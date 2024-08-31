@@ -1,0 +1,58 @@
+@startuml social-networking-service
+title ユースケース図
+
+left to right direction
+
+rectangle "SNS App" {
+    usecase "タイムラインを閲覧する" as viewTimeline
+    note top of viewTimeline
+        タイムラインには、トレンドのタイムラインと
+        フォロワー投稿のタイムラインの2種類がある。
+        トレンドのタイムラインはログインしていなくても閲覧できる。
+    end note
+
+    package ログインを必要としないユースケース {
+        usecase "ユーザー登録する" as userRegister
+        usecase "ログインする" as login
+    }
+
+    package ログインを必要とするケース {
+        usecase "プロフィールを設定する" as setProfile
+        usecase "プロフィールを閲覧する" as viewProfile
+        usecase "ユーザーをフォローする" as follow
+        usecase "投稿する" as post
+        usecase "投稿を予約する" as reservePost
+        usecase "投稿を保存する" as savePost
+        usecase "投稿に返信する" as reply
+        usecase "いいねする" as like
+        usecase "プライベートメッセージを送信する" as sendMessage
+        usecase "通知を確認する" as viewNotification
+        usecase "ログアウトする" as logout
+        post <.. reservePost : <<extend>>
+        reservePost <.. savePost : <<include>>
+    }
+}
+
+:ユーザー: as user
+
+user -- viewTimeline
+user -- userRegister
+user -- login
+
+user -- setProfile
+user -- viewProfile
+user -- follow
+user -- post
+user -- reply
+user -- like
+user -- sendMessage
+user -- viewNotification
+user -- logout
+
+:シードシステム（偽ユーザー）: as fakeUser
+
+userRegister -- fakeUser
+post -- fakeUser
+reply -- fakeUser
+like -- fakeUser
+@enduml
