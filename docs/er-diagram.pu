@@ -1,0 +1,81 @@
+@startuml social-networking-service
+title ER図
+
+hide circle
+skinparam linetype ortho
+
+entity "users" as users {
+    *user_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *name: VARCHAR(50) NOT NULL 
+    *username: VARCHAR(20) NOT NULL
+    *email: VARCHAR(320) NOT NULL UNIQUE
+    *password: VARCHAR(255) NOT NULL
+    *profile_text: VARCHAR(160) NULL
+    *profile_image_hash: VARCHAR(40) NULL
+    *email_confirmed_at: DATETIME NULL
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    *updated_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+}
+
+entity "follows" as follows {
+    *follow_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *follower_id: INT UNSIGNED <<FK>>
+    *followee_id: INT UNSIGNED <<FK>>
+}
+
+entity "posts" as posts {
+    *post_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *user_id: INT UNSIGNED NOT NULL <<FK>>
+    *reply_to_id: INT UNSIGNED NULL <<FK>>
+    *content: VARCHAR(255) NOT NULL
+    *image_hash: VARCHAR(40) NULL
+    *status: ENUM('POSTED','SAVED','SCHEDULED') NOT NULL
+    *scheduled_at: DATETIME NULL
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "likes" as likes {
+    *like_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *user_id: INT UNSIGNED <<FK>>
+    *post_id: INT UNSIGNED <<FK>>
+}
+
+entity "notifications" as notifications {
+    *notification_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *from_user_id: INT UNSIGNED <<FK>>
+    *to_user_id: INT UNSIGNED <<FK>>
+    *source_id: INT UNSIGNED
+    *type: ENUM('FOLLOW','LIKE','COMMENT','MESSAGE')
+    *is_read: BOOL NOT NULL DEFAULT FALSE
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "messages" as messages {
+    *message_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *from_user_id: INT UNSIGNED <<FK>>
+    *to_user_id: INT UNSIGNED <<FK>>
+    *content: VARCHAR(255) NOT NULL
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+}
+
+' 投稿関連
+users ||..o| posts
+posts |o..o{ posts
+users ||..o{ likes
+posts ||..o{ likes
+
+' フォロワー関連
+users ||..o{ follows
+
+' 通知関連
+users ||..o{ notifications
+
+' メッセージ関連
+users ||..o{ messages
+@enduml
