@@ -11,7 +11,7 @@ class CreateUsersTable implements SchemaMigration {
             "CREATE TABLE users (
                 user_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(50) NOT NULL,
-                username VARCHAR(20) NOT NULL,
+                username VARCHAR(20) NOT NULL UNIQUE,
                 email VARCHAR(320) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 profile_text VARCHAR(160) NULL,
