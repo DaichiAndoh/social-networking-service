@@ -7,11 +7,15 @@ spl_autoload_register(function($name) {
 
 $DEBUG = true;
 
-// ルートの読み込み
-$routes = include("../routing/routes.php");
-
 // リクエストURIを解析してパスだけを取得
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+
+// ルートの読み込み
+if (strpos($path, "/api/") === 0) {
+    $routes = include("../routing/api_routes.php");
+} else {
+    $routes = include("../routing/page_routes.php");
+}
 
 // ルートにパスが存在するかチェック
 if (isset($routes[$path])) {

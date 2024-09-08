@@ -8,6 +8,12 @@ use Models\Traits\GenericModel;
 class User implements Model {
     use GenericModel;
 
+    public static $valueMaxLen = [
+        "name" => 50,
+        "username" => 20,
+        "email" => 320,
+    ];
+
     public function __construct(
         private string $name,
         private string $username,
