@@ -25,7 +25,7 @@
                         <div id="password-error-msg" class="invalid-feedback"></div>
                         <div class="form-text">
                             <p class="m-0">以下の条件を満たすパスワードを設定してください。</p>
-                            <p class="m-0 ms-2">- 8文字以上</p>
+                            <p class="m-0 ms-2">- 8文字以上30文字以下</p>
                             <p class="m-0 ms-2">- 1文字以上の大文字</p>
                             <p class="m-0 ms-2">- 1文字以上の小文字</p>
                             <p class="m-0 ms-2">- 1文字以上の数値</p>

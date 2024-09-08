@@ -18,23 +18,14 @@ class ValidationHelper {
 
             switch ($type) {
                 case ValueType::STRING:
-                    $result = is_string($value);
-                    if ($result) {
-                        if (!self::validateStrLen($value, 1, User::$valueMaxLen[$field])) {
-                            $fieldErrors[$field] = sprintf("1文字以上,%s文字以下で入力してください。", User::$valueMaxLen[$field]);
-                        }
-                    } else {
-                        $fieldErrors[$field] = "入力値が不適切です。";
+                    if (!is_string($value)) {
+                        $fieldErrors[$field] = "無効な入力値です。";
                     }
                     break;
 
                 case ValueType::EMAIL:
                     if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
                         $fieldErrors[$field] = "無効なメールアドレスです。";
-                    } else {
-                        if (!self::validateStrLen($value, 1, User::$valueMaxLen[$field])) {
-                            $fieldErrors[$field] = sprintf("1文字以上,%s文字以下で入力してください。", User::$valueMaxLen[$field]);
-                        }
                     }
                     break;
 
@@ -42,6 +33,7 @@ class ValidationHelper {
                     if (!(
                         is_string($value) &&
                         strlen($value) >= 8 && // 8文字以上
+                        strlen($value) <= 30 && // 30文字以下
                         preg_match("/[A-Z]/", $value) && // 1文字以上の大文字
                         preg_match("/[a-z]/", $value) && // 1文字以上の小文字
                         preg_match("/\d/", $value) && // 1文字以上の数値

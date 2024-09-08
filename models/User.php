@@ -8,7 +8,13 @@ use Models\Traits\GenericModel;
 class User implements Model {
     use GenericModel;
 
-    public static $valueMaxLen = [
+    public static $minLens = [
+        "name" => 1,
+        "username" => 1,
+        "email" => 1,
+    ];
+
+    public static $maxLens = [
         "name" => 50,
         "username" => 20,
         "email" => 320,

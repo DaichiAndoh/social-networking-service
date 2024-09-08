@@ -35,16 +35,41 @@ return [
                 "confirm-password" => ValueType::PASSWORD,
             ], $_POST);
 
+            if (
+                !isset($fieldErrors["name"]) &&
+                ValidationHelper::validateStrLen($_POST["name"], User::$minLen["name"], User::$maxLen["name"])
+            ) $fieldErrors["name"] = sprintf(
+                "%s文字以上、%s文字以下で入力してください。",
+                User::$minLen["name"],
+                User::$maxLen["name"],
+            );
+
+            if (!isset($fieldErrors["username"])) {
+                if (!ValidationHelper::validateStrLen($_POST["username"], User::$minLen["username"], User::$maxLen["username"])) {
+                    $fieldErrors["username"] = sprintf(
+                        "%s文字以上、%s文字以下で入力してください。",
+                        User::$minLen["username"],
+                        User::$maxLen["username"],
+                    );
+                } else if ($userDao->getByUsername($_POST["username"])){
+                    $fieldErrors["username"] = "このユーザー名は使用できません。";
+                }
+            }
+
+            if (!isset($fieldErrors["email"])) {
+                if (!ValidationHelper::validateStrLen($_POST["email"], User::$minLen["email"], User::$maxLen["email"])) {
+                    $fieldErrors["email"] = sprintf(
+                        "%s文字以上、%s文字以下で入力してください。",
+                        User::$minLen["email"],
+                        User::$maxLen["email"],
+                    );
+                } else if ($userDao->getByEmail($_POST["email"])) {
+                    $fieldErrors["email"] = "このメールアドレスは使用できません。";
+                }
+            }
+
             if (!isset($fieldErrors["confirm-password"]) && $_POST["confirm-password"] !== $_POST["password"]) {
                 $fieldErrors["confirm-password"] = "パスワードと一致していません。";
-            }
-
-            if (!isset($fieldErrors["email"]) && $userDao->getByEmail($_POST["email"])){
-                $fieldErrors["email"] = "このメールアドレスは使用できません。";
-            }
-
-            if (!isset($fieldErrors["username"]) && $userDao->getByEmail($_POST["username"])){
-                $fieldErrors["username"] = "このユーザー名は使用できません。";
             }
 
             // 入力値検証でエラーが存在すれば、そのエラー情報をレスポンスとして返す
