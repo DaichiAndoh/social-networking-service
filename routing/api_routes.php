@@ -1,6 +1,7 @@
 <?php
 
 use Database\DataAccess\DAOFactory;
+use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticate;
 use Helpers\ValidationHelper;
 use Models\User;
@@ -70,6 +71,66 @@ return [
 
             // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
             FlashData::setFlashData("success", "Account successfully created.");
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "An error occurred.";
+            return new JSONRenderer($resBody);
+        }
+    },
+    "/api/login" => function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // ユーザが現在ログインしている場合、以降の処理は行わない
+            if (Authenticate::isLoggedIn()) throw new Exception("Already logged in.");
+
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
+
+            $userDao = DAOFactory::getUserDAO();
+
+            // 入力値検証
+            $fieldErrors = ValidationHelper::validateFields([
+                "email" => ValueType::EMAIL,
+                "password" => ValueType::STRING,
+            ], $_POST);
+
+            // 入力値検証でエラーが存在すれば、そのエラー情報をレスポンスとして返す
+            if (!empty($fieldErrors)) {
+                $resBody["success"] = false;
+                $resBody["fieldErrors"] = $fieldErrors;
+                return new JSONRenderer($resBody);
+            }
+
+            // 入力値でユーザー認証を行う
+            Authenticate::authenticate($_POST["email"], $_POST["password"]);
+
+            // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
+            FlashData::setFlashData("success", "Logged in successfully.");
+            return new JSONRenderer($resBody);
+        } catch (AuthenticationFailureException $e) {
+            $resBody["success"] = false;
+            $resBody["fieldErrors"] = [
+                "email" => "メールアドレスまたはパスワードが不適切です。",
+                "password" => "メールアドレスまたはパスワードが不適切です。",
+            ];
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "An error occurred.";
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    },
+    "/api/logout" => function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            Authenticate::logoutUser();
+            FlashData::setFlashData("success", "Logged out.");
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());

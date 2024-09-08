@@ -2,6 +2,7 @@
 
 namespace Helpers;
 
+use Exceptions\AuthenticationFailureException;
 use Database\DataAccess\DAOFactory;
 use Models\User;
 
@@ -45,5 +46,24 @@ class Authenticate {
     public static function getAuthenticatedUser(): ?User {
         self::retrieveAuthenticatedUser();
         return self::$authenticatedUser;
+    }
+
+    /**
+     * @throws AuthenticationFailureException
+     */
+    public static function authenticate(string $email, string $password): User {
+        $userDAO = DAOFactory::getUserDAO();
+
+        // メールアドレスでユーザー取得
+        self::$authenticatedUser = $userDAO->getByEmail($email);
+        if (self::$authenticatedUser === null) throw new AuthenticationFailureException();
+
+        // パスワードを取得
+        $hashedPassword = $userDAO->getHashedPasswordById(self::$authenticatedUser->getUserId());
+        if (password_verify($password, $hashedPassword)) {
+            self::loginAsUser(self::$authenticatedUser);
+            return self::$authenticatedUser;
+        }
+        else throw new AuthenticationFailureException();
     }
 }

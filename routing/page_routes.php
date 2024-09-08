@@ -21,6 +21,13 @@ return [
         return new HTMLRenderer("page/register", []);
     },
     "/login" => function(): HTTPRenderer {
+        if (Authenticate::isLoggedIn()) {
+            FlashData::setFlashData("error", "Cannot login as you are already logged in.");
+            if (Authenticate::emailVerified()) {
+                return new RedirectRenderer("/");
+            }
+            return new RedirectRenderer("/");
+        }
         return new HTMLRenderer("page/login", []);
     },
 ];
