@@ -40,6 +40,7 @@ class HTMLRenderer implements HTTPRenderer {
     private function getHeader(): string {
         ob_start();
         require $this->getViewFilePath("layout/header");
+        require $this->getViewFilePath("component/message_boxes");
         return ob_get_clean();
     }
 
