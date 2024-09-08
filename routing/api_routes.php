@@ -34,8 +34,8 @@ return [
                 "confirm-password" => ValueType::PASSWORD,
             ], $_POST);
 
-            if (!isset($fieldErrors["confirm-password"]) && $_POST["confirm_password"] !== $_POST["password"]) {
-                $fieldErrors["confirm_password"] = "パスワードと一致していません。";
+            if (!isset($fieldErrors["confirm-password"]) && $_POST["confirm-password"] !== $_POST["password"]) {
+                $fieldErrors["confirm-password"] = "パスワードと一致していません。";
             }
 
             if (!isset($fieldErrors["email"]) && $userDao->getByEmail($_POST["email"])){
@@ -55,13 +55,13 @@ return [
 
             // 新しいUserオブジェクトを作成
             $user = new User(
-                name: $validatedData["name"],
-                username: $validatedData["username"],
-                email: $validatedData["email"],
+                name: $_POST["name"],
+                username: $_POST["username"],
+                email: $_POST["email"],
             );
 
             // データベースにユーザーを作成
-            $success = $userDao->create($user, $validatedData["password"]);
+            $success = $userDao->create($user, $_POST["password"]);
 
             if (!$success) throw new Exception("Failed to create new user!");
 

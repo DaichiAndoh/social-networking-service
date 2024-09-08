@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log("success");
     } else {
       if (resData.fieldErrors) {
-        for (const field in resData.errors) {
-          setFormValidation(field, resData.errors[field]);
+        for (const field in resData.fieldErrors) {
+          setFormValidation(field, resData.fieldErrors[field]);
         }
       }
       if (resData.error) {

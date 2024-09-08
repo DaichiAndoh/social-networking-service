@@ -18,12 +18,12 @@ class User implements Model {
         private string $name,
         private string $username,
         private string $email,
-        private string $created_at,
-        private string $updated_at,
         private ?int $user_id = null,
         private ?string $profile_text = null,
         private ?string $profile_image_hash = null,
         private ?string $email_confirmed_at = null,
+        private ?string $created_at = null,
+        private ?string $updated_at = null,
     ) {}
 
     public function getUserId(): ?int {
@@ -82,7 +82,7 @@ class User implements Model {
         $this->email_confirmed_at = $email_confirmed_at;
     }
 
-    public function getCreatedAt(): string {
+    public function getCreatedAt(): ?string {
         return $this->created_at;
     }
 
@@ -90,7 +90,7 @@ class User implements Model {
         $this->created_at = $created_at;
     }
 
-    public function getUpdatedAt(): string {
+    public function getUpdatedAt(): ?string {
         return $this->updated_at;
     }
 
