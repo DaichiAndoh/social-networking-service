@@ -104,7 +104,7 @@ return [
             $resBody["error"] = "An error occurred.";
             return new JSONRenderer($resBody);
         }
-    }),
+    })->setMiddleware(["api_guest"]),
     "/api/login" => Route::create("/api/login", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -150,7 +150,7 @@ return [
             $resBody["error"] = $e->getMessage();
             return new JSONRenderer($resBody);
         }
-    }),
+    })->setMiddleware(["api_guest"]),
     "/api/logout" => Route::create("/api/logout", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -164,5 +164,5 @@ return [
             $resBody["error"] = "An error occurred.";
             return new JSONRenderer($resBody);
         }
-    }),
+    })->setMiddleware(["api_logged_in"]),
 ];

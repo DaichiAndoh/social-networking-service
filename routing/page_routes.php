@@ -12,23 +12,15 @@ return [
         return new HTMLRenderer("page/top", []);
     }),
     "/register" => Route::create("/register", function(): HTTPRenderer {
-        if (Authenticate::isLoggedIn()) {
-            FlashData::setFlashData("error", "Cannot register as you are already logged in.");
-            if (Authenticate::emailVerified()) {
-                return new RedirectRenderer("/");
-            }
-            return new RedirectRenderer("/");
-        }
         return new HTMLRenderer("page/register", []);
-    }),
+    })->setMiddleware(["guest"]),
     "/login" => Route::create("/login", function(): HTTPRenderer {
-        if (Authenticate::isLoggedIn()) {
-            FlashData::setFlashData("error", "Cannot login as you are already logged in.");
-            if (Authenticate::emailVerified()) {
-                return new RedirectRenderer("/");
-            }
-            return new RedirectRenderer("/");
-        }
         return new HTMLRenderer("page/login", []);
-    }),
+    })->setMiddleware(["guest"]),
+    "/verify_resend" => Route::create("/verify_resend", function(): HTTPRenderer {
+        return new HTMLRenderer("page/verify_resend", []);
+    })->setMiddleware(["unverified"]),
+    "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
+        return new HTMLRenderer("page/timeline", []);
+    })->setMiddleware(["auth"]),
 ];
