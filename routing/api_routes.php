@@ -8,13 +8,14 @@ use Models\User;
 use Response\FlashData;
 use Response\HTTPRenderer;
 use Response\Render\JSONRenderer;
+use Routing\Route;
 use Types\ValueType;
 
 return [
-    "/api" => function(): HTTPRenderer {
+    "/api" => Route::create("/api", function(): HTTPRenderer {
         return new JSONRenderer(["page" => "top"]);
-    },
-    "/api/register" => function(): HTTPRenderer {
+    }),
+    "/api/register" => Route::create("/api/register", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
@@ -103,8 +104,8 @@ return [
             $resBody["error"] = "An error occurred.";
             return new JSONRenderer($resBody);
         }
-    },
-    "/api/login" => function(): HTTPRenderer {
+    }),
+    "/api/login" => Route::create("/api/login", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
@@ -112,7 +113,7 @@ return [
             if (Authenticate::isLoggedIn()) throw new Exception("Already logged in.");
 
             // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("Invalid request method!");
 
             $userDao = DAOFactory::getUserDAO();
 
@@ -149,8 +150,8 @@ return [
             $resBody["error"] = $e->getMessage();
             return new JSONRenderer($resBody);
         }
-    },
-    "/api/logout" => function(): HTTPRenderer {
+    }),
+    "/api/logout" => Route::create("/api/logout", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
@@ -163,5 +164,5 @@ return [
             $resBody["error"] = "An error occurred.";
             return new JSONRenderer($resBody);
         }
-    },
+    }),
 ];

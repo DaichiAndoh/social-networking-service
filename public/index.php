@@ -21,9 +21,26 @@ if (strpos($path, "/api/") === 0) {
 
 // ルートにパスが存在するかチェック
 if (isset($routes[$path])) {
-    // コールバックを呼び出してrendererを作成
     try{
-        $renderer = $routes[$path]();
+        // ルートの取得
+        $route = $routes[$path];
+        if (!($route instanceof Routing\Route)) throw new Exception("Invalid route type");
+
+        // ミドルウェア読み込み
+        $middlewareRegister = include("../middleware/middleware_register.php");
+        $middlewares = array_merge(
+            $middlewareRegister["global"],
+            array_map(
+                fn ($routeAlias) => $middlewareRegister["aliases"][$routeAlias],
+                $route->getMiddleware()
+            )
+        );
+
+        // 実行
+        $middlewareHandler = new \Middleware\MiddlewareHandler(
+            array_map(fn($middlewareClass) => new $middlewareClass(), $middlewares)
+        );
+        $renderer = $middlewareHandler->run($route->getCallback());
 
         // ヘッダーを設定
         foreach ($renderer->getFields() as $name => $value) {
