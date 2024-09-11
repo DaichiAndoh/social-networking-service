@@ -14,10 +14,8 @@ class GuestMiddleware implements Middleware {
     public function handle(callable $next): HTTPRenderer {
         error_log("Running authentication check...");
 
-        if (Authenticate::emailVerified()) {
+        if (Authenticate::isLoggedIn()) {
             return new RedirectRenderer("/timeline");
-        } else if (Authenticate::isLoggedIn()) {
-            return new RedirectRenderer("/verify_resend");
         }
 
         return $next();

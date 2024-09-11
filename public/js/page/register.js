@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log(resData);
 
     if (resData.success) {
-      console.log("success");
+      if (resData.redirectPath) {
+        window.location.href = resData.redirectPath;
+      }
     } else {
       if (resData.fieldErrors) {
         for (const field in resData.fieldErrors) {

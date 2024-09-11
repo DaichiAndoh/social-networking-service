@@ -3,6 +3,8 @@
 namespace Routing;
 
 use Closure;
+use Helpers\Authenticate;
+use Helpers\Settings;
 
 class Route {
     private string $path;
@@ -38,5 +40,51 @@ class Route {
 
     public function getPath(): string {
         return $this->path;
+    }
+
+    private function getBaseURL(): string {
+        if (!isset($_SERVER)) return $this->getPath();
+
+        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off" || $_SERVER["SERVER_PORT"] == 443) ? "https://" : "http://";
+        $host = $_SERVER["HTTP_HOST"];
+        return sprintf($protocol . $host . $this->getPath()) ;
+    }
+
+    private function getSecretKey(): string {
+        return Settings::env("SIGNATURE_SECRET_KEY");
+    }
+
+    public function getSignedURL(array $queryParameters): string {
+        $url = $this->getBaseURL();
+
+        // ユーザーデータ（email）をハッシュ化
+        $queryParameters["user"] = hash_hmac("sha256", $queryParameters["user"], $this->getSecretKey());
+
+        // URLパラメータのクエリ文字列を配列から作成
+        $queryString = http_build_query($queryParameters);
+
+        // HMAC-SHA256を使って署名を作成
+        $signature = hash_hmac("sha256", $url . "?" . $queryString, $this->getSecretKey());
+
+        // パーツを組み合わせて値を返します。
+        return sprintf("%s?%s&signature=%s", $url, $queryString, $signature);
+    }
+
+    public function isSignedURLValid(string $url): bool {
+        // URLデータを含む連想配列を返すparse_url組み込み関数を使用して、URLから署名を抽出
+        $parsedUrl = parse_url($url);
+        if (!isset($parsedUrl["query"])) return false;
+
+        // $parsedUrl["query"]をparse_strでパース
+        $queryParams = [];
+        parse_str($parsedUrl["query"], $queryParams);
+
+        if (!isset($queryParams["signature"])) return false;
+
+        // signatureの署名を検証
+        $signature = $queryParams["signature"];
+        $urlWithoutSignature = str_replace("&signature=" . $signature, "", $url);
+        $expectedSignature = hash_hmac("sha256", $urlWithoutSignature, $this->getSecretKey());
+        return hash_equals($expectedSignature, $signature);
     }
 }

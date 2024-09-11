@@ -39,10 +39,6 @@ class Authenticate {
         return self::$authenticatedUser !== null;
     }
 
-    public static function emailVerified(): bool {
-        return self::isLoggedIn() && self::$authenticatedUser->getEmailConfirmedAt() !== null;
-    }
-
     public static function getAuthenticatedUser(): ?User {
         self::retrieveAuthenticatedUser();
         return self::$authenticatedUser;
@@ -56,7 +52,10 @@ class Authenticate {
 
         // メールアドレスでユーザー取得
         self::$authenticatedUser = $userDAO->getByEmail($email);
-        if (self::$authenticatedUser === null) throw new AuthenticationFailureException();
+        if (
+            self::$authenticatedUser === null ||
+            self::$authenticatedUser->getEmailConfirmedAt() === null
+        ) throw new AuthenticationFailureException();
 
         // パスワードを取得
         $hashedPassword = $userDAO->getHashedPasswordById(self::$authenticatedUser->getUserId());

@@ -3,6 +3,7 @@
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticate;
+use Helpers\MailSend;
 use Helpers\ValidationHelper;
 use Models\User;
 use Response\FlashData;
@@ -38,19 +39,19 @@ return [
 
             if (
                 !isset($fieldErrors["name"]) &&
-                ValidationHelper::validateStrLen($_POST["name"], User::$minLen["name"], User::$maxLen["name"])
+                !ValidationHelper::validateStrLen($_POST["name"], User::$minLens["name"], User::$maxLens["name"])
             ) $fieldErrors["name"] = sprintf(
                 "%s文字以上、%s文字以下で入力してください。",
-                User::$minLen["name"],
-                User::$maxLen["name"],
+                User::$minLens["name"],
+                User::$maxLens["name"],
             );
 
             if (!isset($fieldErrors["username"])) {
-                if (!ValidationHelper::validateStrLen($_POST["username"], User::$minLen["username"], User::$maxLen["username"])) {
+                if (!ValidationHelper::validateStrLen($_POST["username"], User::$minLens["username"], User::$maxLens["username"])) {
                     $fieldErrors["username"] = sprintf(
                         "%s文字以上、%s文字以下で入力してください。",
-                        User::$minLen["username"],
-                        User::$maxLen["username"],
+                        User::$minLens["username"],
+                        User::$maxLens["username"],
                     );
                 } else if ($userDao->getByUsername($_POST["username"])){
                     $fieldErrors["username"] = "このユーザー名は使用できません。";
@@ -58,7 +59,7 @@ return [
             }
 
             if (!isset($fieldErrors["email"])) {
-                if (!ValidationHelper::validateStrLen($_POST["email"], User::$minLen["email"], User::$maxLen["email"])) {
+                if (!ValidationHelper::validateStrLen($_POST["email"], User::$minLens["email"], User::$maxLens["email"])) {
                     $fieldErrors["email"] = sprintf(
                         "%s文字以上、%s文字以下で入力してください。",
                         User::$minLen["email"],
@@ -87,16 +88,26 @@ return [
                 email: $_POST["email"],
             );
 
-            // データベースにユーザーを作成
+            // DB登録
+            $userDao = DAOFactory::getUserDAO();
             $success = $userDao->create($user, $_POST["password"]);
+            if (!$success) throw new Exception("アカウント仮登録処理に失敗しました。");
 
-            if (!$success) throw new Exception("Failed to create new user!");
+            // メール検証用URLを作成
+            $queryParameters = [
+                "id" => $user->getUserId(),
+                "user"=> $user->getEmail(),
+                "expiration" => time() + 3600,
+            ];
+            $signedURL = Route::create("/verify_email", function() {})->getSignedURL($queryParameters);
 
-            // ユーザーログイン
-            Authenticate::loginAsUser($user);
+            // 検証メールを送信
+            $sendResult = MailSend::sendVerificationMail($signedURL, "[SNS] メールアドレスを確認してください。", $user->getEmail(), $user->getName());
+            if (!$sendResult) new Exception("メールアドレス検証メールの送信に失敗しました。");
 
-            // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
-            FlashData::setFlashData("success", "Account successfully created.");
+            // UI側でメールアドレス検証待ちのページに遷移されるため、そこでこのメッセージが表示される
+            FlashData::setFlashData("success", "登録されたメールアドレス宛に検証用メールを送信しました。");
+            $resBody["redirectPath"] = "/login";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -164,5 +175,5 @@ return [
             $resBody["error"] = "An error occurred.";
             return new JSONRenderer($resBody);
         }
-    })->setMiddleware(["api_logged_in"]),
+    })->setMiddleware(["api_auth"]),
 ];

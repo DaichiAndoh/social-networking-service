@@ -23,6 +23,12 @@ class ValidationHelper {
                     }
                     break;
 
+                case ValueType::INT:
+                    if (!self::validateInteger($value)) {
+                        $fieldErrors[$field] = "無効な入力値です。";
+                    }
+                    break;
+
                 case ValueType::EMAIL:
                     if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
                         $fieldErrors[$field] = "無効なメールアドレスです。";
@@ -46,6 +52,12 @@ class ValidationHelper {
         }
 
         return $fieldErrors;
+    }
+
+    public static function validateInteger($value, float $min = -INF, float $max = INF): bool {
+        if (!filter_var($value, FILTER_VALIDATE_INT)) return false;
+        if ($value < $min || $value > $max) return false;
+        return true;
     }
 
     public static function validateStrLen(string $value, int $min = 1, int $max = 100): bool {

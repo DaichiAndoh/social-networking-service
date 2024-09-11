@@ -108,8 +108,6 @@ class UserDAOImpl implements UserDAO {
     }
 
     public function updateEmailConfirmedAt(int $user_id): bool {
-        if ($user->getUserId() === null) throw new \Exception("Cannot update a user without ID.");
-
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query = "UPDATE users SET email_confirmed_at = NOW() WHERE user_id = ?";
