@@ -22,6 +22,7 @@ return [
             if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
 
             $userDao = DAOFactory::getUserDAO();
+            $tempUserDao = DAOFactory::getTempUserDAO();
 
             // 入力値検証
             $fieldErrors = ValidationHelper::validateFields([
@@ -83,22 +84,30 @@ return [
                 email: $_POST["email"],
             );
 
-            // DB登録
+            // userを作成
             $userDao = DAOFactory::getUserDAO();
             $success = $userDao->create($user, $_POST["password"]);
-            if (!$success) throw new Exception("アカウント仮登録処理に失敗しました。");
+            if (!$success) throw new Exception("userの作成に失敗しました。");
 
             // メール検証用URLを作成
             $queryParameters = [
-                "id" => $user->getUserId(),
                 "user"=> $user->getEmail(),
                 "expiration" => time() + 3600,
             ];
-            $signedURL = Route::create("/verify_email", function() {})->getSignedURL($queryParameters);
+            $signedURLData = Route::create("/verify_email", function() {})->getSignedURL($queryParameters);
+
+            // temp_userを作成
+            $tempUser = new TempUser(
+                user_id: $user->getUserId(),
+                signature: $signedURLData["signature"],
+                type: "EMAIL_VERIFICATION",
+            );
+            $result = $tempUserDao->create($tempUser);
+            if (!$result) throw new Exception("temp_userの作成に失敗しました。");
 
             // 検証メールを送信
             $sendResult = MailSend::sendVerificationMail(
-                $signedURL,
+                $signedURLData["url"],
                 $user->getEmail(),
                 $user->getName(),
                 "email_verification"
@@ -189,7 +198,6 @@ return [
 
             // パスワードリセット用URLを作成
             $queryParameters = [
-                "id" => $user->getUserId(),
                 "user"=> $user->getEmail(),
                 "expiration" => time() + 3600,
             ];

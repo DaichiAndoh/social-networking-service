@@ -42,7 +42,7 @@ class TempUserDAOImpl implements TempUserDAO {
     }
 
     public function getBySignature(string $signature): ?TempUser {
-        $userRaw = $this->getRawBySignature($signature, $type);
+        $userRaw = $this->getRawBySignature($signature);
         if($userRaw === null) return null;
 
         return $this->rawDataToTempUser($userRaw);

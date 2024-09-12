@@ -27,12 +27,17 @@ return [
     "/verify_email" => Route::create("/verify_email", function(): HTTPRenderer {
         try {
             $userDao = DAOFactory::getUserDAO();
-            $user = $userDao->getById($_GET["id"]);
+            $tempUserDao = DAOFactory::getTempUserDAO();
+
+            $tempUser = $tempUserDao->getBySignature($_GET["signature"]);
+            $user = $userDao->getById($tempUser->getUserId());
 
             if ($user->getEmailConfirmedAt() !== null) throw new Exception("メールアドレスは検証済みです。");
 
             $result = $userDao->updateEmailConfirmedAt($user->getUserId());
             if (!$result) throw new Exception("メールアドレス検証処理に失敗しました。");
+
+            $tempUserDao->deleteTempUserById($tempUser->getTempUserId());
 
             Authenticate::loginAsUser($user);
 
