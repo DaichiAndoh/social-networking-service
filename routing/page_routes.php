@@ -18,6 +18,12 @@ return [
     "/login" => Route::create("/login", function(): HTTPRenderer {
         return new HTMLRenderer("page/login", []);
     })->setMiddleware(["guest"]),
+    "/password_forget" => Route::create("/password_forget", function(): HTTPRenderer {
+        return new HTMLRenderer("page/password_forget", []);
+    })->setMiddleware(["guest"]),
+    "/password_reset" => Route::create("/password_reset", function(): HTTPRenderer {
+        return new HTMLRenderer("page/password_reset", ["signature" => $_GET["signature"]]);
+    })->setMiddleware(["guest", "signature"]),
     "/verify_email" => Route::create("/verify_email", function(): HTTPRenderer {
         try {
             $userDao = DAOFactory::getUserDAO();

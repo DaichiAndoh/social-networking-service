@@ -2,6 +2,7 @@
 
 namespace Middleware\UI;
 
+use Database\DataAccess\DAOFactory;
 use Helpers\ValidationHelper;
 use Middleware\Middleware;
 use Response\FlashData;
@@ -30,6 +31,14 @@ class SignatureValidationMiddleware implements Middleware {
             // 有効期限があるかどうかを確認し、有効期限がある場合は有効期限が切れていないことを確認
             if (isset($_GET["expiration"]) && $_GET["expiration"] < time()) {
                 FlashData::setFlashData("error", "URLの有効期限が切れています。");
+                return new RedirectRenderer("/");
+            }
+
+            // 使用済みかどうかを確認
+            $tempUserDao = DAOFactory::getTempUserDAO();
+            $tempUser = $tempUserDao->getBySignature($_GET["signature"]);
+            if ($tempUser === null) {
+                FlashData::setFlashData("error", "既に使用されたURLです。");
                 return new RedirectRenderer("/");
             }
 

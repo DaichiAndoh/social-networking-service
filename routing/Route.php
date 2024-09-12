@@ -54,7 +54,7 @@ class Route {
         return Settings::env("SIGNATURE_SECRET_KEY");
     }
 
-    public function getSignedURL(array $queryParameters): string {
+    public function getSignedURL(array $queryParameters): array {
         $url = $this->getBaseURL();
 
         // ユーザーデータ（email）をハッシュ化
@@ -67,7 +67,10 @@ class Route {
         $signature = hash_hmac("sha256", $url . "?" . $queryString, $this->getSecretKey());
 
         // パーツを組み合わせて値を返します。
-        return sprintf("%s?%s&signature=%s", $url, $queryString, $signature);
+        return [
+            "signature" => $signature,
+            "url" => sprintf("%s?%s&signature=%s", $url, $queryString, $signature),
+        ];
     }
 
     public function isSignedURLValid(string $url): bool {

@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\Exception;
 use Helpers\Settings;
 
 class MailSend {
-    public static function sendVerificationMail(string $signedURL, string $subject, string $toAddress, string $toName): bool {
+    public static function sendVerificationMail(string $signedURL, string $toAddress, string $toName, string $mailType): bool {
         $mail = new PHPMailer(true);
 
         try {
@@ -24,20 +24,35 @@ class MailSend {
             $mail->setFrom(Settings::env("MAIL_FROM_ADDRESS"), Settings::env("MAIL_FROM_NAME")); // 送信者を設定
             $mail->addAddress($toAddress, $toName); // 受信者を追加
 
-            $mail->Subject = $subject; // 件名を設定
-
             $mail->isHTML(); // メール形式をHTMLに設定
 
-            // 本文を設定
-            ob_start();
-            extract([
-                "signedURL" => $signedURL,
-                "toName" => $toName,
-            ]);
-            include("../views/mail/email_verify.php");
-            $mail->Body = ob_get_clean();
+            // 本文, 件名を設定
+            switch ($mailType) {
+                case "email_verification":
+                    ob_start();
+                    extract([
+                        "signedURL" => $signedURL,
+                        "toName" => $toName,
+                    ]);
+                    include("../views/mail/email_verify.php");
+                    $mail->Body = ob_get_clean();
+                    $textBody = file_get_contents("../views/mail/email_verify.txt");
+                    $mail->Subject = "[SNS] メールアドレスを確認してください。";
+                    break;
 
-            $textBody = file_get_contents("../views/mail/email_verify.txt");
+                case "password_reset":
+                    ob_start();
+                    extract([
+                        "signedURL" => $signedURL,
+                        "toName" => $toName,
+                    ]);
+                    include("../views/mail/password_reset.php");
+                    $mail->Body = ob_get_clean();
+                    $textBody = file_get_contents("../views/mail/password_reset.txt");
+                    $mail->Subject = "[SNS] パスワードを変更してください。";
+                    break;
+            }
+
             $textBody = str_replace("[URL]", $signedURL, $textBody);
             $textBody = str_replace("[TO_NAME]", $toName, $textBody);
             $mail->AltBody = $textBody;

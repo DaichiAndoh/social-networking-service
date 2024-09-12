@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Verify Your Email Address</title>
+    <title>メールアドレス検証</title>
 </head>
 <body>
     <p><?php echo htmlspecialchars($toName) . " さま"; ?></p>

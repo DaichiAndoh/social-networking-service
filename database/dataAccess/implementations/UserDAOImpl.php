@@ -116,4 +116,21 @@ class UserDAOImpl implements UserDAO {
 
         return $result;
     }
+
+    public function updatePassword(int $user_id, string $password): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "UPDATE users SET password = ? WHERE user_id = ?";
+
+        $result = $mysqli->prepareAndExecute(
+            $query,
+            "si",
+            [
+                password_hash($password, PASSWORD_DEFAULT),
+                $user_id
+            ]
+        );
+
+        return $result;
+    }
 }

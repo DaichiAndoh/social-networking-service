@@ -21,6 +21,8 @@
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </button>
+
+                        <p class="m-0 mt-4"><a href="/password_forget">パスワードをお忘れですか？</a></p>
                     </div>
                 </form>
             </div>
