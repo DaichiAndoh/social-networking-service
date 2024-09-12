@@ -13,18 +13,12 @@ use Routing\Route;
 use Types\ValueType;
 
 return [
-    "/api" => Route::create("/api", function(): HTTPRenderer {
-        return new JSONRenderer(["page" => "top"]);
-    }),
     "/api/register" => Route::create("/api/register", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
-            // ユーザが現在ログインしている場合、登録ページにアクセスすることは不可
-            if (Authenticate::isLoggedIn()) throw new Exception("Already logged in.");
-
             // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("Invalid request method!");
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
 
             $userDao = DAOFactory::getUserDAO();
 
@@ -102,17 +96,19 @@ return [
             $signedURL = Route::create("/verify_email", function() {})->getSignedURL($queryParameters);
 
             // 検証メールを送信
-            $sendResult = MailSend::sendVerificationMail($signedURL, "[SNS] メールアドレスを確認してください。", $user->getEmail(), $user->getName());
+            $sendResult = MailSend::sendVerificationMail(
+                $signedURL,
+                "[SNS] メールアドレスを確認してください。",
+                $user->getEmail(),
+                $user->getName()
+            );
             if (!$sendResult) new Exception("メールアドレス検証メールの送信に失敗しました。");
 
-            // UI側でメールアドレス検証待ちのページに遷移されるため、そこでこのメッセージが表示される
-            FlashData::setFlashData("success", "登録されたメールアドレス宛に検証用メールを送信しました。");
-            $resBody["redirectPath"] = "/login";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = "An error occurred.";
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
@@ -120,11 +116,8 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // ユーザが現在ログインしている場合、以降の処理は行わない
-            if (Authenticate::isLoggedIn()) throw new Exception("Already logged in.");
-
             // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("Invalid request method!");
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
 
             $userDao = DAOFactory::getUserDAO();
 
@@ -145,7 +138,8 @@ return [
             Authenticate::authenticate($_POST["email"], $_POST["password"]);
 
             // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
-            FlashData::setFlashData("success", "Logged in successfully.");
+            FlashData::setFlashData("success", "ログインしました。");
+            $resBody["redirectUrl"] = "/timeline";
             return new JSONRenderer($resBody);
         } catch (AuthenticationFailureException $e) {
             $resBody["success"] = false;
@@ -157,8 +151,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = "An error occurred.";
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
@@ -167,12 +160,12 @@ return [
 
         try {
             Authenticate::logoutUser();
-            FlashData::setFlashData("success", "Logged out.");
+            FlashData::setFlashData("success", "ログアウトしました。");
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = "An error occurred.";
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth"]),

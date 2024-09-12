@@ -19,7 +19,7 @@ class MailSend {
             $mail->Password = Settings::env("SMPT_PASSWORD"); // SMTPパスワード
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // TLS暗号化を有効化
             $mail->Port = 587; // 接続先のTCPポート
-            $mail->CharSet = 'UTF-8'; // 文字コードをUTF-8に設定
+            $mail->CharSet = "UTF-8"; // 文字コードをUTF-8に設定
 
             $mail->setFrom(Settings::env("MAIL_FROM_ADDRESS"), Settings::env("MAIL_FROM_NAME")); // 送信者を設定
             $mail->addAddress($toAddress, $toName); // 受信者を追加

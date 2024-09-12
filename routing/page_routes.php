@@ -2,18 +2,16 @@
 
 use Database\DataAccess\DAOFactory;
 use Helpers\Authenticate;
-use Helpers\ValidationHelper;
 use Response\HTTPRenderer;
 use Response\FlashData;
 use Response\Render\HTMLRenderer;
 use Response\Render\RedirectRenderer;
 use Routing\Route;
-use Types\ValueType;
 
 return [
     "/" => Route::create("/", function(): HTTPRenderer {
         return new HTMLRenderer("page/top", []);
-    }),
+    })->setMiddleware(["guest"]),
     "/register" => Route::create("/register", function(): HTTPRenderer {
         return new HTMLRenderer("page/register", []);
     })->setMiddleware(["guest"]),
@@ -21,29 +19,24 @@ return [
         return new HTMLRenderer("page/login", []);
     })->setMiddleware(["guest"]),
     "/verify_email" => Route::create("/verify_email", function(): HTTPRenderer {
-        $required_fields = [
-            "id" => ValueType::INT,
-            "user" => ValueType::STRING,
-            "expiration" => ValueType::INT,
-        ];
+        try {
+            $userDao = DAOFactory::getUserDAO();
+            $user = $userDao->getById($_GET["id"]);
 
-        $fieldErrors = ValidationHelper::validateFields($required_fields, $_GET);
+            if ($user->getEmailConfirmedAt() !== null) throw new Exception("メールアドレスは検証済みです。");
 
-        if (!empty($fieldErrors)) {
-            FlashData::setFlashData("error", "無効なURLです。");
+            $result = $userDao->updateEmailConfirmedAt($user->getUserId());
+            if (!$result) throw new Exception("メールアドレス検証処理に失敗しました。");
+
+            Authenticate::loginAsUser($user);
+
+            FlashData::setFlashData("success", "アカウント登録が完了しました。");
+            return new RedirectRenderer("/timeline");
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            FlashData::setFlashData("error", "エラーが発生しました。");
             return new RedirectRenderer("/");
         }
-
-        $userDao = DAOFactory::getUserDAO();
-        $user = $userDao->getById($_GET["id"]);
-        echo print_r($user);
-        $result = $userDao->updateEmailConfirmedAt($user->getUserId());
-        if (!$result) throw new Exception("メールアドレス検証処理に失敗しました。");
-
-        Authenticate::loginAsUser($user);
-
-        FlashData::setFlashData("success", "アカウント登録が完了しました。");
-        return new RedirectRenderer("/timeline");
     })->setMiddleware(["guest", "signature"]),
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
         return new HTMLRenderer("page/timeline", []);

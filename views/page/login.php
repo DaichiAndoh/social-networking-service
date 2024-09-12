@@ -15,7 +15,12 @@
                         <div id="password-error-msg" class="invalid-feedback"></div>
                     </div>
                     <div class="text-center mt-5">
-                        <button type="submit" class="btn btn-primary w-100">ログイン</button>
+                        <button id="login-btn" type="submit" class="btn btn-primary w-100">
+                            ログイン
+                            <div id="login-btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
                     </div>
                 </form>
             </div>

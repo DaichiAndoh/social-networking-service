@@ -5,7 +5,7 @@
     <title>Verify Your Email Address</title>
 </head>
 <body>
-    <p><?php echo htmlspecialchars($toName) . ' さま'; ?></p>
+    <p><?php echo htmlspecialchars($toName) . " さま"; ?></p>
     <p>ご登録いただきありがとうございます。</p>
     <p>アカウント保護のため下のURLをクリックして、メールアドレスを確認してください。</p>
     <p><a href="<?php echo htmlspecialchars($signedURL); ?>" style="color: #1a73e8;">メールアドレスを確認する</a></p>

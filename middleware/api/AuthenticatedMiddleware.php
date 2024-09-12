@@ -17,7 +17,7 @@ class AuthenticatedMiddleware implements Middleware {
         if (!Authenticate::isLoggedIn()) {
             $resBody = [
                 "success" => false,
-                "error" => "An error occurred.",
+                "error" => "エラーが発生しました。",
             ];
             return new JSONRenderer($resBody);
         }

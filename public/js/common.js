@@ -5,7 +5,6 @@ async function apiPost(url, body) {
     return resData;
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred. Please try again.");
     return null;
   }
 }

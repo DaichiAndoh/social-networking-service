@@ -38,9 +38,20 @@
                         <div id="confirm-password-error-msg" class="invalid-feedback"></div>
                     </div>
                     <div class="text-center mt-5">
-                        <button type="submit" class="btn btn-primary w-100">ユーザー登録</button>
+                        <button id="register-btn" type="submit" class="btn btn-primary w-100">
+                            ユーザー登録
+                            <div id="register-btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
                     </div>
                 </form>
+
+                <div id="preregistration-completion-msg" class="text-center d-none">
+                    <h4>仮登録が完了しました。</h4>
+                    <p class="m-0 mt-4">登録されたメールアドレス宛に検証用メールを送信しました。</p>
+                    <p class="mb-0">そちらのメールに従って登録を完了させてください。</p>
+                </div>
             </div>
         </div>
     </div>
