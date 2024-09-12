@@ -52,10 +52,7 @@ class Authenticate {
 
         // メールアドレスでユーザー取得
         self::$authenticatedUser = $userDAO->getByEmail($email);
-        if (
-            self::$authenticatedUser === null ||
-            self::$authenticatedUser->getEmailConfirmedAt() === null
-        ) throw new AuthenticationFailureException();
+        if (self::$authenticatedUser === null) throw new AuthenticationFailureException();
 
         // パスワードを取得
         $hashedPassword = $userDAO->getHashedPasswordById(self::$authenticatedUser->getUserId());

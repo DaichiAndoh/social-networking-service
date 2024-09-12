@@ -46,12 +46,6 @@
                         </button>
                     </div>
                 </form>
-
-                <div id="preregistration-completion-msg" class="text-center d-none">
-                    <h4>仮登録が完了しました。</h4>
-                    <p class="m-0 mt-4">登録されたメールアドレス宛に検証用メールを送信しました。</p>
-                    <p class="mb-0">そちらのメールに従って登録を完了させてください。</p>
-                </div>
             </div>
         </div>
     </div>

@@ -88,6 +88,7 @@ return [
             $userDao = DAOFactory::getUserDAO();
             $success = $userDao->create($user, $_POST["password"]);
             if (!$success) throw new Exception("userの作成に失敗しました。");
+            else Authenticate::loginAsUser($user);
 
             // メール検証用URLを作成
             $queryParameters = [
@@ -114,6 +115,7 @@ return [
             );
             if (!$sendResult) new Exception("メールアドレス検証メールの送信に失敗しました。");
 
+            $resBody["redirectUrl"] = "/verify_resend";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -165,6 +167,38 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
+    "/api/email/verification/resend" => Route::create("/api/email/verification/resend", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            // 検証用URLを作成
+            $authenticatedUser = Authenticate::getAuthenticatedUser();
+            $queryParameters = [
+                "user"=> $authenticatedUser->getEmail(),
+                "expiration" => time() + 1800,
+            ];
+            $signedURLData = Route::create("/email/verify", function() {})->getSignedURL($queryParameters);
+
+            // 検証用メールを送信
+            $sendResult = MailSend::sendVerificationMail(
+                $signedURLData["url"],
+                $authenticatedUser->getEmail(),
+                $authenticatedUser->getName(),
+                "password_reset"
+            );
+            if (!$sendResult) new Exception("メールアドレス検証用メールの送信に失敗しました。");
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_unverified"]),
     "/api/password_forget" => Route::create("/api/password_forget", function(): HTTPRenderer {
         $resBody = ["success" => true];
 

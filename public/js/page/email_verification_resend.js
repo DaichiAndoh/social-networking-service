@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const form = document.getElementById("register-form");
-  const btn = document.getElementById("register-btn");
-  const spinner = document.getElementById("register-btn-spinner");
+  const form = document.getElementById("email-verification-resend-form");
+  const btn = document.getElementById("email-verification-resend-btn");
+  const spinner = document.getElementById("btn-spinner");
+  const msg = document.getElementById("completion-msg");
 
   form.addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -10,8 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     btn.classList.add("disabled");
     spinner.classList.remove("d-none");
 
-    const formData = new FormData(form);
-    const resData = await apiPost("/api/register", formData);
+    const resData = await apiPost("/api/email/verification/resend");
 
     if (resData === null) {
       btn.classList.remove("disabled");
@@ -20,18 +20,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     if (resData.success) {
-      if (resData.redirectUrl) {
-        window.location.href = resData.redirectUrl;
-      }
+      form.classList.add("d-none");
+      msg.classList.remove("d-none");
     } else {
       btn.classList.remove("disabled");
       spinner.classList.add("d-none");
 
-      if (resData.fieldErrors) {
-        for (const field in resData.fieldErrors) {
-          setFormValidation(field, resData.fieldErrors[field]);
-        }
-      }
       if (resData.error) {
         alert(resData.error);
       }
