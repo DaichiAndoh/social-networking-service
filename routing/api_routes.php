@@ -4,6 +4,7 @@ use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticate;
 use Helpers\MailSend;
+use Helpers\Settings;
 use Helpers\ValidationHelper;
 use Models\TempUser;
 use Models\User;
@@ -199,7 +200,7 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_unverified"]),
-    "/api/password_forget" => Route::create("/api/password_forget", function(): HTTPRenderer {
+    "/api/password/forgot" => Route::create("/api/password/forgot", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
@@ -235,16 +236,16 @@ return [
                 "user"=> $user->getEmail(),
                 "expiration" => time() + 3600,
             ];
-            $signedURLData = Route::create("/password_reset", function() {})->getSignedURL($queryParameters);
+            $signedURLData = Route::create("/password/reset", function() {})->getSignedURL($queryParameters);
 
-            // temp_userを作成
+            // 一時ユーザーを作成
             $tempUser = new TempUser(
                 user_id: $user->getUserId(),
                 signature: $signedURLData["signature"],
                 type: "PASSWORD_RESET",
             );
             $result = $tempUserDao->create($tempUser);
-            if (!$result) throw new Exception("temp_userの作成に失敗しました。");
+            if (!$result) throw new Exception("一時ユーザーの作成に失敗しました。");
 
             // 検証メールを送信
             $sendResult = MailSend::sendVerificationMail(
@@ -263,7 +264,7 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
-    "/api/password_reset" => Route::create("/api/password_reset", function(): HTTPRenderer {
+    "/api/password/reset" => Route::create("/api/password/reset", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
         try {
@@ -275,6 +276,7 @@ return [
 
             // 入力値検証
             $fieldErrors = ValidationHelper::validateFields([
+                "user" => ValueType::STRING,
                 "signature" => ValueType::STRING,
                 "password" => ValueType::PASSWORD,
                 "confirm-password" => ValueType::PASSWORD,
@@ -296,9 +298,16 @@ return [
             if ($tempUser === null || $tempUser->getType() !== "PASSWORD_RESET") {
                 throw new Exception("署名に紐づくユーザーが存在しません。");
             }
+            $user = $userDao->getById($tempUser->getUserId());
+
+            // 署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと同じかを確認
+            $hashedEmail = hash_hmac("sha256", $user->getEmail(), Settings::env("SIGNATURE_SECRET_KEY"));
+            $expectedHashedEmail = $_POST["user"];
+            if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
+                throw new Exception("署名に紐づくメールアドレスがパスワード更新対象ユーザーのメールアドレスと一致しません。");
+            }
 
             // パスワードを更新
-            $user = $userDao->getById($tempUser->getUserId());
             $result = $userDao->updatePassword($user->getUserId(), $_POST["password"]);
             if (!$result) throw new Exception("パスワードの更新処理に失敗しました。");
 

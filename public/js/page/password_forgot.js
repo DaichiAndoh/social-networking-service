@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const form = document.getElementById("password-forget-form");
-  const btn = document.getElementById("password-forget-btn");
-  const spinner = document.getElementById("password-forget-btn-spinner");
-  const msg = document.getElementById("password-forget-completion-msg");
+  const form = document.getElementById("password-forgot-form");
+  const btn = document.getElementById("password-forgot-btn");
+  const spinner = document.getElementById("btn-spinner");
+  const msg = document.getElementById("completion-msg");
 
   form.addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     spinner.classList.remove("d-none");
 
     const formData = new FormData(form);
-    const resData = await apiPost("/api/password_forget", formData);
+    const resData = await apiPost("/api/password/forgot", formData);
 
     if (resData === null) {
       btn.classList.remove("disabled");

@@ -4,7 +4,8 @@
             <div class="card py-5 px-3 my-3">
                 <h2 class="text-center mb-4">パスワードリセット</h2>
                 <form id="password-reset-form" method="post">
-                <input type="hidden" name="signature" value="<?= $signature; ?>">
+                    <input type="hidden" name="user" value="<?= $user; ?>">
+                    <input type="hidden" name="signature" value="<?= $signature; ?>">
                     <div class="mb-3">
                         <label for="password" class="form-label">新しいパスワード</label>
                         <input type="password" class="form-control" id="password" name="password" required>
@@ -26,7 +27,7 @@
                     <div class="text-center mt-5">
                         <button id="password-reset-btn" type="submit" class="btn btn-primary w-100">
                             パスワードリセット
-                            <div id="password-reset-btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                            <div id="btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </button>
