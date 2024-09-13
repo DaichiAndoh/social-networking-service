@@ -1,10 +1,10 @@
 <?php
 
 use Database\DataAccess\DAOFactory;
-use Helpers\Authenticate;
-use Helpers\Settings;
-use Response\HTTPRenderer;
+use Helpers\Authenticator;
+use Helpers\Hasher;
 use Response\FlashData;
+use Response\HTTPRenderer;
 use Response\Render\HTMLRenderer;
 use Response\Render\RedirectRenderer;
 use Routing\Route;
@@ -19,43 +19,15 @@ return [
     "/login" => Route::create("/login", function(): HTTPRenderer {
         return new HTMLRenderer("page/login", []);
     })->setMiddleware(["guest"]),
-    "/password/forgot" => Route::create("/password/forgot", function(): HTTPRenderer {
-        return new HTMLRenderer("page/password_forgot", []);
-    })->setMiddleware(["guest"]),
-    "/password/reset" => Route::create("/password/reset", function(): HTTPRenderer {
-        $userDao = DAOFactory::getUserDAO();
-        $tempUserDao = DAOFactory::getTempUserDAO();
-
-        // signatureに紐づくユーザーを取得
-        $tempUser = $tempUserDao->getBySignature($_GET["signature"]);
-        if ($tempUser === null || $tempUser->getType() !== "PASSWORD_RESET") {
-            FlashData::setFlashData("error", "無効なURLです。");
-            return new RedirectRenderer("/login");
-        }
-        $user = $userDao->getById($tempUser->getUserId());
-
-        // 署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと同じかを確認
-        $hashedEmail = hash_hmac("sha256", $user->getEmail(), Settings::env("SIGNATURE_SECRET_KEY"));
-        $expectedHashedEmail = $_GET["user"];
-        if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
-            FlashData::setFlashData("error", "無効なURLです。");
-            return new RedirectRenderer("/login");
-        }
-
-        return new HTMLRenderer("page/password_reset", [
-            "user" => $_GET["user"],
-            "signature" => $_GET["signature"],
-        ]);
-    })->setMiddleware(["guest", "signature"]),
     "/email/verification/resend" => Route::create("/email/verification/resend", function(): HTTPRenderer {
         return new HTMLRenderer("page/email_verification_resend", []);
     })->setMiddleware(["auth", "email_unverified"]),
     "/email/verify" => Route::create("/email/verify", function(): HTTPRenderer {
         try {
-            $authenticatedUser = Authenticate::getAuthenticatedUser();
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
 
             // 署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと同じかを確認
-            $hashedEmail = hash_hmac("sha256", $authenticatedUser->getEmail(), Settings::env("SIGNATURE_SECRET_KEY"));
+            $hashedEmail = Hasher::createHash($authenticatedUser->getEmail());
             $expectedHashedEmail = $_GET["user"];
             if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
                 throw new Exception("署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと一致しません。");
@@ -70,10 +42,44 @@ return [
             return new RedirectRenderer("/timeline");
         } catch (Exception $e) {
             error_log($e->getMessage());
-            FlashData::setFlashData("error", $e->getMessage());
+            FlashData::setFlashData("error", "エラーが発生しました。");
+            return new RedirectRenderer("/email/verification/resend");
+        }
+    })->setMiddleware(["auth", "email_unverified", "signature"]),
+    "/password/forgot" => Route::create("/password/forgot", function(): HTTPRenderer {
+        return new HTMLRenderer("page/password_forgot", []);
+    })->setMiddleware(["guest"]),
+    "/password/reset" => Route::create("/password/reset", function(): HTTPRenderer {
+        try {
+            $userDao = DAOFactory::getUserDAO();
+            $tempUserDao = DAOFactory::getTempUserDAO();
+
+            // signatureに紐づくユーザーを取得
+            $tempUser = $tempUserDao->getBySignature($_GET["signature"]);
+            if ($tempUser === null || $tempUser->getType() !== "PASSWORD_RESET") {
+                FlashData::setFlashData("error", "無効なURLです。");
+                return new RedirectRenderer("/");
+            }
+            $user = $userDao->getById($tempUser->getUserId());
+
+            // 署名に紐づくメールアドレスがユーザーのメールアドレスと同じかを確認
+            $hashedEmail = Hasher::createHash($user->getEmail());
+            $expectedHashedEmail = $_GET["user"];
+            if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
+                FlashData::setFlashData("error", "無効なURLです。");
+                return new RedirectRenderer("/");
+            }
+
+            return new HTMLRenderer("page/password_reset", [
+                "user" => $_GET["user"],
+                "signature" => $_GET["signature"],
+            ]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            FlashData::setFlashData("error", "エラーが発生しました。");
             return new RedirectRenderer("/");
         }
-    })->setMiddleware(["auth", "email_unverified"]),
+    })->setMiddleware(["guest", "signature"]),
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
         return new HTMLRenderer("page/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),

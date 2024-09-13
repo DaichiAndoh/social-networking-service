@@ -2,7 +2,7 @@
 
 namespace Middleware\API;
 
-use Helpers\Authenticate;
+use Helpers\Authenticator;
 use Middleware\Middleware;
 use Response\HTTPRenderer;
 use Response\Render\JSONRenderer;
@@ -14,7 +14,7 @@ class AuthenticatedMiddleware implements Middleware {
     public function handle(callable $next): HTTPRenderer {
         error_log("Running authentication check...");
 
-        if (!Authenticate::isLoggedIn()) {
+        if (!Authenticator::isLoggedIn()) {
             $resBody = [
                 "success" => false,
                 "error" => "エラーが発生しました。",

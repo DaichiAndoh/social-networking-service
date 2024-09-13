@@ -2,10 +2,10 @@
 
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
-use Helpers\Authenticate;
-use Helpers\MailSend;
-use Helpers\Settings;
-use Helpers\ValidationHelper;
+use Helpers\Authenticator;
+use Helpers\Hasher;
+use Helpers\MailSender;
+use Helpers\Validator;
 use Models\TempUser;
 use Models\User;
 use Response\FlashData;
@@ -26,7 +26,7 @@ return [
             $tempUserDao = DAOFactory::getTempUserDAO();
 
             // 入力値検証
-            $fieldErrors = ValidationHelper::validateFields([
+            $fieldErrors = Validator::validateFields([
                 "name" => ValueType::STRING,
                 "username" => ValueType::STRING,
                 "email" => ValueType::EMAIL,
@@ -36,7 +36,7 @@ return [
 
             if (
                 !isset($fieldErrors["name"]) &&
-                !ValidationHelper::validateStrLen($_POST["name"], User::$minLens["name"], User::$maxLens["name"])
+                !Validator::validateStrLen($_POST["name"], User::$minLens["name"], User::$maxLens["name"])
             ) $fieldErrors["name"] = sprintf(
                 "%s文字以上、%s文字以下で入力してください。",
                 User::$minLens["name"],
@@ -44,7 +44,7 @@ return [
             );
 
             if (!isset($fieldErrors["username"])) {
-                if (!ValidationHelper::validateStrLen($_POST["username"], User::$minLens["username"], User::$maxLens["username"])) {
+                if (!Validator::validateStrLen($_POST["username"], User::$minLens["username"], User::$maxLens["username"])) {
                     $fieldErrors["username"] = sprintf(
                         "%s文字以上、%s文字以下で入力してください。",
                         User::$minLens["username"],
@@ -56,7 +56,7 @@ return [
             }
 
             if (!isset($fieldErrors["email"])) {
-                if (!ValidationHelper::validateStrLen($_POST["email"], User::$minLens["email"], User::$maxLens["email"])) {
+                if (!Validator::validateStrLen($_POST["email"], User::$minLens["email"], User::$maxLens["email"])) {
                     $fieldErrors["email"] = sprintf(
                         "%s文字以上、%s文字以下で入力してください。",
                         User::$minLen["email"],
@@ -88,35 +88,25 @@ return [
             // userを作成
             $userDao = DAOFactory::getUserDAO();
             $success = $userDao->create($user, $_POST["password"]);
-            if (!$success) throw new Exception("userの作成に失敗しました。");
-            else Authenticate::loginAsUser($user);
+            if ($success) Authenticator::loginAsUser($user);
+            else throw new Exception("ユーザー登録に失敗しました。");
 
             // メール検証用URLを作成
             $queryParameters = [
-                "user"=> $user->getEmail(),
-                "expiration" => time() + 3600,
+                "user"=> Hasher::createHash($user->getEmail()),
+                "expiration" => time() + 1800,
             ];
-            $signedURLData = Route::create("/verify_email", function() {})->getSignedURL($queryParameters);
-
-            // temp_userを作成
-            $tempUser = new TempUser(
-                user_id: $user->getUserId(),
-                signature: $signedURLData["signature"],
-                type: "EMAIL_VERIFICATION",
-            );
-            $result = $tempUserDao->create($tempUser);
-            if (!$result) throw new Exception("temp_userの作成に失敗しました。");
+            $signedURLData = Route::create("/email/verify", function() {})->getSignedURL($queryParameters);
 
             // 検証メールを送信
-            $sendResult = MailSend::sendVerificationMail(
+            $sendResult = MailSender::sendEmailVerificationMail(
                 $signedURLData["url"],
                 $user->getEmail(),
                 $user->getName(),
-                "email_verification"
             );
             if (!$sendResult) new Exception("メールアドレス検証メールの送信に失敗しました。");
 
-            $resBody["redirectUrl"] = "/verify_resend";
+            $resBody["redirectUrl"] = "/email/verification/resend";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -135,7 +125,7 @@ return [
             $userDao = DAOFactory::getUserDAO();
 
             // 入力値検証
-            $fieldErrors = ValidationHelper::validateFields([
+            $fieldErrors = Validator::validateFields([
                 "email" => ValueType::EMAIL,
                 "password" => ValueType::STRING,
             ], $_POST);
@@ -148,7 +138,7 @@ return [
             }
 
             // 入力値でユーザー認証を行う
-            Authenticate::authenticate($_POST["email"], $_POST["password"]);
+            Authenticator::authenticate($_POST["email"], $_POST["password"]);
 
             // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
             FlashData::setFlashData("success", "ログインしました。");
@@ -176,19 +166,18 @@ return [
             if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
 
             // 検証用URLを作成
-            $authenticatedUser = Authenticate::getAuthenticatedUser();
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
             $queryParameters = [
-                "user"=> $authenticatedUser->getEmail(),
+                "user"=> Hasher::createHash($authenticatedUser->getEmail()),
                 "expiration" => time() + 1800,
             ];
             $signedURLData = Route::create("/email/verify", function() {})->getSignedURL($queryParameters);
 
             // 検証用メールを送信
-            $sendResult = MailSend::sendVerificationMail(
+            $sendResult = MailSender::sendEmailVerificationMail(
                 $signedURLData["url"],
                 $authenticatedUser->getEmail(),
                 $authenticatedUser->getName(),
-                "password_reset"
             );
             if (!$sendResult) new Exception("メールアドレス検証用メールの送信に失敗しました。");
 
@@ -211,7 +200,7 @@ return [
             $tempUserDao = DAOFactory::getTempUserDAO();
 
             // 入力値検証
-            $fieldErrors = ValidationHelper::validateFields([
+            $fieldErrors = Validator::validateFields([
                 "email" => ValueType::EMAIL,
             ], $_POST);
 
@@ -233,7 +222,7 @@ return [
 
             // パスワードリセット用URLを作成
             $queryParameters = [
-                "user"=> $user->getEmail(),
+                "user"=> Hasher::createHash($user->getEmail()),
                 "expiration" => time() + 3600,
             ];
             $signedURLData = Route::create("/password/reset", function() {})->getSignedURL($queryParameters);
@@ -248,11 +237,10 @@ return [
             if (!$result) throw new Exception("一時ユーザーの作成に失敗しました。");
 
             // 検証メールを送信
-            $sendResult = MailSend::sendVerificationMail(
+            $sendResult = MailSender::sendPasswordResetMail(
                 $signedURLData["url"],
                 $user->getEmail(),
                 $user->getName(),
-                "password_reset"
             );
             if (!$sendResult) new Exception("パスワード変更メールの送信に失敗しました。");
 
@@ -275,7 +263,7 @@ return [
             $tempUserDao = DAOFactory::getTempUserDAO();
 
             // 入力値検証
-            $fieldErrors = ValidationHelper::validateFields([
+            $fieldErrors = Validator::validateFields([
                 "user" => ValueType::STRING,
                 "signature" => ValueType::STRING,
                 "password" => ValueType::PASSWORD,
@@ -300,8 +288,8 @@ return [
             }
             $user = $userDao->getById($tempUser->getUserId());
 
-            // 署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと同じかを確認
-            $hashedEmail = hash_hmac("sha256", $user->getEmail(), Settings::env("SIGNATURE_SECRET_KEY"));
+            // 署名に紐づくメールアドレスがユーザーのメールアドレスと同じかを確認
+            $hashedEmail = Hasher::createHash($user->getEmail());
             $expectedHashedEmail = $_POST["user"];
             if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
                 throw new Exception("署名に紐づくメールアドレスがパスワード更新対象ユーザーのメールアドレスと一致しません。");
@@ -328,7 +316,7 @@ return [
         $resBody = ["success" => true];
 
         try {
-            Authenticate::logoutUser();
+            Authenticator::logoutUser();
             FlashData::setFlashData("success", "ログアウトしました。");
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

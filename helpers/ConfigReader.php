@@ -4,7 +4,7 @@ namespace Helpers;
 
 use Exceptions\ReadAndParseEnvException;
 
-class Settings {
+class ConfigReader {
     private const ENV_PATH =  ".env";
 
     public static function env(string $pair): string{

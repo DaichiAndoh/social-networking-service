@@ -2,11 +2,11 @@
 
 namespace Helpers;
 
-use Exceptions\AuthenticationFailureException;
 use Database\DataAccess\DAOFactory;
+use Exceptions\AuthenticationFailureException;
 use Models\User;
 
-class Authenticate {
+class Authenticator {
     // 認証されたユーザーの状態をこのクラス変数に保持する
     private static ?User $authenticatedUser = null;
     private const USER_ID_SESSION_KEY = "user_id";

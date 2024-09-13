@@ -2,7 +2,7 @@
 
 namespace Middleware\UI;
 
-use Helpers\Authenticate;
+use Helpers\Authenticator;
 use Middleware\Middleware;
 use Response\HTTPRenderer;
 use Response\Render\RedirectRenderer;
@@ -14,7 +14,7 @@ class GuestMiddleware implements Middleware {
     public function handle(callable $next): HTTPRenderer {
         error_log("Running authentication check...");
 
-        if (Authenticate::isLoggedIn()) {
+        if (Authenticator::isLoggedIn()) {
             return new RedirectRenderer("/timeline");
         }
 

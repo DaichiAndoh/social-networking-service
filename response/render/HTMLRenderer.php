@@ -2,7 +2,6 @@
 
 namespace Response\Render;
 
-use Helpers\Authenticate;
 use Response\HTTPRenderer;
 
 class HTMLRenderer implements HTTPRenderer {

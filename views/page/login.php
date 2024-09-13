@@ -17,7 +17,7 @@
                     <div class="text-center mt-5">
                         <button id="login-btn" type="submit" class="btn btn-primary w-100">
                             ログイン
-                            <div id="login-btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                            <div id="btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </button>

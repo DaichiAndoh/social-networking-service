@@ -40,7 +40,7 @@
                     <div class="text-center mt-5">
                         <button id="register-btn" type="submit" class="btn btn-primary w-100">
                             ユーザー登録
-                            <div id="register-btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                            <div id="btn-spinner" class="spinner-border spinner-border-sm text-light d-none" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </button>

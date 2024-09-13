@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("login-form");
   const btn = document.getElementById("login-btn");
-  const spinner = document.getElementById("login-btn-spinner");
+  const spinner = document.getElementById("btn-spinner");
 
   form.addEventListener("submit", async function(event) {
     event.preventDefault();

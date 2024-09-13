@@ -6,11 +6,11 @@ use Database\DataAccess\Implementations\TempUserDAOImpl;
 use Database\DataAccess\Implementations\UserDAOImpl;
 use Database\DataAccess\Interfaces\TempUserDAO;
 use Database\DataAccess\Interfaces\UserDAO;
-use Helpers\Settings;
+use Helpers\ConfigReader;
 
 class DAOFactory {
     public static function getUserDAO(): UserDAO {
-        $driver = Settings::env("DATABASE_DRIVER");
+        $driver = ConfigReader::env("DATABASE_DRIVER");
 
         return match ($driver) {
             "mysql" => new UserDAOImpl(),
@@ -19,7 +19,7 @@ class DAOFactory {
     }
 
     public static function getTempUserDAO(): TempUserDAO {
-        $driver = Settings::env("DATABASE_DRIVER");
+        $driver = ConfigReader::env("DATABASE_DRIVER");
 
         return match ($driver) {
             "mysql" => new TempUserDAOImpl(),

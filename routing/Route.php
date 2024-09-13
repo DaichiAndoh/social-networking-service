@@ -3,8 +3,7 @@
 namespace Routing;
 
 use Closure;
-use Helpers\Authenticate;
-use Helpers\Settings;
+use Helpers\ConfigReader;
 
 class Route {
     private string $path;
@@ -51,14 +50,11 @@ class Route {
     }
 
     private function getSecretKey(): string {
-        return Settings::env("SIGNATURE_SECRET_KEY");
+        return ConfigReader::env("SIGNATURE_SECRET_KEY");
     }
 
     public function getSignedURL(array $queryParameters): array {
         $url = $this->getBaseURL();
-
-        // ユーザーデータ（email）をハッシュ化
-        $queryParameters["user"] = hash_hmac("sha256", $queryParameters["user"], $this->getSecretKey());
 
         // URLパラメータのクエリ文字列を配列から作成
         $queryString = http_build_query($queryParameters);

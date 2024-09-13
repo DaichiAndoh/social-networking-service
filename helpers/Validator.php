@@ -2,10 +2,10 @@
 
 namespace Helpers;
 
-use Types\ValueType;
 use Models\User;
+use Types\ValueType;
 
-class ValidationHelper {
+class Validator {
     public static function validateFields(array $fields, array $data): array {
         $fieldErrors = [];
 

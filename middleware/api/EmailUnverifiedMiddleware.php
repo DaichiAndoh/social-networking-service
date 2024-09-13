@@ -2,7 +2,7 @@
 
 namespace Middleware\API;
 
-use Helpers\Authenticate;
+use Helpers\Authenticator;
 use Middleware\Middleware;
 use Response\HTTPRenderer;
 use Response\Render\JSONRenderer;
@@ -15,7 +15,7 @@ class EmailUnverifiedMiddleware implements Middleware {
     public function handle(callable $next): HTTPRenderer {
         error_log("Running authentication check...");
 
-        if (!Authenticate::isLoggedIn()) {
+        if (!Authenticator::isLoggedIn()) {
             $resBody = [
                 "success" => false,
                 "error" => "エラーが発生しました。",
@@ -23,7 +23,7 @@ class EmailUnverifiedMiddleware implements Middleware {
             return new JSONRenderer($resBody);
         }
 
-        $authenticatedUser = Authenticate::getAuthenticatedUser();
+        $authenticatedUser = Authenticator::getAuthenticatedUser();
         if ($authenticatedUser->getEmailConfirmedAt() !== null) {
             $resBody = [
                 "success" => false,
