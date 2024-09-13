@@ -3,7 +3,7 @@
 namespace Routing;
 
 use Closure;
-use Helpers\ConfigReader;
+use Helpers\Hasher;
 
 class Route {
     private string $path;
@@ -49,10 +49,6 @@ class Route {
         return sprintf($protocol . $host . $this->getPath()) ;
     }
 
-    private function getSecretKey(): string {
-        return ConfigReader::env("SIGNATURE_SECRET_KEY");
-    }
-
     public function getSignedURL(array $queryParameters): array {
         $url = $this->getBaseURL();
 
@@ -60,7 +56,7 @@ class Route {
         $queryString = http_build_query($queryParameters);
 
         // HMAC-SHA256を使って署名を作成
-        $signature = hash_hmac("sha256", $url . "?" . $queryString, $this->getSecretKey());
+        $signature = Hasher::createHash($url . "?" . $queryString);
 
         // パーツを組み合わせて値を返します。
         return [
@@ -83,7 +79,7 @@ class Route {
         // signatureの署名を検証
         $signature = $queryParams["signature"];
         $urlWithoutSignature = str_replace("&signature=" . $signature, "", $url);
-        $expectedSignature = hash_hmac("sha256", $urlWithoutSignature, $this->getSecretKey());
-        return hash_equals($expectedSignature, $signature);
+        $expectedSignature = Hasher::createHash($urlWithoutSignature);
+        return Hasher::isHashEqual($expectedSignature, $signature);
     }
 }

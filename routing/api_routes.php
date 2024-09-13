@@ -291,7 +291,7 @@ return [
             // 署名に紐づくメールアドレスがユーザーのメールアドレスと同じかを確認
             $hashedEmail = Hasher::createHash($user->getEmail());
             $expectedHashedEmail = $_POST["user"];
-            if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
+            if (!Hasher::isHashEqual($expectedHashedEmail, $hashedEmail)) {
                 throw new Exception("署名に紐づくメールアドレスがパスワード更新対象ユーザーのメールアドレスと一致しません。");
             }
 
@@ -299,6 +299,7 @@ return [
             $result = $userDao->updatePassword($user->getUserId(), $_POST["password"]);
             if (!$result) throw new Exception("パスワードの更新処理に失敗しました。");
 
+            // 一時ユーザーを削除
             $tempUserDao->deleteTempUserById($tempUser->getTempUserId());
 
             // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される

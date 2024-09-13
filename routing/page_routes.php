@@ -29,7 +29,7 @@ return [
             // 署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと同じかを確認
             $hashedEmail = Hasher::createHash($authenticatedUser->getEmail());
             $expectedHashedEmail = $_GET["user"];
-            if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
+            if (!Hasher::isHashEqual($expectedHashedEmail, $hashedEmail)) {
                 throw new Exception("署名に紐づくメールアドレスがログイン中ユーザーのメールアドレスと一致しません。");
             }
 
@@ -65,7 +65,7 @@ return [
             // 署名に紐づくメールアドレスがユーザーのメールアドレスと同じかを確認
             $hashedEmail = Hasher::createHash($user->getEmail());
             $expectedHashedEmail = $_GET["user"];
-            if (!hash_equals($expectedHashedEmail, $hashedEmail)) {
+            if (!Hasher::isHashEqual($expectedHashedEmail, $hashedEmail)) {
                 FlashData::setFlashData("error", "無効なURLです。");
                 return new RedirectRenderer("/");
             }
