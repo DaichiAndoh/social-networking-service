@@ -1,23 +1,41 @@
 <?php
-spl_autoload_extensions(".php");
-spl_autoload_register(function($name) {
-    $filepath = __DIR__ . "/../" . str_replace("\\", "/", $name) . ".php";
-    require_once $filepath;
-});
+
+require_once "../vendor/autoload.php";
 
 $DEBUG = true;
-
-// ルートの読み込み
-$routes = include("../routing/routes.php");
 
 // リクエストURIを解析してパスだけを取得
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
+// ルートの読み込み
+if (strpos($path, "/api/") === 0) {
+    $routes = include("../routing/api_routes.php");
+} else {
+    $routes = include("../routing/page_routes.php");
+}
+
 // ルートにパスが存在するかチェック
 if (isset($routes[$path])) {
-    // コールバックを呼び出してrendererを作成
     try{
-        $renderer = $routes[$path]();
+        // ルートの取得
+        $route = $routes[$path];
+        if (!($route instanceof Routing\Route)) throw new Exception("Invalid route type");
+
+        // ミドルウェア読み込み
+        $middlewareRegister = include("../middleware/middleware_register.php");
+        $middlewares = array_merge(
+            $middlewareRegister["global"],
+            array_map(
+                fn ($routeAlias) => $middlewareRegister["aliases"][$routeAlias],
+                $route->getMiddleware()
+            )
+        );
+
+        // 実行
+        $middlewareHandler = new \Middleware\MiddlewareHandler(
+            array_map(fn($middlewareClass) => new $middlewareClass(), $middlewares)
+        );
+        $renderer = $middlewareHandler->run($route->getCallback());
 
         // ヘッダーを設定
         foreach ($renderer->getFields() as $name => $value) {

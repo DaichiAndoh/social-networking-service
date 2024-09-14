@@ -2,7 +2,6 @@
 
 namespace Response\Render;
 
-use Helpers\Authenticate;
 use Response\HTTPRenderer;
 
 class HTMLRenderer implements HTTPRenderer {
@@ -40,6 +39,7 @@ class HTMLRenderer implements HTTPRenderer {
     private function getHeader(): string {
         ob_start();
         require $this->getViewFilePath("layout/header");
+        require $this->getViewFilePath("component/message_boxes");
         return ob_get_clean();
     }
 

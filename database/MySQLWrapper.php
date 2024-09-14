@@ -4,16 +4,16 @@ namespace Database;
 
 use Exception;
 use mysqli;
-use Helpers\Settings;
+use Helpers\ConfigReader;
 
 class MySQLWrapper extends mysqli {
     public function __construct(?string $hostname = null, ?string $username = null, ?string $password = null, ?string $database = null, ?int $port = null, ?string $socket = null) {
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        $hostname = $hostname ?? Settings::env("DATABASE_HOST");
-        $username = $username ?? Settings::env("DATABASE_USER");
-        $password = $password ?? Settings::env("DATABASE_USER_PASSWORD");
-        $database = $database ?? Settings::env("DATABASE_NAME");
+        $hostname = $hostname ?? ConfigReader::env("DATABASE_HOST");
+        $username = $username ?? ConfigReader::env("DATABASE_USER");
+        $password = $password ?? ConfigReader::env("DATABASE_USER_PASSWORD");
+        $database = $database ?? ConfigReader::env("DATABASE_NAME");
 
         parent::__construct($hostname, $username, $password, $database, $port, $socket);
     }

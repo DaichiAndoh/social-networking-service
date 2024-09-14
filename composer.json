@@ -1,0 +1,18 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Commands\\": "Commands/",
+            "Database\\": "Database/",
+            "Exceptions\\": "Exceptions/",
+            "Helpers\\": "Helpers/",
+            "Middleware\\": "Middleware/",
+            "Models\\": "Models/",
+            "Response\\": "Response/",
+            "Routing\\": "Routing/",
+            "Types\\": "Types/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}
