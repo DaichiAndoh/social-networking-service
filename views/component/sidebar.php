@@ -1,4 +1,4 @@
-<?php if ($user !== null): ?>
+<?php if ($user !== null && $user->getEmailConfirmedAt() !== null): ?>
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-auto col-sm-4 col-md-3 col-xl-2 px-sm-1 px-0" style="background-color: #051c2c;">
@@ -49,9 +49,9 @@
                     </div>
                 </div>
             </div>
-            <!-- 下のコメントアウト部分を各ページファイルで作成する -->
-            <!-- <div class="col py-2">
-                Content area...
+            <div class="col py-2 bg-light text-dark">
+                <!-- 下のコメントアウト部分を各ページファイルで作成する -->
+                <!-- Content area...
             </div>
         </div>
     </div> -->

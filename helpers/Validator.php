@@ -5,6 +5,8 @@ namespace Helpers;
 use Models\User;
 use Types\ValueType;
 
+require_once(sprintf("%s/../constants/file_constants.php", __DIR__));
+
 class Validator {
     public static function validateFields(array $fields, array $data): array {
         $fieldErrors = [];
@@ -63,5 +65,14 @@ class Validator {
     public static function validateStrLen(string $value, int $min = 1, int $max = 100): bool {
         $len = strlen($value);
         return $len >= $min && $len <= $max;
+    }
+
+    public static function validateImageType(string $type): bool {
+        $allowedTypes = ["image/png", "image/jpeg", "image/gif"];
+        return in_array($type, $allowedTypes);
+    }
+
+    public static function validateImageSize(int $size, int $min = DEFAULT_FILE_MIN_SIZE, int $max = DEFAULT_FILE_MAX_SIZE): bool {
+        return $size >= $min && $size <= $max;
     }
 }

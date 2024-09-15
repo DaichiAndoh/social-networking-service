@@ -32,6 +32,29 @@ class UserDAOImpl implements UserDAO {
         return true;
     }
 
+    public function update(User $user): bool {
+        if ($user->getUserId() === null) throw new \Exception("ユーザーIDを持たないユーザーは更新処理できません。");
+
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "UPDATE users SET name = ?, username = ?, profile_text = ?, profile_image_hash = ? WHERE user_id = ?";
+
+        $result = $mysqli->prepareAndExecute(
+            $query,
+            "ssssd",
+            [
+                $user->getName(),
+                $user->getUsername(),
+                $user->getProfileText(),
+                $user->getProfileImageHash(),
+                $user->getUserId(),
+            ],
+        );
+
+        if (!$result) return false;
+        return true;
+    }
+
     private function getRawById(int $user_id): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
 

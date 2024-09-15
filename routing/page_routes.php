@@ -83,4 +83,8 @@ return [
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
         return new HTMLRenderer("page/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),
+
+    "/user" => Route::create("/user", function(): HTTPRenderer {
+        return new HTMLRenderer("page/user", []);
+    })->setMiddleware(["auth", "email_verified"]),
 ];
