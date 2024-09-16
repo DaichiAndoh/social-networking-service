@@ -3,14 +3,18 @@
         <ion-icon name="arrow-back-outline" class="fs-4"></ion-icon>
     </a>
 
+    <div id="user-not-found" class="py-3 text-center d-none">
+        <h5>このアカウントは存在しません。</h5>
+    </div>
+
     <div id="profile-block" class="d-none">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <a id="profile-profile-image-link" href="" target="_blank" rel="noopener noreferrer">
                 <img id="profile-profile-image" src="" alt="プロフィール画像" width="90" height="90" class="rounded-circle border">
             </a>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#profileEditModal">プロフィールを編集</button>
-            <!-- <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#profileEditModal">フォロー</button> -->
-            <!-- <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#profileEditModal">アンフォロー</button> -->
+            <button id="profile-edit-btn" class="btn btn-primary btn-sm d-none" data-bs-toggle="modal" data-bs-target="#profileEditModal">プロフィールを編集</button>
+            <button id="profile-follow-btn" class="btn btn-primary btn-sm d-none">フォロー</button>
+            <button id="profile-unfollow-btn" class="btn btn-outline-primary btn-sm d-none">アンフォロー</button>
         </div>
 
         <div>

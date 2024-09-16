@@ -335,17 +335,32 @@ return [
         $resBody = ["success" => true];
 
         try {
-            $user = Authenticator::getAuthenticatedUser();
-            $userData = [
-                "name" => $user->getName(),
-                "username" => $user->getUsername(),
-                "profileText" => $user->getProfileText(),
-                "profileImagePath" => $user->getProfileImageHash() ?
-                    PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
-                    PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
-                "profileImageType" => $user->getProfileImageHash() === null ? "default" : "custom",
-            ];
-            $resBody["userData"] = $userData;
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["userData"] = null;
+            } else {
+                $userData = [
+                    "isLoggedInUser" => intval($user->getUsername() === $authenticatedUser->getUsername()),
+                    "followed" => 1, // TODO: フォロー機能実装時に修正する
+                    "name" => $user->getName(),
+                    "username" => $user->getUsername(),
+                    "profileText" => $user->getProfileText(),
+                    "profileImagePath" => $user->getProfileImageHash() ?
+                        PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profileImageType" => $user->getProfileImageHash() === null ? "default" : "custom",
+                ];
+                $resBody["userData"] = $userData;
+            }
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

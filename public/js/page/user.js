@@ -6,13 +6,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
-  const payload = JSON.stringify({ username });
-  const resData = await apiPost("/api/user/profile/init", payload);
+  const formData = new FormData();
+  formData.append("username", username ?? "");
+  const resData = await apiPost("/api/user/profile/init", formData);
 
   if (resData.success) {
-    if (resData.userData) {
-      initProfile(resData.userData);
-    }
+    initProfile(resData.userData);
   } else {
     if (resData.error) {
       alert(resData.error);
@@ -20,6 +19,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function initProfile(userData) {
+    if (userData === null) {
+      const userNotFound = document.getElementById("user-not-found");
+      userNotFound.classList.remove("d-none");
+      return;
+    }
+
     const profileBlock = document.getElementById("profile-block");
 
     const nameEl = document.getElementById("profile-name");
@@ -35,6 +40,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     const customRadio = document.getElementById("profile-image-type-custom");
     const profileImagePreviewEl = document.getElementById("profile-image-preview");
 
+    const editBtn = document.getElementById("profile-edit-btn");
+    const followBtn = document.getElementById("profile-follow-btn");
+    const unfollowBtn = document.getElementById("profile-unfollow-btn");
+
     nameEl.innerText = userData.name;
     usernameEl.innerText = "@" + userData.username;
     profileTextEl.innerText = userData.profileText ?? "";
@@ -47,6 +56,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     defaultRadio.checked = userData.profileImageType === "default";
     customRadio.checked = userData.profileImageType === "custom";
     profileImagePreviewEl.src = userData.profileImagePath;
+
+    if (userData.isLoggedInUser) {
+      editBtn.classList.remove("d-none");
+    } else {
+      if (userData.followed) {
+        unfollowBtn.classList.remove("d-none");
+      } else {
+        followBtn.classList.remove("d-none");
+      }
+    }
 
     profileBlock.classList.remove("d-none");
   }
