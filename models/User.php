@@ -12,12 +12,14 @@ class User implements Model {
         "name" => 1,
         "username" => 1,
         "email" => 1,
+        "profile_text" => 0,
     ];
 
     public static $maxLens = [
         "name" => 50,
         "username" => 20,
         "email" => 320,
+        "profile_text" => 160,
     ];
 
     public function __construct(
@@ -76,7 +78,7 @@ class User implements Model {
         return $this->profile_image_hash;
     }
 
-    public function setProfileImageHash(string $profile_image_hash): void {
+    public function setProfileImageHash(?string $profile_image_hash): void {
         $this->profile_image_hash = $profile_image_hash;
     }
 

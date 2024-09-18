@@ -4,6 +4,7 @@ use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticator;
 use Helpers\Hasher;
+use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
 use Models\TempUser;
@@ -13,6 +14,8 @@ use Response\HTTPRenderer;
 use Response\Render\JSONRenderer;
 use Routing\Route;
 use Types\ValueType;
+
+require_once(sprintf("%s/../constants/file_constants.php", __DIR__));
 
 return [
     "/api/register" => Route::create("/api/register", function(): HTTPRenderer {
@@ -327,4 +330,147 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth"]),
+
+    "/api/user/profile/init" => Route::create("/api/user/profile/init", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["userData"] = null;
+            } else {
+                $userData = [
+                    "isLoggedInUser" => intval($user->getUsername() === $authenticatedUser->getUsername()),
+                    "followed" => 1, // TODO: フォロー機能実装時に修正する
+                    "name" => $user->getName(),
+                    "username" => $user->getUsername(),
+                    "profileText" => $user->getProfileText(),
+                    "profileImagePath" => $user->getProfileImageHash() ?
+                        PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profileImageType" => $user->getProfileImageHash() === null ? "default" : "custom",
+                ];
+                $resBody["userData"] = $userData;
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/profile/edit" => Route::create("/api/user/profile/edit", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $user = Authenticator::getAuthenticatedUser();
+            $userDao = DAOFactory::getUserDAO();
+
+            // 入力値検証
+            $fieldErrors = Validator::validateFields([
+                "name" => ValueType::STRING,
+                "username" => ValueType::STRING,
+            ], $_POST);
+
+            if (
+                !isset($fieldErrors["name"]) &&
+                !Validator::validateStrLen($_POST["name"], User::$minLens["name"], User::$maxLens["name"])
+            ) $fieldErrors["name"] = sprintf(
+                "%s文字以上、%s文字以下で入力してください。",
+                User::$minLens["name"],
+                User::$maxLens["name"],
+            );
+
+            if (!isset($fieldErrors["username"])) {
+                if (!Validator::validateStrLen($_POST["username"], User::$minLens["username"], User::$maxLens["username"])) {
+                    $fieldErrors["username"] = sprintf(
+                        "%s文字以上、%s文字以下で入力してください。",
+                        User::$minLens["username"],
+                        User::$maxLens["username"],
+                    );
+                } else {
+                    $sameUsernameUser = $userDao->getByUsername($_POST["username"]);
+                    if ($sameUsernameUser !== null && $sameUsernameUser->getUserId() !== $user->getUserId()) {
+                        $fieldErrors["username"] = "このユーザー名は使用できません。";
+                    }
+                }
+            }
+
+            if (!isset($fieldErrors["profile-text"])) {
+                if (!Validator::validateStrLen($_POST["profile-text"], User::$minLens["profile_text"], User::$maxLens["profile_text"])) {
+                    $fieldErrors["profile-text"] = sprintf(
+                        "%s文字以下で入力してください。",
+                        User::$maxLens["profile_text"],
+                    );
+                }
+            }
+
+            $profileImageType = $_POST["profile-image-type"];
+            $profileImageUploaded = $profileImageType === "custom" && $_FILES["profile-image"]["error"] === UPLOAD_ERR_OK;
+            if ($profileImageUploaded) {
+                if (!Validator::validateImageType($_FILES["profile-image"]["type"])) {
+                    $fieldErrors["profile-image"] =
+                        "ファイル形式が不適切です。JPG, JPEG, PNG, GIFのファイルが設定可能です。";
+                } else if (!Validator::validateImageSize($_FILES["profile-image"]["size"])) {
+                    $fieldErrors["profile-image"] =
+                        "ファイルが大きすぎます。";
+                }
+            }
+
+            // 入力値検証でエラーが存在すれば、そのエラー情報をレスポンスとして返す
+            if (!empty($fieldErrors)) {
+                $resBody["success"] = false;
+                $resBody["fieldErrors"] = $fieldErrors;
+                return new JSONRenderer($resBody);
+            }
+
+            // プロフィール画像を保存
+            if ($profileImageUploaded) {
+                $imageHash = ImageOperator::saveProfileImage(
+                    $_FILES["profile-image"]["tmp_name"],
+                    ImageOperator::imageTypeToExtension($_FILES["profile-image"]["type"]),
+                    $user->getUsername(),
+                );
+            } else if ($profileImageType === "custom") {
+                $imageHash = $user->getProfileImageHash();
+            } else {
+                $imageHash = null;
+            }
+
+            // 元のプロフィール画像が不要になる場合は削除
+            if ($user->getProfileImageHash() !== null) {
+                if ($profileImageUploaded || $profileImageType === "default") {
+                    ImageOperator::deleteProfileImage($user->getProfileImageHash());
+                }
+            }
+
+            // ユーザーのデータを更新
+            $user->setName($_POST["name"]);
+            $user->setUsername($_POST["username"]);
+            $user->setProfileText($_POST["profile-text"]);
+            $user->setProfileImageHash($imageHash);
+            $userDao->update($user);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
 ];
