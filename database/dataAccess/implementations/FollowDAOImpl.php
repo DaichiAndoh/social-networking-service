@@ -30,12 +30,12 @@ class FollowDAOImpl implements FollowDAO {
         return true;
     }
 
-    public function unfollow(Follow $follow): bool {
+    public function unfollow(int $user_id, int $followee_id): bool {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query = "DELETE FROM follows WHERE follower_id = ? AND followee_id = ?";
 
-        $result = $mysqli->prepareAndExecute($query, "dd", [$follow->getFollowerId(), $follow->getFolloweeId()]);
+        $result = $mysqli->prepareAndExecute($query, "dd", [$user_id, $followee_id]);
 
         return $result;
     }
@@ -64,6 +64,26 @@ class FollowDAOImpl implements FollowDAO {
             return 0;
         }
         return (int)$result[0]["count"];
+    }
+
+    public function isFollower(int $user_id, int $follower_id): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT * FROM follows WHERE followee_id = ? AND follower_id = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "dd", [$user_id, $follower_id]) ?? null;
+
+        return $result !== null && count($result) > 0;
+    }
+
+    public function isFollowee(int $user_id, int $followee_id): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT * FROM follows WHERE followee_id = ? AND follower_id = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "dd", [$followee_id, $user_id]) ?? null;
+
+        return $result !== null && count($result) > 0;
     }
 
     public function getFollowers(int $user_id, int $limit, int $offset): array {}
