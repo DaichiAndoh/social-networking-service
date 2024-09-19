@@ -11,4 +11,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   window.onload = adjustContentWidth;
   window.onresize = adjustContentWidth;
+
+
+  /**
+   * ログアウト処理
+   */
+  const logoutLink = document.getElementById("logout-link");
+  logoutLink.addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData();
+    const resData = await apiPost("/api/logout", formData);
+
+    if (resData === null) {
+      alert("エラーが発生しました。");
+    }
+
+    if (resData.success) {
+      if (resData.redirectUrl) {
+        window.location.href = resData.redirectUrl;
+      }
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
+    }
+  });
 });

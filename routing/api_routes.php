@@ -323,6 +323,7 @@ return [
         try {
             Authenticator::logoutUser();
             FlashData::setFlashData("success", "ログアウトしました。");
+            $resBody["redirectUrl"] = "/login";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -568,7 +569,6 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
-
     "/api/user/followers" => Route::create("/api/user/followers", function(): HTTPRenderer {
         $resBody = ["success" => true];
 

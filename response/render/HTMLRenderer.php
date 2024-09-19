@@ -42,9 +42,11 @@ class HTMLRenderer implements HTTPRenderer {
     private function getHeader(): string {
         ob_start();
         $user = Authenticator::getAuthenticatedUser();
-        $profileImagePath = $user->getProfileImageHash() ?
-            PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
-            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png";
+        if ($user !== null) {
+            $profileImagePath = $user->getProfileImageHash() ?
+                PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
+                PROFILE_IMAGE_FILE_DIR . "default_profile_image.png";
+        }
         require $this->getViewFilePath("layout/header");
         require $this->getViewFilePath("component/message_boxes");
         require $this->getViewFilePath("component/sidebar");

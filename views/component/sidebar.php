@@ -43,7 +43,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#">ログアウト</a></li>
+                            <li><a id="logout-link" class="dropdown-item">ログアウト</a></li>
                         </ul>
                     </div>
                 </div>
