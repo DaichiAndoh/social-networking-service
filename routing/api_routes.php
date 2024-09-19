@@ -500,6 +500,8 @@ return [
 
             if ($user === null) {
                 throw new Exception("フォロー対象のユーザーが存在しません。");
+            } else if ($user->getUserId() === $authenticatedUser->getUserId()) {
+                throw new Exception("フォロー対象のユーザーが不適切です。");
             }
 
             $followDao = DAOFactory::getFollowDAO();
@@ -543,6 +545,8 @@ return [
 
             if ($user === null) {
                 throw new Exception("アンフォロー対象のユーザーが存在しません。");
+            } else if ($user->getUserId() === $authenticatedUser->getUserId()) {
+                throw new Exception("アンフォロー対象のユーザーが不適切です。");
             }
 
             $followDao = DAOFactory::getFollowDAO();
