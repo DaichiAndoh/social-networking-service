@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
+  const followeeLink = document.getElementById("followee-link");
+  const followerLink = document.getElementById("follower-link");
+  followeeLink.href = `/user/followees${username ? "?un=" + username : ""}`;
+  followerLink.href = `/user/followers${username ? "?un=" + username : ""}`;
+
   const formData = new FormData();
   formData.append("username", username ?? "");
   const resData = await apiPost("/api/user/profile/init", formData);

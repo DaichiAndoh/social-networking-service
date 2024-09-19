@@ -86,6 +86,23 @@ class FollowDAOImpl implements FollowDAO {
         return $result !== null && count($result) > 0;
     }
 
-    public function getFollowers(int $user_id, int $limit, int $offset): array {}
-    public function getFollowees(int $user_id, int $limit, int $offset): array {}
+    public function getFollowers(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT u.name, u.username, u.profile_image_hash FROM users u INNER JOIN follows f ON u.user_id = f.follower_id WHERE f.followee_id = ? LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
+
+    public function getFollowees(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT u.name, u.username, u.profile_image_hash FROM users u INNER JOIN follows f ON u.user_id = f.followee_id WHERE f.follower_id = ? LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
 }

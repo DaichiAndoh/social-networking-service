@@ -87,4 +87,10 @@ return [
     "/user" => Route::create("/user", function(): HTTPRenderer {
         return new HTMLRenderer("page/user", []);
     })->setMiddleware(["auth", "email_verified"]),
+    "/user/followers" => Route::create("/user/followers", function(): HTTPRenderer {
+        return new HTMLRenderer("page/followers", []);
+    })->setMiddleware(["auth", "email_verified"]),
+    "/user/followees" => Route::create("/user/followees", function(): HTTPRenderer {
+        return new HTMLRenderer("page/followees", []);
+    })->setMiddleware(["auth", "email_verified"]),
 ];

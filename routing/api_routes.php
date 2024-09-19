@@ -564,4 +564,101 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
+
+    "/api/user/followers" => Route::create("/api/user/followers", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["followers"] = null;
+            } else {
+                $followDao = DAOFactory::getFollowDAO();
+
+                $limit = $_POST["limit"] ?? 30;
+                $offset = $_POST["offset"] ?? 0;
+                $followers = $followDao->getFollowers($user->getUserId(), $limit, $offset);
+
+                for ($i = 0; $i < count($followers); $i++) {
+                    $followers[$i] = [
+                        "name" => $followers[$i]["name"],
+                        "username" => $followers[$i]["username"],
+                        "profileImagePath" => $followers[$i]["profile_image_hash"] ?
+                            PROFILE_IMAGE_FILE_DIR . $followers[$i]["profile_image_hash"] :
+                            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                        "profilePath" => "/user?un=" . $followers[$i]["username"],
+                    ];
+                }
+
+                $resBody["followers"] = $followers;
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/followees" => Route::create("/api/user/followees", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["followees"] = null;
+            } else {
+                $followDao = DAOFactory::getFollowDAO();
+
+                $limit = $_POST["limit"] ?? 30;
+                $offset = $_POST["offset"] ?? 0;
+                $followees = $followDao->getFollowees($user->getUserId(), $limit, $offset);
+
+                for ($i = 0; $i < count($followees); $i++) {
+                    $followees[$i] = [
+                        "name" => $followees[$i]["name"],
+                        "username" => $followees[$i]["username"],
+                        "profileImagePath" => $followees[$i]["profile_image_hash"] ?
+                            PROFILE_IMAGE_FILE_DIR . $followees[$i]["profile_image_hash"] :
+                            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                        "profilePath" => "/user?un=" . $followees[$i]["username"],
+                    ];
+                }
+
+                $resBody["followees"] = $followees;
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
 ];
