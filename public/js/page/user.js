@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
+  const followeeLink = document.getElementById("followee-link");
+  const followerLink = document.getElementById("follower-link");
+  followeeLink.href = `/user/followees${username ? "?un=" + username : ""}`;
+  followerLink.href = `/user/followers${username ? "?un=" + username : ""}`;
+
   const formData = new FormData();
   formData.append("username", username ?? "");
   const resData = await apiPost("/api/user/profile/init", formData);
@@ -32,6 +37,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const profileTextEl = document.getElementById("profile-profile-text");
     const profileImageEl = document.getElementById("profile-profile-image");
     const profileImageLinkEl = document.getElementById("profile-profile-image-link");
+    const followeeCountEl = document.getElementById("followee-count");
+    const followerCountEl = document.getElementById("follower-count");
 
     const nameInput = document.getElementById("name");
     const usernameInput = document.getElementById("username");
@@ -43,12 +50,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     const editBtn = document.getElementById("profile-edit-btn");
     const followBtn = document.getElementById("profile-follow-btn");
     const unfollowBtn = document.getElementById("profile-unfollow-btn");
+    const followerLabel = document.getElementById("follower-label");
 
     nameEl.innerText = userData.name;
     usernameEl.innerText = "@" + userData.username;
     profileTextEl.innerText = userData.profileText ?? "";
     profileImageEl.src = userData.profileImagePath;
     profileImageLinkEl.href = userData.profileImagePath;
+    followeeCountEl.innerText = userData.followeeCount;
+    followerCountEl.innerText = userData.followerCount;
 
     nameInput.value = userData.name;
     usernameInput.value = userData.username;
@@ -60,10 +70,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (userData.isLoggedInUser) {
       editBtn.classList.remove("d-none");
     } else {
-      if (userData.followed) {
+      if (userData.isFollowee) {
         unfollowBtn.classList.remove("d-none");
       } else {
         followBtn.classList.remove("d-none");
+      }
+
+      if (userData.isFollower) {
+        followerLabel.classList.remove("d-none");
       }
     }
 
@@ -135,6 +149,56 @@ document.addEventListener("DOMContentLoaded", async function () {
           setFormValidation(field, resData.fieldErrors[field]);
         }
       }
+      if (resData.error) {
+        alert(resData.error);
+      }
+    }
+  });
+
+
+  /**
+   * フォローボタンクリック時の処理
+   */
+  const followBtn = document.getElementById("profile-follow-btn");
+  followBtn.addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("username", username ?? "");
+    const resData = await apiPost("/api/user/follow", formData);
+
+    if (resData === null) {
+      alert("エラーが発生しました。");
+    }
+
+    if (resData.success) {
+      window.location.reload();
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
+    }
+  });
+
+
+  /**
+   * アンフォローボタンクリック時の処理
+   */
+  const unfollowBtn = document.getElementById("profile-unfollow-btn");
+  unfollowBtn.addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("username", username ?? "");
+    const resData = await apiPost("/api/user/unfollow", formData);
+
+    if (resData === null) {
+      alert("エラーが発生しました。");
+    }
+
+    if (resData.success) {
+      window.location.reload();
+    } else {
       if (resData.error) {
         alert(resData.error);
       }

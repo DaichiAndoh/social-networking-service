@@ -5,6 +5,8 @@ namespace Response\Render;
 use Helpers\Authenticator;
 use Response\HTTPRenderer;
 
+require_once(sprintf("%s/../../constants/file_constants.php", __DIR__));
+
 class HTMLRenderer implements HTTPRenderer {
     private string $viewFile;
     private array $data;
@@ -40,6 +42,11 @@ class HTMLRenderer implements HTTPRenderer {
     private function getHeader(): string {
         ob_start();
         $user = Authenticator::getAuthenticatedUser();
+        if ($user !== null) {
+            $profileImagePath = $user->getProfileImageHash() ?
+                PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
+                PROFILE_IMAGE_FILE_DIR . "default_profile_image.png";
+        }
         require $this->getViewFilePath("layout/header");
         require $this->getViewFilePath("component/message_boxes");
         require $this->getViewFilePath("component/sidebar");

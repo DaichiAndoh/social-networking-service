@@ -7,6 +7,7 @@ use Helpers\Hasher;
 use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
+use Models\Follow;
 use Models\TempUser;
 use Models\User;
 use Response\FlashData;
@@ -322,6 +323,7 @@ return [
         try {
             Authenticator::logoutUser();
             FlashData::setFlashData("success", "ログアウトしました。");
+            $resBody["redirectUrl"] = "/login";
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -335,6 +337,9 @@ return [
         $resBody = ["success" => true];
 
         try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
@@ -348,9 +353,12 @@ return [
             if ($user === null) {
                 $resBody["userData"] = null;
             } else {
+                $followDao = DAOFactory::getFollowDAO();
+
                 $userData = [
                     "isLoggedInUser" => intval($user->getUsername() === $authenticatedUser->getUsername()),
-                    "followed" => 1, // TODO: フォロー機能実装時に修正する
+                    "isFollowee" => intval($followDao->isFollowee($authenticatedUser->getUserId(), $user->getUserId())),
+                    "isFollower" => intval($followDao->isFollower($authenticatedUser->getUserId(), $user->getUserId())),
                     "name" => $user->getName(),
                     "username" => $user->getUsername(),
                     "profileText" => $user->getProfileText(),
@@ -358,6 +366,8 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profileImageType" => $user->getProfileImageHash() === null ? "default" : "custom",
+                    "followeeCount" => $followDao->getFolloweeCount($user->getUserId()),
+                    "followerCount" => $followDao->getFollowerCount($user->getUserId()),
                 ];
                 $resBody["userData"] = $userData;
             }
@@ -470,6 +480,188 @@ return [
             error_log($e->getMessage());
             $resBody["success"] = false;
             $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/follow" => Route::create("/api/user/follow", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            if ($username === "") {
+                throw new Exception("パラメータが不適切です。");
+            }
+
+            $userDao = DAOFactory::getUserDAO();
+            $user = $userDao->getByUsername($username);
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($user === null) {
+                throw new Exception("フォロー対象のユーザーが存在しません。");
+            } else if ($user->getUserId() === $authenticatedUser->getUserId()) {
+                throw new Exception("フォロー対象のユーザーが不適切です。");
+            }
+
+            $followDao = DAOFactory::getFollowDAO();
+            $isFollowee = $followDao->isFollowee($authenticatedUser->getUserId(), $user->getUserId());
+            if ($isFollowee) {
+                throw new Exception("既にフォローしています。");
+            }
+
+            $follow = new Follow(
+                follower_id: $authenticatedUser->getUserId(),
+                followee_id: $user->getUserId(),
+            );
+            $result = $followDao->follow($follow);
+            if (!$result) {
+                throw new Exception("フォロー処理に失敗しました。");
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/unfollow" => Route::create("/api/user/unfollow", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            if ($username === "") {
+                throw new Exception("パラメータが不適切です。");
+            }
+
+            $userDao = DAOFactory::getUserDAO();
+            $user = $userDao->getByUsername($username);
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($user === null) {
+                throw new Exception("アンフォロー対象のユーザーが存在しません。");
+            } else if ($user->getUserId() === $authenticatedUser->getUserId()) {
+                throw new Exception("アンフォロー対象のユーザーが不適切です。");
+            }
+
+            $followDao = DAOFactory::getFollowDAO();
+            $isFollowee = $followDao->isFollowee($authenticatedUser->getUserId(), $user->getUserId());
+            if (!$isFollowee) {
+                throw new Exception("現在フォローしているユーザーではありません。");
+            }
+
+            $result = $followDao->unfollow($authenticatedUser->getUserId(), $user->getUserId());
+            if (!$result) {
+                throw new Exception("アンフォロー処理に失敗しました。");
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/followers" => Route::create("/api/user/followers", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["followers"] = null;
+            } else {
+                $followDao = DAOFactory::getFollowDAO();
+
+                $limit = $_POST["limit"] ?? 30;
+                $offset = $_POST["offset"] ?? 0;
+                $followers = $followDao->getFollowers($user->getUserId(), $limit, $offset);
+
+                for ($i = 0; $i < count($followers); $i++) {
+                    $followers[$i] = [
+                        "name" => $followers[$i]["name"],
+                        "username" => $followers[$i]["username"],
+                        "profileImagePath" => $followers[$i]["profile_image_hash"] ?
+                            PROFILE_IMAGE_FILE_DIR . $followers[$i]["profile_image_hash"] :
+                            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                        "profilePath" => "/user?un=" . $followers[$i]["username"],
+                    ];
+                }
+
+                $resBody["followers"] = $followers;
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/followees" => Route::create("/api/user/followees", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            if ($user === null) {
+                $resBody["followees"] = null;
+            } else {
+                $followDao = DAOFactory::getFollowDAO();
+
+                $limit = $_POST["limit"] ?? 30;
+                $offset = $_POST["offset"] ?? 0;
+                $followees = $followDao->getFollowees($user->getUserId(), $limit, $offset);
+
+                for ($i = 0; $i < count($followees); $i++) {
+                    $followees[$i] = [
+                        "name" => $followees[$i]["name"],
+                        "username" => $followees[$i]["username"],
+                        "profileImagePath" => $followees[$i]["profile_image_hash"] ?
+                            PROFILE_IMAGE_FILE_DIR . $followees[$i]["profile_image_hash"] :
+                            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                        "profilePath" => "/user?un=" . $followees[$i]["username"],
+                    ];
+                }
+
+                $resBody["followees"] = $followees;
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),

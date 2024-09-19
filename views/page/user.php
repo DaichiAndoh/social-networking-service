@@ -18,12 +18,15 @@
         </div>
 
         <div>
-            <h4 id="profile-name" class="m-0"></h4>
+            <h5 id="profile-name" class="m-0"></h5>
             <p id="profile-username" class="m-0 text-secondary fw-light"></p>
+            <p id="follower-label" class="m-0 text-secondary fw-light d-none">
+                <small class="bg-light p-1 rounded">フォローされています</small>
+            </p>
             <p id="profile-profile-text" class="mt-2"></p>
             <div class="d-block d-sm-flex gap-3">
-                <p class="mb-1">フォロー 100</p>
-                <p class="mb-1">フォロワー 2,000</p>
+                <a id="followee-link" class="mb-1 d-block text-black">フォロー <span id="followee-count"></span></a>
+                <a id="follower-link" class="mb-1 d-block text-black">フォロワー <span id="follower-count"></span></a>
             </div>
         </div>
     </div>
