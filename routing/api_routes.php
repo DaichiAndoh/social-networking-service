@@ -8,6 +8,7 @@ use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
 use Models\Follow;
+use Models\Post;
 use Models\TempUser;
 use Models\User;
 use Response\FlashData;
@@ -662,6 +663,98 @@ return [
             error_log($e->getMessage());
             $resBody["success"] = false;
             $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+
+    "/api/post/create" => Route::create("api/post/create", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $user = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            // 入力値検証
+            if (!in_array($_POST["type"], ["create", "draft", "schedule"])) {
+                throw new Exception("リクエストデータが不適切です。");
+            }
+
+            $fieldErrors = Validator::validateFields([
+                "post-content" => ValueType::STRING,
+            ], $_POST);
+
+            if (
+                !isset($fieldErrors["post-content"]) &&
+                !Validator::validateStrLen($_POST["post-content"], Post::$minLens["content"], Post::$maxLens["content"])
+            ) $fieldErrors["post-content"] = sprintf(
+                "%s文字以上、%s文字以下で入力してください。",
+                User::$minLens["content"],
+                User::$maxLens["content"],
+            );
+
+            $postImageUploaded = $_FILES["post-image"]["error"] === UPLOAD_ERR_OK;
+            if ($postImageUploaded) {
+                if (!Validator::validateImageType($_FILES["post-image"]["type"])) {
+                    $fieldErrors["post-image"] =
+                        "ファイル形式が不適切です。JPG, JPEG, PNG, GIFのファイルが設定可能です。";
+                } else if (!Validator::validateImageSize($_FILES["post-image"]["size"])) {
+                    $fieldErrors["post-image"] =
+                        "ファイルが大きすぎます。";
+                }
+            }
+
+            if ($_POST["type"] === "schedule") {
+                if ($_POST["post-scheduled-at"] === null || !Validator::validateDateTime($_POST["post-scheduled-at"])) {
+                    $fieldErrors["post-scheduled-at"] =
+                        "日付を正しく設定してください。";
+                }
+            }
+
+            // 入力値検証でエラーが存在すれば、そのエラー情報をレスポンスとして返す
+            if (!empty($fieldErrors)) {
+                $resBody["success"] = false;
+                $resBody["fieldErrors"] = $fieldErrors;
+                return new JSONRenderer($resBody);
+            }
+
+            // 画像を保存
+            if ($postImageUploaded) {
+                $imageHash = ImageOperator::savePostImage(
+                    $_FILES["post-image"]["tmp_name"],
+                    ImageOperator::imageTypeToExtension($_FILES["post-image"]["type"]),
+                    $user->getUsername(),
+                );
+            }
+
+            // 新しいPostオブジェクトを作成
+            $status = "POSTED";
+            if ($_POST["type"] === "draft") $status = "SAVED";
+            else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+
+            $post = new Post(
+                content: $_POST["post-content"],
+                status: $status,
+                user_id: $user->getUserId(),
+            );
+            if ($postImageUploaded) $post->setImageHash($imageHash);
+            if ($status === "SCHEDULED") $post->setScheduledAt($_POST["post-scheduled-at"]);
+
+            // ポストを作成
+            $success = $postDao->create($post);
+            if (!$success) throw new Exception("ポスト作成に失敗しました。");
+
+            $message = "ポストを作成しました。";
+            if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
+            if ($status === "SCHEDULED") $message = "ポストを予約しました。";
+            FlashData::setFlashData("success", $message);
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),

@@ -9,16 +9,17 @@
 }
 
 .nav > .nav-item ion-icon {
-    font-size: 30px;
-}
-
-.nav > .nav-item ion-icon {
     font-size: 26px;
 }
 
 .nav > .nav-item {
     padding: 6px;
     border-radius: 26px;
+}
+
+.nav > .nav-item:last-child {
+    padding: 0px;
+    margin: 6px;
 }
 
 .nav > .nav-item:hover {
@@ -39,4 +40,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+#post-btn {
+    border-radius: 26px;
+}
+
+#post-icon-btn {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 30px;
 }

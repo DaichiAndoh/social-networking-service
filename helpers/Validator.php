@@ -2,6 +2,7 @@
 
 namespace Helpers;
 
+use DateTime;
 use Models\User;
 use Types\ValueType;
 
@@ -74,5 +75,10 @@ class Validator {
 
     public static function validateImageSize(int $size, int $min = DEFAULT_FILE_MIN_SIZE, int $max = DEFAULT_FILE_MAX_SIZE): bool {
         return $size >= $min && $size <= $max;
+    }
+
+    public static function validateDateTime($datetime, $format = 'Y/m/d H:i'): bool {
+        $dt = DateTime::createFromFormat($format, $datetime);
+        return $dt && $dt->format($format) === $datetime;
     }
 }
