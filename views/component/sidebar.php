@@ -85,7 +85,7 @@
                     </a>
                     <ul class="nav nav-pills flex-column mb-sm-auto mt-0 mt-sm-3 align-items-center align-items-sm-start" id="menu">
                         <li class="nav-item mb-2">
-                            <a href="#" class="nav-link p-0 d-flex align-items-center text-light">
+                            <a href="/timeline" class="nav-link p-0 d-flex align-items-center text-light">
                                 <ion-icon name="home-outline"></ion-icon>
                                 <span class="fs-5 ms-2 d-none d-sm-inline">ホーム</span>
                             </a>
@@ -134,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div id="content" class="col py-2 bg-light text-dark">
+            <div id="content" class="col bg-light text-dark" style="max-height: 100vh; overflow-y: hidden;">
                 <!-- 下のコメントアウト部分を各ページファイルで作成する -->
                 <!-- Content area...
             </div>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SNS</title>
     <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/page/timeline.css">
     <script src="/js/common.js"></script>
 
     <!-- Bootstrap -->
