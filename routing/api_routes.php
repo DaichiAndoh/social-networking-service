@@ -20,6 +20,7 @@ use Types\ValueType;
 require_once(sprintf("%s/../constants/file_constants.php", __DIR__));
 
 return [
+    // ユーザー認証関連
     "/api/register" => Route::create("/api/register", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
