@@ -13,35 +13,36 @@ document.addEventListener("DOMContentLoaded", async function () {
   formData.append("username", username ?? "");
   formData.append("limit", limit);
   formData.append("offset", offset);
-  const resData = await apiPost("/api/user/followees", formData);
+  const resData = await apiPost("/api/user/followers", formData);
 
   if (resData.success) {
-    renderFollowees(resData.followees);
+    renderFollowers(resData.followers);
   } else {
     if (resData.error) {
       alert(resData.error);
     }
   }
 
-  function renderFollowees(followees) {
-    if (followees === null) {
+  function renderFollowers(followers) {
+    if (followers === null) {
       const userNotFound = document.getElementById("user-not-found");
       userNotFound.classList.remove("d-none");
       return;
     }
 
-    if (followees.length === 0) {
-      displayNotExistsLabel();
+    if (followers.length === 0) {
+      const notExistsLabel = document.getElementById("followers-not-exists");
+      notExistsLabel.classList.remove("d-none");
       return;
     }
 
-    const followeesWrapper = document.getElementById("followees");
-    for (const followee of followees) {
-      createFolloweeEl(followeesWrapper, followee);
+    const followersWrapper = document.getElementById("followers");
+    for (const follower of followers) {
+      createFollowerEl(followersWrapper, follower);
     }
   }
 
-  function createFolloweeEl(parent, followee) {
+  function createFollowerEl(parent, follower) {
     // 親要素のdiv
     const container = document.createElement("div");
     container.classList.add("d-flex", "align-items-center", "p-1");
@@ -53,12 +54,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       container.style.backgroundColor = "";
     });
     container.addEventListener("click", function() {
-      window.location.href = followee.profilePath;
+      window.location.href = follower.profilePath;
     });
 
     // プロフィール画像のimg
     const img = document.createElement("img");
-    img.src = followee.profileImagePath;
+    img.src = follower.profileImagePath;
     img.alt = "プロフィール画像";
     img.width = 50;
     img.height = 50;
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // 名前のh6
     const nameEl = document.createElement("h6");
     nameEl.classList.add("m-0");
-    nameEl.textContent = followee.name;
+    nameEl.textContent = follower.name;
     nameEl.style.overflow = "hidden";
     nameEl.style.textOverflow = "ellipsis";
     nameEl.style.whiteSpace = "nowrap";
@@ -81,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const usernameEl = document.createElement("p");
     usernameEl.id = "profile-username";
     usernameEl.classList.add("m-0", "text-secondary", "fw-light");
-    usernameEl.textContent = "@" + followee.username;
+    usernameEl.textContent = "@" + follower.username;
     usernameEl.style.overflow = "hidden";
     usernameEl.style.textOverflow = "ellipsis";
     usernameEl.style.whiteSpace = "nowrap";
@@ -96,10 +97,5 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // 親要素のdivを引数で受け取った親要素に追加
     parent.appendChild(container);
-  }
-
-  function displayNotExistsLabel() {
-    const notExistsLabel = document.getElementById("followees-not-exists");
-    notExistsLabel.classList.remove("d-none");
   }
 });

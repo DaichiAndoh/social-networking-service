@@ -83,17 +83,18 @@ return [
         }
     })->setMiddleware(["guest", "signature"]),
 
-    "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
-        return new HTMLRenderer("page/timeline", []);
-    })->setMiddleware(["auth", "email_verified"]),
-
+    // ユーザープロフィール関連
     "/user" => Route::create("/user", function(): HTTPRenderer {
-        return new HTMLRenderer("page/user", []);
+        return new HTMLRenderer("page/profile/user", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followers" => Route::create("/user/followers", function(): HTTPRenderer {
-        return new HTMLRenderer("page/followers", []);
+        return new HTMLRenderer("page/profile/followers", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followees" => Route::create("/user/followees", function(): HTTPRenderer {
-        return new HTMLRenderer("page/followees", []);
+        return new HTMLRenderer("page/profile/followees", []);
+    })->setMiddleware(["auth", "email_verified"]),
+
+    "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
+        return new HTMLRenderer("page/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),
 ];

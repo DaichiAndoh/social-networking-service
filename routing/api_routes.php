@@ -335,6 +335,7 @@ return [
         }
     })->setMiddleware(["api_auth"]),
 
+    // ユーザープロフィール関連
     "/api/user/profile/init" => Route::create("/api/user/profile/init", function(): HTTPRenderer {
         $resBody = ["success" => true];
 

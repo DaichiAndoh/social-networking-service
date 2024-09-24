@@ -6,11 +6,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
-  const followeeLink = document.getElementById("followee-link");
-  const followerLink = document.getElementById("follower-link");
-  followeeLink.href = `/user/followees${username ? "?un=" + username : ""}`;
-  followerLink.href = `/user/followers${username ? "?un=" + username : ""}`;
-
   const formData = new FormData();
   formData.append("username", username ?? "");
   const resData = await apiPost("/api/user/profile/init", formData);
@@ -30,8 +25,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-    const profileBlock = document.getElementById("profile-block");
-
+    // ユーザープロフィール
     const nameEl = document.getElementById("profile-name");
     const usernameEl = document.getElementById("profile-username");
     const profileTextEl = document.getElementById("profile-profile-text");
@@ -39,7 +33,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     const profileImageLinkEl = document.getElementById("profile-profile-image-link");
     const followeeCountEl = document.getElementById("followee-count");
     const followerCountEl = document.getElementById("follower-count");
+    const followeeLink = document.getElementById("followee-link");
+    const followerLink = document.getElementById("follower-link");
 
+    nameEl.innerText = userData.name;
+    usernameEl.innerText = "@" + userData.username;
+    profileTextEl.innerText = userData.profileText ?? "";
+    profileImageEl.src = userData.profileImagePath;
+    profileImageLinkEl.href = userData.profileImagePath;
+    followeeCountEl.innerText = userData.followeeCount;
+    followerCountEl.innerText = userData.followerCount;
+    followeeLink.href = `/user/followees?un=${userData.username}`;
+    followerLink.href = `/user/followers?un=${userData.username}`;
+  
+    // 表示ボタン判定, 編集モーダル初期値設定
     const nameInput = document.getElementById("name");
     const usernameInput = document.getElementById("username");
     const profileTextInput = document.getElementById("profile-text");
@@ -51,14 +58,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const followBtn = document.getElementById("profile-follow-btn");
     const unfollowBtn = document.getElementById("profile-unfollow-btn");
     const followerLabel = document.getElementById("follower-label");
-
-    nameEl.innerText = userData.name;
-    usernameEl.innerText = "@" + userData.username;
-    profileTextEl.innerText = userData.profileText ?? "";
-    profileImageEl.src = userData.profileImagePath;
-    profileImageLinkEl.href = userData.profileImagePath;
-    followeeCountEl.innerText = userData.followeeCount;
-    followerCountEl.innerText = userData.followerCount;
 
     nameInput.value = userData.name;
     usernameInput.value = userData.username;
@@ -81,12 +80,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
 
+    // ユーザープロフィールブロック表示（ここで表示させることで画面のちらつきを抑える）
+    const profileBlock = document.getElementById("profile-block");
     profileBlock.classList.remove("d-none");
   }
 
 
   /**
-   * ラジオボタン変更時の処理
+   * プロフィール編集モーダル
+   * 画像タイプラジオボタン変更時の処理
    */
   const defaultRadio = document.getElementById("profile-image-type-default");
   const customRadio = document.getElementById("profile-image-type-custom");
@@ -106,6 +108,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
+   * プロフィール編集モーダル
    * ファイルinput値変更時の処理
    */
   const profileImageInput = document.getElementById("profile-image");
@@ -127,7 +130,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * プロフィール編集モーダル内ボタンクリック時の処理
+   * プロフィール編集モーダル
+   * 保存ボタンクリック時の処理
    */
   const form = document.getElementById("profile-edit-form");
   form.addEventListener("submit", async function(event) {

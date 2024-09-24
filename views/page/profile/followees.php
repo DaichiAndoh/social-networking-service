@@ -7,9 +7,9 @@
         <h6>このアカウントは存在しません。</h6>
     </div>
 
-    <div id="followers">
-        <div id="followers-not-exists" class="py-3 text-center d-none">
-            <h6>現在フォローされているユーザーはいません。</h6>
+    <div id="followees">
+        <div id="followees-not-exists" class="py-3 text-center d-none">
+            <h6>現在フォローしているユーザーはいません。</h6>
         </div>
     </div>
 </div>
@@ -19,4 +19,4 @@
 </div>
 </div>
 
-<script src="/js/page/followers.js"></script>
+<script src="/js/page/profile/followees.js"></script>
