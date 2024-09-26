@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", async function () {
   /**
-   * コンテンツブロックの幅設定処理
+   * メインコンテンツブロックの横幅設定処理
    */
   function adjustContentWidth() {
     const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("content");
+    const mailContent = document.getElementById("main-content");
     
     const parentWidth = sidebar.parentElement.clientWidth;
     const sidebarWidth = sidebar.clientWidth;
 
-    content.style.maxWidth = (parentWidth - sidebarWidth) + "px";
+    mailContent.style.maxWidth = (parentWidth - sidebarWidth) + "px";
   }
 
   window.onload = adjustContentWidth;
@@ -43,7 +43,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * ポスト作成モーダル内タブ切り替え時の処理
+   * ポスト作成モーダル
+   * datetimepicker
+   */
+  new tempusDominus.TempusDominus(document.getElementById('datetimepicker'), {
+    localization: {
+      format: "yyyy/MM/dd HH:mm",
+    },
+  });
+
+
+  /**
+   * ポスト作成モーダル
+   * タブ切り替え時の処理
    */
   document.querySelectorAll("#ceatePostModal .nav-link").forEach(link => {
     link.addEventListener("click", function(event) {
@@ -72,7 +84,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * ポスト作成モーダル内予約投稿設定変更時の処理
+   * ポスト作成モーダル
+   * 予約投稿チェックボックス変更時の処理
    */
   const scheduleSwicher = document.getElementById("schedule");
   const datetimepicker = document.getElementById("datetimepicker");
@@ -99,17 +112,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * ポスト作成モーダル内datetimepicker
-   */
-  new tempusDominus.TempusDominus(document.getElementById('datetimepicker'), {
-    localization: {
-      format: "yyyy/MM/dd HH:mm",
-    },
-  });
-
-
-  /**
-   * ポスト作成モーダル内作成ボタンクリック時の処理
+   * ポスト作成モーダル
+   * 作成ボタンクリック時の処理
    */
   const form = document.getElementById("create-post-form");
   form.addEventListener("submit", async function(event) {

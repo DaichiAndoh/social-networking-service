@@ -8,21 +8,21 @@
     background-color: rgba(255, 255, 255, .1);
 }
 
-.nav > .nav-item ion-icon {
+#sidebar .nav > .nav-item ion-icon {
     font-size: 26px;
 }
 
-.nav > .nav-item {
+#sidebar .nav > .nav-item {
     padding: 6px;
     border-radius: 26px;
 }
 
-.nav > .nav-item:last-child {
+#sidebar .nav > .nav-item:last-child {
     padding: 0px;
     margin: 6px;
 }
 
-.nav > .nav-item:hover {
+#sidebar .nav > .nav-item:hover {
     background-color: rgba(255, 255, 255, .1);
 }
 
