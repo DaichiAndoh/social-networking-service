@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     mailContent.style.maxWidth = (parentWidth - sidebarWidth) + "px";
   }
 
-  window.onload = adjustContentWidth;
+  adjustContentWidth();
   window.onresize = adjustContentWidth;
 
 

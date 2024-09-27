@@ -4,3 +4,19 @@ body {
     box-sizing: border-box;
     word-break: break-all;
 }
+
+.hover-action {
+    padding: 3px;
+}
+
+.hover-action:hover {
+    background-color: rgba(240, 240, 240, 0.4);
+}
+
+.hover-underline {
+    text-decoration: none;
+}
+
+.hover-underline:hover {
+    text-decoration: underline;
+}

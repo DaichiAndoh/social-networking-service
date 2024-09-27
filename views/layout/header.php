@@ -6,7 +6,6 @@
     <title>SNS</title>
 
     <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/page/timeline.css">
     <script src="/js/common.js"></script>
     <?php if ($user !== null): ?>
         <link rel="stylesheet" href="/css/component/sidebar.css">

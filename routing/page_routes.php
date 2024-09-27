@@ -94,7 +94,8 @@ return [
         return new HTMLRenderer("page/profile/followees", []);
     })->setMiddleware(["auth", "email_verified"]),
 
+    // タイムライン関連
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
-        return new HTMLRenderer("page/timeline", []);
+        return new HTMLRenderer("page/timeline/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),
 ];

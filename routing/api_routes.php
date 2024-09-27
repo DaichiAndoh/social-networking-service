@@ -669,6 +669,88 @@ return [
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
 
+    // タイムライン関連
+    "/api/timeline/trend" => Route::create("/api/timeline/trend", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $authenticatedUser->getUserId();
+            $posts = $postDao->getTrendTimelinePosts($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/timeline/follow" => Route::create("/api/timeline/follow", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $authenticatedUser->getUserId();
+            $posts = $postDao->getFolloweeTimelinePosts($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+
     "/api/post/create" => Route::create("api/post/create", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -757,87 +839,6 @@ return [
             error_log($e->getMessage());
             $resBody["success"] = false;
             $resBody["error"] = "エラーが発生しました。";
-            return new JSONRenderer($resBody);
-        }
-    })->setMiddleware(["api_auth", "api_email_verified"]),
-
-    "/api/timeline/trend" => Route::create("/api/timeline/trend", function(): HTTPRenderer {
-        $resBody = ["success" => true];
-
-        try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
-            $authenticatedUser = Authenticator::getAuthenticatedUser();
-            $postDao = DAOFactory::getPostDAO();
-
-            $limit = $_POST["limit"] ?? 30;
-            $offset = $_POST["offset"] ?? 0;
-            $userId = $authenticatedUser->getUserId();
-            $posts = $postDao->getTrendTimelinePosts($userId, $limit, $offset);
-
-            for ($i = 0; $i < count($posts); $i++) {
-                $posts[$i] = [
-                    "postId" => $posts[$i]["post_id"],
-                    "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
-                        "",
-                    "name" => $posts[$i]["name"],
-                    "username" => $posts[$i]["username"],
-                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
-                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
-                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
-                    "profilePath" => "/user?un=" . $posts[$i]["username"],
-                ];
-            }
-
-            $resBody["posts"] = $posts;
-            return new JSONRenderer($resBody);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
-            return new JSONRenderer($resBody);
-        }
-    })->setMiddleware(["api_auth", "api_email_verified"]),
-    "/api/timeline/followee" => Route::create("/api/timeline/followee", function(): HTTPRenderer {
-        $resBody = ["success" => true];
-
-        try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
-            $authenticatedUser = Authenticator::getAuthenticatedUser();
-            $postDao = DAOFactory::getPostDAO();
-
-            $limit = $_POST["limit"] ?? 30;
-            $offset = $_POST["offset"] ?? 0;
-            $userId = $authenticatedUser->getUserId();
-            $posts = $postDao->getFolloweeTimelinePosts($userId, $limit, $offset);
-
-            for ($i = 0; $i < count($posts); $i++) {
-                $posts[$i] = [
-                    "postId" => $posts[$i]["post_id"],
-                    "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
-                        "",
-                    "name" => $posts[$i]["name"],
-                    "username" => $posts[$i]["username"],
-                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
-                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
-                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
-                    "profilePath" => "/user?un=" . $posts[$i]["username"],
-                ];
-            }
-
-            $resBody["posts"] = $posts;
-            return new JSONRenderer($resBody);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
