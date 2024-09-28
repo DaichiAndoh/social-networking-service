@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     timelineWrapper.style.maxHeight = `${windowHeight - timelineWrapperTop}px`;
   }
   setMaxHeight();
-  window.onresize = setMaxHeight;
+  window.addEventListener("resize", setMaxHeight);
 
 
   /**

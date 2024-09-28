@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   adjustContentWidth();
-  window.onresize = adjustContentWidth;
+  window.addEventListener("resize", adjustContentWidth);
 
 
   /**
