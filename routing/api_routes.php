@@ -3,6 +3,7 @@
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticator;
+use Helpers\DateOperator;
 use Helpers\Hasher;
 use Helpers\ImageOperator;
 use Helpers\MailSender;
@@ -692,6 +693,8 @@ return [
                     "imageHash" => $posts[$i]["image_hash"] ?
                         POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -723,7 +726,7 @@ return [
             $limit = $_POST["limit"] ?? 30;
             $offset = $_POST["offset"] ?? 0;
             $userId = $authenticatedUser->getUserId();
-            $posts = $postDao->getFolloweeTimelinePosts($userId, $limit, $offset);
+            $posts = $postDao->getFollowTimelinePosts($userId, $limit, $offset);
 
             for ($i = 0; $i < count($posts); $i++) {
                 $posts[$i] = [
@@ -732,6 +735,8 @@ return [
                     "imageHash" => $posts[$i]["image_hash"] ?
                         POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?

@@ -37,11 +37,12 @@ class PostDAOImpl implements PostDAO {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
-            "SELECT p.post_id, p.content, p.image_hash, u.name, u.username, u.profile_image_hash " .
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, u.name, u.username, u.profile_image_hash " .
             "FROM posts p INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN follows f ON u.user_id = f.followee_id " .
             "WHERE p.status = 'POSTED' " .
             "AND (f.follower_id = ? OR p.user_id = ?) " .
+            "ORDER BY p.post_id DESC " .
             "LIMIT ? OFFSET ?";
 
         $result = $mysqli->prepareAndFetchAll($query, "iiii", [$user_id, $user_id, $limit, $offset]) ?? null;
@@ -49,15 +50,16 @@ class PostDAOImpl implements PostDAO {
         return $result ?? [];
     }
 
-    public function getFolloweeTimelinePosts(int $user_id, int $limit, int $offset): array {
+    public function getFollowTimelinePosts(int $user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
-            "SELECT p.post_id, p.content, p.image_hash, u.name, u.username, u.profile_image_hash " .
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, u.name, u.username, u.profile_image_hash " .
             "FROM posts p INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN follows f ON u.user_id = f.followee_id " .
             "WHERE p.status = 'POSTED' " .
             "AND (f.follower_id = ? OR p.user_id = ?) " .
+            "ORDER BY p.post_id DESC " .
             "LIMIT ? OFFSET ?";
 
         $result = $mysqli->prepareAndFetchAll($query, "iiii", [$user_id, $user_id, $limit, $offset]) ?? null;

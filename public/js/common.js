@@ -28,7 +28,7 @@ function createPostEl(post, parent) {
   cardDiv.classList.add("card", "p-3", "rounded-0");
   cardDiv.style.cursor = "pointer";
   cardDiv.addEventListener("click", () => {
-    console.log("card clicked!");
+    window.location.href = post.postPath;
   });
 
   const cardContentDiv = document.createElement("div");
