@@ -98,4 +98,9 @@ return [
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
         return new HTMLRenderer("page/timeline/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),
+
+    // ポスト関連
+    "/post" => Route::create("/post", function(): HTTPRenderer {
+        return new HTMLRenderer("page/post/detail", []);
+    })->setMiddleware(["auth", "email_verified"]),
 ];

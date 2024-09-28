@@ -33,6 +33,34 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
+    public function getPost(int $post_id): ?array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, u.name, u.username, u.profile_image_hash " .
+            "FROM posts p INNER JOIN users u ON p.user_id = u.user_id " .
+            "WHERE p.post_id = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "i", [$post_id]) ?? null;
+
+        return $result ? $result[0] : null;
+    }
+
+    public function getReplies(int $post_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, u.name, u.username, u.profile_image_hash " .
+            "FROM posts p INNER JOIN users u ON p.user_id = u.user_id " .
+            "WHERE p.reply_to_id = ? " .
+            "ORDER BY p.post_id DESC " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$post_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
+
     public function getTrendTimelinePosts(int $user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
