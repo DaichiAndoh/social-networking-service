@@ -49,6 +49,7 @@ class HTMLRenderer implements HTTPRenderer {
         }
         require $this->getViewFilePath("layout/header");
         require $this->getViewFilePath("component/message_boxes");
+        require $this->getViewFilePath("component/post_modal");
         require $this->getViewFilePath("component/sidebar");
         return ob_get_clean();
     }
