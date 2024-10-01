@@ -121,6 +121,15 @@ function createPostEl(post, parent) {
   const replyDiv = document.createElement("div");
   replyDiv.classList.add("text-dark", "text-decoration-none", "d-flex", "align-items-center", "rounded", "hover-action");
   replyDiv.style.cursor = "pointer";
+  replyDiv.setAttribute("data-bs-toggle", "modal");
+  replyDiv.setAttribute("data-bs-target", "#createReplyModal");
+  replyDiv.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const replyToIdInput = document.getElementById("reply-to-id");
+    replyToIdInput.value = post.postId;
+  });
 
   const replyIcon = document.createElement("ion-icon");
   replyIcon.setAttribute("name", "chatbubbles-outline");

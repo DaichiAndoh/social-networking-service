@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="/css/component/sidebar.css">
         <script src="/js/component/sidebar.js"></script>
         <script src="/js/component/post_modal.js"></script>
+        <script src="/js/component/reply_modal.js"></script>
     <?php endif; ?>
 
     <!-- Bootstrap -->

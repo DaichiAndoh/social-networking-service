@@ -819,6 +819,9 @@ return [
                 );
             }
 
+            // 返信ポストかどうかを判定
+            $isReply = intval($_POST["post-reply-to-id"] ?? "0") !== 0;
+
             // 新しいPostオブジェクトを作成
             $status = "POSTED";
             if ($_POST["type"] === "draft") $status = "SAVED";
@@ -828,6 +831,7 @@ return [
                 content: $_POST["post-content"],
                 status: $status,
                 user_id: $user->getUserId(),
+                reply_to_id: $isReply ? intval($_POST["post-reply-to-id"]) : null,
             );
             if ($postImageUploaded) $post->setImageHash($imageHash);
             if ($status === "SCHEDULED") $post->setScheduledAt($_POST["post-scheduled-at"]);
@@ -836,10 +840,12 @@ return [
             $success = $postDao->create($post);
             if (!$success) throw new Exception("ポスト作成に失敗しました。");
 
-            $message = "ポストを作成しました。";
+            $message = $isReply ? "返信しました。" : "ポストを作成しました。";
             if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
             if ($status === "SCHEDULED") $message = "ポストを予約しました。";
             FlashData::setFlashData("success", $message);
+
+            if ($isReply) $resBody["redirectUrl"] = "/post?id=" . $_POST["post-reply-to-id"];
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());

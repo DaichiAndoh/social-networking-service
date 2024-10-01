@@ -12,13 +12,14 @@ class PostDAOImpl implements PostDAO {
 
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "INSERT INTO posts (user_id, content, status, image_hash, scheduled_at) VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO posts (user_id, reply_to_id, content, status, image_hash, scheduled_at) VALUES (?, ?, ?, ?, ?, ?)";
 
         $result = $mysqli->prepareAndExecute(
             $query,
-            "dssss",
+            "ddssss",
             [
                 $post->getUserId(),
+                $post->getReplyToId(),
                 $post->getContent(),
                 $post->getStatus(),
                 $post->getImageHash(),
