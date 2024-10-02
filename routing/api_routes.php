@@ -851,6 +851,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -894,6 +896,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -1022,8 +1026,9 @@ return [
 
             if ($postId === null) throw new Exception("リクエストデータが不適切です。");
 
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
-            $post = $postDao->getPost($postId);
+            $post = $postDao->getPost($postId, $authenticatedUser->getUserId());
 
             if ($post === null) {
                 $resBody["post"] = null;
@@ -1037,6 +1042,8 @@ return [
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
                     "replyCount" => $post["reply_count"],
+                    "likeCount" => $post["like_count"],
+                    "liked" => $post["liked"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?
@@ -1067,8 +1074,9 @@ return [
 
             if ($postId === null) throw new Exception("リクエストデータが不適切です。");
 
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
-            $replies = $postDao->getReplies($postId, $replyLimit, $replyOffset);
+            $replies = $postDao->getReplies($postId, $authenticatedUser->getUserId(), $replyLimit, $replyOffset);
 
             $resBody["replies"] = array_map(function($post) {
                 return [
@@ -1080,6 +1088,8 @@ return [
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
                     "replyCount" => $post["reply_count"],
+                    "likeCount" => $post["like_count"],
+                    "liked" => $post["liked"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?

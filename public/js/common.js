@@ -158,11 +158,16 @@ function createPostEl(post, parent) {
   });
 
   const heartIcon = document.createElement("ion-icon");
-  heartIcon.setAttribute("name", "heart-outline");
+  if (post.liked) {
+    heartIcon.setAttribute("name", "heart");
+    heartIcon.style.color = "red";
+  } else {
+    heartIcon.setAttribute("name", "heart-outline");
+  }
 
   const heartCount = document.createElement("span");
   heartCount.classList.add("ms-1", "heart-count");
-  heartCount.innerText = "10";
+  heartCount.innerText = post.likeCount;
 
   heartDiv.appendChild(heartIcon);
   heartDiv.appendChild(heartCount);
