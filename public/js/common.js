@@ -136,7 +136,7 @@ function createPostEl(post, parent) {
 
   const replyCount = document.createElement("span");
   replyCount.classList.add("ms-1");
-  replyCount.innerText = "10";
+  replyCount.innerText = post.replyCount;
 
   replyDiv.appendChild(replyIcon);
   replyDiv.appendChild(replyCount);

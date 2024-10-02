@@ -695,6 +695,7 @@ return [
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -737,6 +738,7 @@ return [
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -879,6 +881,7 @@ return [
                         "",
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
+                    "replyCount" => $post["reply_count"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?
@@ -921,6 +924,7 @@ return [
                         "",
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
+                    "replyCount" => $post["reply_count"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?
