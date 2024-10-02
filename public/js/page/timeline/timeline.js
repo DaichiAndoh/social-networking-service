@@ -2,32 +2,35 @@ document.addEventListener("DOMContentLoaded", async function () {
   /**
    * タイムライン初期化処理
    */
-  const limit = 30;
-  let offsetOfTrendTl = 0;
-  let loadAllPostsOfTrendTl = false;
-  let offsetOfFollowTl = 0;
-  let loadAllPostsOfFollowTl = false;
-
-  const trendTl = document.getElementById("trend-timeline");
-  const followTl = document.getElementById("follow-timeline");
   const spinner = document.getElementById("spinner");
+  const limit = 30;
+  const tlData = {
+    trend: {
+      offset: 0,
+      loadAll: false,
+      tlEl: document.getElementById("trend-timeline"),
+    },
+    follow: {
+      offset: 0,
+      loadAll: false,
+      tlEl: document.getElementById("follow-timeline"),
+    },
+  }
 
   async function loadTl(tlType = "trend") {
     const formData = new FormData();
     formData.append("limit", limit);
-    formData.append("offset", tlType === "trend" ? offsetOfTrendTl : offsetOfFollowTl);
+    formData.append("offset", tlData[tlType].offset ?? 0);
     const resData = await apiPost(`/api/timeline/${tlType === "trend" ? "trend" : "follow"}`, formData);
 
     if (resData.success) {
       if (resData.posts.length) {
         for (const post of resData.posts) {
-          createPostEl(post, tlType === "trend" ? trendTl : followTl);
+          createPostEl(post, tlData[tlType].tlEl);
         }
-        if (tlType === "trend") offsetOfTrendTl += limit;
-        else offsetOfFollowTl += limit;
+        tlData[tlType].offset += limit;
       } else {
-        if (tlType === "trend") loadAllPostsOfTrendTl = true;
-        else loadAllPostsOfFollowTl = true;
+        tlData[tlType].loadAll = true;
       }
       spinner.classList.add("d-none");
     } else {
@@ -37,7 +40,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
   await loadTl();
-  await loadTl("follow");
 
 
   /**
@@ -45,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   let activeTab = "trend";
   document.querySelectorAll("#timeline-tabs .nav-link").forEach(link => {
-    link.addEventListener("click", function(event) {
+    link.addEventListener("click", async function(event) {
       event.preventDefault();
 
       // 全てのnav-linkからactiveクラスを削除
@@ -71,9 +73,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       const timelineWrapper = document.getElementById("timeline-wrapper");
       timelineWrapper.scrollTop = 0;
       activeTab = this.id === "trend-nav-link" ? "trend" : "follow";
+      if (tlData[activeTab].offset === 0) {
+        await loadTl(activeTab);
+      }
     });
   });
-  
+
 
   /**
    * timeline-wrapperの max-height 設定処理
@@ -96,14 +101,12 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   document.getElementById("timeline-wrapper").addEventListener("scroll", async function() {
     const content = this;
-    const loadAllPosts = activeTab === "trend" ? loadAllPostsOfTrendTl : loadAllPostsOfFollowTl;
 
     // 要素がスクロールの最下部に達したかを確認
     if (content.scrollTop + content.clientHeight >= content.scrollHeight) {
-      if (!loadAllPosts) {
+      if (!tlData[activeTab].loadAll) {
         spinner.classList.remove("d-none");
-        if (activeTab === "trend") await loadTl();
-        else await loadTl("follow");
+        await loadTl(activeTab);
       }
     }
   });
