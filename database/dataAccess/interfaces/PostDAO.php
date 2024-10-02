@@ -10,4 +10,7 @@ interface PostDAO {
     public function getReplies(int $post_id, int $limit, int $offset): array;
     public function getTrendTimelinePosts(int $user_id, int $limit, int $offset): array;
     public function getFollowTimelinePosts(int $user_id, int $limit, int $offset): array;
+    public function getUserPosts(int $user_id, int $limit, int $offset): array;
+    public function getUserReplies(int $user_id, int $limit, int $offset): array;
+    public function getUserLikes(int $user_id, int $limit, int $offset): array;
 }

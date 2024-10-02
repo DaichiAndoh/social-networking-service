@@ -208,4 +208,134 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
   });
+
+
+  /**
+   * ポスト一覧初期化処理
+  */
+  const postBlock = document.getElementById("post-block");
+  const spinner = document.getElementById("spinner");
+  const limit = 30;
+  const listData = {
+    posts: {
+      offset: 0,
+      loadAll: false,
+      listEl: document.getElementById("posts-list"),
+    },
+    replies: {
+      offset: 0,
+      loadAll: false,
+      listEl: document.getElementById("replies-list")
+    },
+    likes: {
+      offset: 0,
+      loadAll: false,
+      listEl: document.getElementById("likes-list"),
+    },
+  }
+
+  async function loadList(listType = "posts") {
+    const formData = new FormData();
+    formData.append("username", username ?? "");
+    formData.append("limit", limit);
+    formData.append("offset", listData[listType].offset ?? 0);
+    const resData = await apiPost(`/api/user/${listType}`, formData);
+
+    if (resData.success) {
+      if (resData.posts.length) {
+        for (const post of resData.posts) {
+          createPostEl(post, listData[listType].listEl);
+        }
+        listData[listType].offset += limit;
+      } else {
+        listData[listType].loadAll = true;
+
+        if (listData[listType].offset === 0) {
+          document.getElementById("post-not-found").classList.remove("d-none");
+          document.getElementById("list-wrapper").classList.add("d-none");
+        }
+      }
+      spinner.classList.add("d-none");
+      postBlock.classList.remove("d-none");
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
+    }
+  }
+  await loadList();
+
+
+  /**
+   * ポスト種類タブ切り替え時の処理
+   */
+  let activeTab = "posts";
+  document.querySelectorAll("#post-type-tabs .nav-link").forEach(link => {
+    link.addEventListener("click", async function(event) {
+      event.preventDefault();
+
+      // 全てのnav-linkからactiveクラスを削除
+      document.querySelectorAll("#post-type-tabs .nav-link").forEach(item => {
+        item.classList.remove("active");
+      });
+
+      // クリックされたnav-linkにactiveクラスを追加
+      this.classList.add("active");
+
+      // 全てのセクションを非表示
+      document.querySelectorAll("div[id$='-list']").forEach(section => {
+        section.classList.add("d-none");
+      });
+
+      // クリックされたリンクに対応するセクションを表示
+      const target = document.querySelector(this.getAttribute("data-target"));
+      if (target) {
+        target.classList.remove("d-none");
+      }
+
+      // 表示を戻す
+      document.getElementById("post-not-found").classList.add("d-none");
+      document.getElementById("list-wrapper").classList.remove("d-none");
+
+      // リストのスクロールをトップに戻す
+      const listWrapper = document.getElementById("list-wrapper");
+      listWrapper.scrollTop = 0;
+      activeTab = this.id.replace("-nav-link", "");
+      if (listData[activeTab].offset === 0) {
+        await loadList(activeTab);
+      }
+    });
+  });
+
+
+  /**
+   * list-wrapperの max-height 設定処理
+   * 初期表示時とウィンドウリサイズ時に max-height を設定
+   */
+  function setMaxHeight() {
+    const listWrapper = document.getElementById("list-wrapper");
+    const listWrapperTop = listWrapper.getBoundingClientRect().top; // 要素のトップ位置
+    const windowHeight = window.innerHeight; // ウィンドウの高さ
+
+    // max-height を設定
+    listWrapper.style.maxHeight = `${windowHeight - listWrapperTop}px`;
+  }
+  setMaxHeight();
+  window.addEventListener("resize", setMaxHeight);
+
+
+  /**
+   * list-wrapperのスクロール時の処理
+   */
+  document.getElementById("list-wrapper").addEventListener("scroll", async function() {
+    const content = this;
+
+    // 要素がスクロールの最下部に達したかを確認
+    if (content.scrollTop + content.clientHeight >= content.scrollHeight) {
+      if (!listData[activeTab].loadAll) {
+        spinner.classList.remove("d-none");
+        await loadList(activeTab);
+      }
+    }
+  });
 });

@@ -109,4 +109,64 @@ class PostDAOImpl implements PostDAO {
 
         return $result ?? [];
     }
+
+    public function getUserPosts(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, COUNT(r.reply_to_id) AS reply_count, u.name, u.username, u.profile_image_hash " .
+            "FROM posts p " .
+            "INNER JOIN users u ON p.user_id = u.user_id " .
+            "LEFT JOIN posts r ON p.post_id = r.reply_to_id " .
+            "WHERE p.status = 'POSTED' " .
+            "AND p.user_id = ? " .
+            "AND p.reply_to_id IS NULL " .
+            "GROUP BY p.post_id " .
+            "ORDER BY p.post_id DESC " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
+
+    public function getUserReplies(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, COUNT(r.reply_to_id) AS reply_count, u.name, u.username, u.profile_image_hash " .
+            "FROM posts p " .
+            "INNER JOIN users u ON p.user_id = u.user_id " .
+            "LEFT JOIN posts r ON p.post_id = r.reply_to_id " .
+            "WHERE p.status = 'POSTED' " .
+            "AND p.user_id = ? " .
+            "AND p.reply_to_id IS NOT NULL " .
+            "GROUP BY p.post_id " .
+            "ORDER BY p.post_id DESC " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
+
+    public function getUserLikes(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, COUNT(r.reply_to_id) AS reply_count, u.name, u.username, u.profile_image_hash " .
+            "FROM posts p " .
+            "INNER JOIN users u ON p.user_id = u.user_id " .
+            "LEFT JOIN posts r ON p.post_id = r.reply_to_id " .
+            "WHERE p.status = 'POSTED' " .
+            "AND p.user_id = ? " .
+            "AND p.reply_to_id IS NULL " .
+            "GROUP BY p.post_id " .
+            "ORDER BY p.post_id DESC " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
 }
