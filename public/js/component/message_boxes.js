@@ -1,7 +1,6 @@
 window.setTimeout(function() {
   const alert = document.getElementById("alert");
   if (alert) {
-    alert.classList.add("fade");
-    alert.classList.remove("show");
+    alert.classList.add("d-none");
   }
 }, 1500);
