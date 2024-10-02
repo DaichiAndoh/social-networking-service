@@ -703,6 +703,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -754,6 +756,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -805,6 +809,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -814,8 +820,7 @@ return [
                 ];
             }
 
-            // $resBody["posts"] = $posts;
-            $resBody["posts"] = [];
+            $resBody["posts"] = $posts;
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
