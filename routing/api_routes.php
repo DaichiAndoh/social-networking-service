@@ -3,11 +3,13 @@
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticator;
+use Helpers\DateOperator;
 use Helpers\Hasher;
 use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
 use Models\Follow;
+use Models\Post;
 use Models\TempUser;
 use Models\User;
 use Response\FlashData;
@@ -19,6 +21,7 @@ use Types\ValueType;
 require_once(sprintf("%s/../constants/file_constants.php", __DIR__));
 
 return [
+    // ユーザー認証関連
     "/api/register" => Route::create("/api/register", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -333,6 +336,7 @@ return [
         }
     })->setMiddleware(["api_auth"]),
 
+    // ユーザープロフィール関連
     "/api/user/profile/init" => Route::create("/api/user/profile/init", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -662,6 +666,433 @@ return [
             error_log($e->getMessage());
             $resBody["success"] = false;
             $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/posts" => Route::create("/api/user/posts", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $user->getUserId();
+            $posts = $postDao->getUserPosts($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/replies" => Route::create("/api/user/replies", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $user->getUserId();
+            $posts = $postDao->getUserReplies($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/user/likes" => Route::create("/api/user/likes", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $username = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            if ($username === "") {
+                $user = Authenticator::getAuthenticatedUser();
+            } else {
+                $userDao = DAOFactory::getUserDAO();
+                $user = $userDao->getByUsername($username);
+            }
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $user->getUserId();
+            $posts = $postDao->getUserLikes($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            // $resBody["posts"] = $posts;
+            $resBody["posts"] = [];
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+
+    // タイムライン関連
+    "/api/timeline/trend" => Route::create("/api/timeline/trend", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $authenticatedUser->getUserId();
+            $posts = $postDao->getTrendTimelinePosts($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/timeline/follow" => Route::create("/api/timeline/follow", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $authenticatedUser->getUserId();
+            $posts = $postDao->getFollowTimelinePosts($userId, $limit, $offset);
+
+            for ($i = 0; $i < count($posts); $i++) {
+                $posts[$i] = [
+                    "postId" => $posts[$i]["post_id"],
+                    "content" => $posts[$i]["content"],
+                    "imageHash" => $posts[$i]["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $posts[$i]["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
+                    "replyCount" => $posts[$i]["reply_count"],
+                    "name" => $posts[$i]["name"],
+                    "username" => $posts[$i]["username"],
+                    "profileImagePath" => $posts[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $posts[$i]["username"],
+                ];
+            }
+
+            $resBody["posts"] = $posts;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = $e->getMessage();
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+
+    // ポスト関連
+    "/api/post/create" => Route::create("api/post/create", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $user = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+
+            // 入力値検証
+            if (!in_array($_POST["type"], ["create", "draft", "schedule"])) {
+                throw new Exception("リクエストデータが不適切です。");
+            }
+
+            $fieldErrors = Validator::validateFields([
+                "post-content" => ValueType::STRING,
+            ], $_POST);
+
+            if (
+                !isset($fieldErrors["post-content"]) &&
+                !Validator::validateStrLen($_POST["post-content"], Post::$minLens["content"], Post::$maxLens["content"])
+            ) $fieldErrors["post-content"] = sprintf(
+                "%s文字以上、%s文字以下で入力してください。",
+                User::$minLens["content"],
+                User::$maxLens["content"],
+            );
+
+            $postImageUploaded = $_FILES["post-image"]["error"] === UPLOAD_ERR_OK;
+            if ($postImageUploaded) {
+                if (!Validator::validateImageType($_FILES["post-image"]["type"])) {
+                    $fieldErrors["post-image"] =
+                        "ファイル形式が不適切です。JPG, JPEG, PNG, GIFのファイルが設定可能です。";
+                } else if (!Validator::validateImageSize($_FILES["post-image"]["size"])) {
+                    $fieldErrors["post-image"] =
+                        "ファイルが大きすぎます。";
+                }
+            }
+
+            if ($_POST["type"] === "schedule") {
+                if ($_POST["post-scheduled-at"] === null || !Validator::validateDateTime($_POST["post-scheduled-at"])) {
+                    $fieldErrors["post-scheduled-at"] =
+                        "日付を正しく設定してください。";
+                }
+            }
+
+            // 入力値検証でエラーが存在すれば、そのエラー情報をレスポンスとして返す
+            if (!empty($fieldErrors)) {
+                $resBody["success"] = false;
+                $resBody["fieldErrors"] = $fieldErrors;
+                return new JSONRenderer($resBody);
+            }
+
+            // 画像を保存
+            if ($postImageUploaded) {
+                $imageHash = ImageOperator::savePostImage(
+                    $_FILES["post-image"]["tmp_name"],
+                    ImageOperator::imageTypeToExtension($_FILES["post-image"]["type"]),
+                    $user->getUsername(),
+                );
+            }
+
+            // 返信ポストかどうかを判定
+            $isReply = intval($_POST["post-reply-to-id"] ?? "0") !== 0;
+
+            // 新しいPostオブジェクトを作成
+            $status = "POSTED";
+            if ($_POST["type"] === "draft") $status = "SAVED";
+            else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+
+            $post = new Post(
+                content: $_POST["post-content"],
+                status: $status,
+                user_id: $user->getUserId(),
+                reply_to_id: $isReply ? intval($_POST["post-reply-to-id"]) : null,
+            );
+            if ($postImageUploaded) $post->setImageHash($imageHash);
+            if ($status === "SCHEDULED") $post->setScheduledAt($_POST["post-scheduled-at"]);
+
+            // ポストを作成
+            $success = $postDao->create($post);
+            if (!$success) throw new Exception("ポスト作成に失敗しました。");
+
+            $message = $isReply ? "返信しました。" : "ポストを作成しました。";
+            if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
+            if ($status === "SCHEDULED") $message = "ポストを予約しました。";
+            FlashData::setFlashData("success", $message);
+
+            if ($isReply) $resBody["redirectUrl"] = "/post?id=" . $_POST["post-reply-to-id"];
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/detail" => Route::create("/api/post/detail", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postId = $_POST["postId"];
+
+            if ($postId === null) throw new Exception("リクエストデータが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $post = $postDao->getPost($postId);
+
+            if ($post === null) {
+                $resBody["post"] = null;
+            } else {
+                $resBody["post"] = [
+                    "postId" => $post["post_id"],
+                    "content" => $post["content"],
+                    "imageHash" => $post["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $post["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
+                    "replyCount" => $post["reply_count"],
+                    "name" => $post["name"],
+                    "username" => $post["username"],
+                    "profileImagePath" => $post["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $post["username"],
+                ];
+            }
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/replies" => Route::create("/api/post/replies", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postId = $_POST["postId"];
+            $replyLimit = $_POST["replyLimit"];
+            $replyOffset = $_POST["replyOffset"];
+
+            if ($postId === null) throw new Exception("リクエストデータが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $replies = $postDao->getReplies($postId, $replyLimit, $replyOffset);
+
+            $resBody["replies"] = array_map(function($post) {
+                return [
+                    "postId" => $post["post_id"],
+                    "content" => $post["content"],
+                    "imageHash" => $post["image_hash"] ?
+                        POST_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "postPath" => "/post?id=" . $post["post_id"],
+                    "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
+                    "replyCount" => $post["reply_count"],
+                    "name" => $post["name"],
+                    "username" => $post["username"],
+                    "profileImagePath" => $post["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "profilePath" => "/user?un=" . $post["username"],
+                ];
+            }, $replies);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),

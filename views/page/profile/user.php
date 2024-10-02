@@ -31,21 +31,38 @@
         </div>
     </div>
 
-    <div id="post-block" class="d-none">
-        <ul class="nav nav-underline d-flex justify-content-center gap-sm-5">
+    <div id="post-block" class="d-none mt-3">
+        <ul id="post-type-tabs"  class="nav nav-underline d-flex justify-content-center gap-sm-5">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">ポスト</a>
+                <a id="posts-nav-link" class="nav-link active" href="#" data-target="#posts-list">ポスト</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">リプライ</a>
+                <a id="replies-nav-link" class="nav-link" href="#" data-target="#replies-list">リプライ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">いいね</a>
+                <a id="likes-nav-link" class="nav-link" href="#" data-target="#likes-list">いいね</a>
             </li>
         </ul>
 
-        <div>
-            <!-- ここにポスト一覧を表示する -->
+        <div id="post-not-found" class="py-3 text-center d-none">
+            <h6>ポストが存在しません。</h6>
+        </div>
+
+        <div id="list-wrapper" class="py-3" style="overflow-y: scroll;">
+            <div id="posts-list" style="max-width: 500px; margin: 0 auto;">
+            </div>
+
+            <div id="replies-list" class="d-none" style="max-width: 500px; margin: 0 auto;">
+            </div>
+
+            <div id="likes-list" class="d-none" style="max-width: 500px; margin: 0 auto;">
+            </div>
+
+            <div id="spinner" class="text-center d-none my-2">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -110,8 +127,9 @@
     </div>
 </div>
 
+
 </div>
 </div>
 </div>
 
-<script src="/js/page/user.js"></script>
+<script src="/js/page/profile/user.js"></script>

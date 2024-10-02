@@ -14,9 +14,9 @@
     </div>
 </div>
 
-</div>
+
 </div>
 </div>
 </div>
 
-<script src="/js/page/followees.js"></script>
+<script src="/js/page/profile/followees.js"></script>

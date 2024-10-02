@@ -12,7 +12,7 @@ class CreateTempUsersTable implements SchemaMigration {
                 temp_user_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                 user_id INT UNSIGNED NOT NULL,
                 signature VARCHAR(64) NOT NULL UNIQUE,
-                type ENUM('EMAIL_VERIFICATION', 'PASSWORD_RESET') NOT NULL DEFAULT 'EMAIL_VERIFICATION',
+                type ENUM('PASSWORD_RESET') NOT NULL DEFAULT 'PASSWORD_RESET',
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
             )"

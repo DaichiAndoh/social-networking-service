@@ -51,4 +51,4 @@
     </div>
 </div>
 
-<script src="/js/page/register.js"></script>
+<script src="/js/page/authentication/register.js"></script>

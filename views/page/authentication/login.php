@@ -30,4 +30,4 @@
     </div>
 </div>
 
-<script src="/js/page/login.js"></script>
+<script src="/js/page/authentication/login.js"></script>

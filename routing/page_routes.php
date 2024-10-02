@@ -13,14 +13,16 @@ return [
     "/" => Route::create("/", function(): HTTPRenderer {
         return new HTMLRenderer("page/top", []);
     })->setMiddleware(["guest"]),
+
+    // ユーザー認証関連
     "/register" => Route::create("/register", function(): HTTPRenderer {
-        return new HTMLRenderer("page/register", []);
+        return new HTMLRenderer("page/authentication/register", []);
     })->setMiddleware(["guest"]),
     "/login" => Route::create("/login", function(): HTTPRenderer {
-        return new HTMLRenderer("page/login", []);
+        return new HTMLRenderer("page/authentication/login", []);
     })->setMiddleware(["guest"]),
     "/email/verification/resend" => Route::create("/email/verification/resend", function(): HTTPRenderer {
-        return new HTMLRenderer("page/email_verification_resend", []);
+        return new HTMLRenderer("page/authentication/email_verification_resend", []);
     })->setMiddleware(["auth", "email_unverified"]),
     "/email/verify" => Route::create("/email/verify", function(): HTTPRenderer {
         try {
@@ -47,7 +49,7 @@ return [
         }
     })->setMiddleware(["auth", "email_unverified", "signature"]),
     "/password/forgot" => Route::create("/password/forgot", function(): HTTPRenderer {
-        return new HTMLRenderer("page/password_forgot", []);
+        return new HTMLRenderer("page/authentication/password_forgot", []);
     })->setMiddleware(["guest"]),
     "/password/reset" => Route::create("/password/reset", function(): HTTPRenderer {
         try {
@@ -70,7 +72,7 @@ return [
                 return new RedirectRenderer("/");
             }
 
-            return new HTMLRenderer("page/password_reset", [
+            return new HTMLRenderer("page/authentication/password_reset", [
                 "user" => $_GET["user"],
                 "signature" => $_GET["signature"],
             ]);
@@ -80,17 +82,25 @@ return [
             return new RedirectRenderer("/");
         }
     })->setMiddleware(["guest", "signature"]),
-    "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
-        return new HTMLRenderer("page/timeline", []);
-    })->setMiddleware(["auth", "email_verified"]),
 
+    // ユーザープロフィール関連
     "/user" => Route::create("/user", function(): HTTPRenderer {
-        return new HTMLRenderer("page/user", []);
+        return new HTMLRenderer("page/profile/user", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followers" => Route::create("/user/followers", function(): HTTPRenderer {
-        return new HTMLRenderer("page/followers", []);
+        return new HTMLRenderer("page/profile/followers", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followees" => Route::create("/user/followees", function(): HTTPRenderer {
-        return new HTMLRenderer("page/followees", []);
+        return new HTMLRenderer("page/profile/followees", []);
+    })->setMiddleware(["auth", "email_verified"]),
+
+    // タイムライン関連
+    "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
+        return new HTMLRenderer("page/timeline/timeline", []);
+    })->setMiddleware(["auth", "email_verified"]),
+
+    // ポスト関連
+    "/post" => Route::create("/post", function(): HTTPRenderer {
+        return new HTMLRenderer("page/post/detail", []);
     })->setMiddleware(["auth", "email_verified"]),
 ];

@@ -1,16 +1,19 @@
 document.addEventListener("DOMContentLoaded", async function () {
+  /**
+   * メインコンテンツブロックの横幅設定処理
+   */
   function adjustContentWidth() {
     const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("content");
+    const mailContent = document.getElementById("main-content");
     
     const parentWidth = sidebar.parentElement.clientWidth;
     const sidebarWidth = sidebar.clientWidth;
 
-    content.style.maxWidth = (parentWidth - sidebarWidth) + "px";
+    mailContent.style.maxWidth = (parentWidth - sidebarWidth) + "px";
   }
 
-  window.onload = adjustContentWidth;
-  window.onresize = adjustContentWidth;
+  adjustContentWidth();
+  window.addEventListener("resize", adjustContentWidth);
 
 
   /**
