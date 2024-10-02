@@ -9,6 +9,7 @@ use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
 use Models\Follow;
+use Models\Like;
 use Models\Post;
 use Models\TempUser;
 use Models\User;
@@ -1087,6 +1088,58 @@ return [
                     "profilePath" => "/user?un=" . $post["username"],
                 ];
             }, $replies);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/like" => Route::create("/api/post/like", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $likeDao = DAOFactory::getLikeDAO();
+            $postId = $_POST["post_id"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            $exists = $likeDao->exists($authenticatedUser->getUserId(), $postId);
+            if ($exists) throw new Exception("既にいいねしています。");
+
+            $like = new Like(
+                user_id: $authenticatedUser->getUserId(),
+                post_id: $postId,
+            );
+            $likeDao->like($like);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/unlike" => Route::create("/api/post/unlike", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $likeDao = DAOFactory::getLikeDAO();
+            $postId = $_POST["post_id"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            $exists = $likeDao->exists($authenticatedUser->getUserId(), $postId);
+            if (!$exists) throw new Exception("既にいいねされていません。");
+
+            $likeDao->unlike($authenticatedUser->getUserId(), $postId);
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
