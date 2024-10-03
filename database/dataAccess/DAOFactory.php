@@ -3,10 +3,12 @@
 namespace Database\DataAccess;
 
 use Database\DataAccess\Implementations\FollowDAOImpl;
+use Database\DataAccess\Implementations\LikeDAOImpl;
 use Database\DataAccess\Implementations\PostDAOImpl;
 use Database\DataAccess\Implementations\TempUserDAOImpl;
 use Database\DataAccess\Implementations\UserDAOImpl;
 use Database\DataAccess\Interfaces\FollowDAO;
+use Database\DataAccess\Interfaces\LikeDAO;
 use Database\DataAccess\Interfaces\PostDAO;
 use Database\DataAccess\Interfaces\TempUserDAO;
 use Database\DataAccess\Interfaces\UserDAO;
@@ -46,6 +48,15 @@ class DAOFactory {
         return match ($driver) {
             "mysql" => new PostDAOImpl(),
             default => new PostDAOImpl(),
+        };
+    }
+
+    public static function getLikeDAO(): LikeDAO {
+        $driver = ConfigReader::env("DATABASE_DRIVER");
+
+        return match ($driver) {
+            "mysql" => new LikeDAOImpl(),
+            default => new LikeDAOImpl(),
         };
     }
 }

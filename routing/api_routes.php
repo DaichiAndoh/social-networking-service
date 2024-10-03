@@ -9,6 +9,7 @@ use Helpers\ImageOperator;
 use Helpers\MailSender;
 use Helpers\Validator;
 use Models\Follow;
+use Models\Like;
 use Models\Post;
 use Models\TempUser;
 use Models\User;
@@ -702,6 +703,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -753,6 +756,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -804,6 +809,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -813,8 +820,7 @@ return [
                 ];
             }
 
-            // $resBody["posts"] = $posts;
-            $resBody["posts"] = [];
+            $resBody["posts"] = $posts;
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -850,6 +856,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -893,6 +901,8 @@ return [
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
                     "replyCount" => $posts[$i]["reply_count"],
+                    "likeCount" => $posts[$i]["like_count"],
+                    "liked" => $posts[$i]["liked"],
                     "name" => $posts[$i]["name"],
                     "username" => $posts[$i]["username"],
                     "profileImagePath" => $posts[$i]["profile_image_hash"] ?
@@ -1021,8 +1031,9 @@ return [
 
             if ($postId === null) throw new Exception("リクエストデータが不適切です。");
 
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
-            $post = $postDao->getPost($postId);
+            $post = $postDao->getPost($postId, $authenticatedUser->getUserId());
 
             if ($post === null) {
                 $resBody["post"] = null;
@@ -1036,6 +1047,8 @@ return [
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
                     "replyCount" => $post["reply_count"],
+                    "likeCount" => $post["like_count"],
+                    "liked" => $post["liked"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?
@@ -1066,8 +1079,9 @@ return [
 
             if ($postId === null) throw new Exception("リクエストデータが不適切です。");
 
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
-            $replies = $postDao->getReplies($postId, $replyLimit, $replyOffset);
+            $replies = $postDao->getReplies($postId, $authenticatedUser->getUserId(), $replyLimit, $replyOffset);
 
             $resBody["replies"] = array_map(function($post) {
                 return [
@@ -1079,6 +1093,8 @@ return [
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
                     "replyCount" => $post["reply_count"],
+                    "likeCount" => $post["like_count"],
+                    "liked" => $post["liked"],
                     "name" => $post["name"],
                     "username" => $post["username"],
                     "profileImagePath" => $post["profile_image_hash"] ?
@@ -1087,6 +1103,58 @@ return [
                     "profilePath" => "/user?un=" . $post["username"],
                 ];
             }, $replies);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/like" => Route::create("/api/post/like", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $likeDao = DAOFactory::getLikeDAO();
+            $postId = $_POST["post_id"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            $exists = $likeDao->exists($authenticatedUser->getUserId(), $postId);
+            if ($exists) throw new Exception("既にいいねしています。");
+
+            $like = new Like(
+                user_id: $authenticatedUser->getUserId(),
+                post_id: $postId,
+            );
+            $likeDao->like($like);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/unlike" => Route::create("/api/post/unlike", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $likeDao = DAOFactory::getLikeDAO();
+            $postId = $_POST["post_id"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            $exists = $likeDao->exists($authenticatedUser->getUserId(), $postId);
+            if (!$exists) throw new Exception("既にいいねされていません。");
+
+            $likeDao->unlike($authenticatedUser->getUserId(), $postId);
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

@@ -25,6 +25,7 @@ async function setFormValidation(fieldId, message) {
 
 function createPostEl(post, parent) {
   const cardDiv = document.createElement("div");
+  cardDiv.id = `post-${post.postId}`;
   cardDiv.classList.add("card", "p-3", "rounded-0");
   cardDiv.style.cursor = "pointer";
   cardDiv.addEventListener("click", () => {
@@ -144,13 +145,29 @@ function createPostEl(post, parent) {
   const heartDiv = document.createElement("div");
   heartDiv.classList.add("ms-3", "text-dark", "text-decoration-none", "d-flex", "align-items-center", "rounded", "hover-action");
   heartDiv.style.cursor = "pointer";
+  heartDiv.addEventListener("click", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const heartIcon = heartDiv.querySelector("[name='heart']");
+    if (heartIcon) {
+      await unlikePost(post.postId);
+    } else {
+      await likePost(post.postId);
+    }
+  });
 
   const heartIcon = document.createElement("ion-icon");
-  heartIcon.setAttribute("name", "heart-outline");
+  if (post.liked) {
+    heartIcon.setAttribute("name", "heart");
+    heartIcon.style.color = "red";
+  } else {
+    heartIcon.setAttribute("name", "heart-outline");
+  }
 
   const heartCount = document.createElement("span");
-  heartCount.classList.add("ms-1");
-  heartCount.innerText = "10";
+  heartCount.classList.add("ms-1", "heart-count");
+  heartCount.innerText = post.likeCount;
 
   heartDiv.appendChild(heartIcon);
   heartDiv.appendChild(heartCount);
@@ -168,4 +185,50 @@ function createPostEl(post, parent) {
   cardDiv.appendChild(cardContentDiv);
 
   parent.appendChild(cardDiv);
+}
+
+async function likePost(postId) {
+  const formData = new FormData();
+  formData.append("post_id", postId);
+  const resData = await apiPost("/api/post/like", formData);
+
+  if (resData.success) {
+    const likedPost = document.getElementById(`post-${postId}`);
+    const heartIcon = likedPost.querySelector("[name='heart-outline']");
+    heartIcon.name = "heart";
+    heartIcon.classList.remove("unlike");
+    heartIcon.classList.add("like");
+    heartIcon.style.color = "red";
+
+    const heartCount = likedPost.querySelector(".heart-count");
+    const currentCount = +heartCount.textContent;
+    heartCount.innerText = (currentCount + 1).toString();
+  } else {
+    if (resData.error) {
+      alert(resData.error);
+    }
+  }
+}
+
+async function unlikePost(postId) {
+  const formData = new FormData();
+  formData.append("post_id", postId);
+  const resData = await apiPost("/api/post/unlike", formData);
+
+  if (resData.success) {
+    const unlikedPost = document.getElementById(`post-${postId}`);
+    const heartIcon = unlikedPost.querySelector("[name='heart']");
+    heartIcon.name = "heart-outline";
+    heartIcon.classList.remove("like");
+    heartIcon.classList.add("unlike");
+    heartIcon.style.color = "";
+
+    const heartCount = unlikedPost.querySelector(".heart-count");
+    const currentCount = +heartCount.textContent;
+    heartCount.innerText = (currentCount - 1).toString();
+  } else {
+    if (resData.error) {
+      alert(resData.error);
+    }
+  }
 }
