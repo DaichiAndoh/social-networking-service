@@ -3,5 +3,7 @@ vendor
 .env
 public/img/user/*
 !public/img/user/default_profile_image.png
-public/img/post/*
-!public/img/post/.gitkeep
+public/img/post/original/*
+!public/img/post/original/.gitkeep
+public/img/post/thumbnail/*
+!public/img/post/thumbnail/.gitkeep

@@ -119,6 +119,25 @@ function createPostEl(post, parent) {
   const textBody = document.createElement("div");
   textBody.innerText = post.content;
 
+  // 画像
+  const postImgDiv = document.createElement("div");
+  postImgDiv.classList.add("text-center");
+  const postImg = document.createElement("img");
+  postImg.src = post.thumbnailPath;
+  postImg.alt = "ポスト画像";
+  postImg.style.width = "100%";
+  postImg.style.maxWidth = "300px";
+  postImg.classList.add("border");
+  const postImgLink = document.createElement("a");
+  postImgLink.href = post.imagePath;
+  postImgLink.target = "_blank";
+  postImgLink.rel = "noopener noreferrer";
+  postImgLink.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  postImgLink.appendChild(postImg);
+  postImgDiv.appendChild(postImgLink);
+
   // 返信アイコン・返信数, いいねアイコン・いいね数
   const iconsDiv = document.createElement("div");
   iconsDiv.classList.add("mt-2", "d-flex", "align-items-center");
@@ -181,6 +200,7 @@ function createPostEl(post, parent) {
 
   rightDiv.appendChild(profileDiv);
   rightDiv.appendChild(textBody);
+  if (post.imagePath && post.thumbnailPath) rightDiv.appendChild(postImgDiv);
   rightDiv.appendChild(iconsDiv);
 
   /** 左右のブロックをカードのコンテンツブロックの子要素に追加 */
