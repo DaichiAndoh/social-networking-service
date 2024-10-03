@@ -34,6 +34,18 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
+    public function delete(int $post_id): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "DELETE FROM posts WHERE post_id = ?";
+
+        $result = $mysqli->prepareAndExecute($query, "d", [$post_id]);
+
+        if (!$result) return false;
+
+        return true;
+    }
+
     public function getPost(int $post_id, int $authenticated_user_id): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
 

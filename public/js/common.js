@@ -25,8 +25,7 @@ async function setFormValidation(fieldId, message) {
 
 function createPostEl(post, parent) {
   const cardDiv = document.createElement("div");
-  cardDiv.id = `post-${post.postId}`;
-  cardDiv.classList.add("card", "p-3", "rounded-0");
+  cardDiv.classList.add("card", "p-3", "rounded-0", `post-${post.postId}`);
   cardDiv.style.cursor = "pointer";
   cardDiv.addEventListener("click", () => {
     window.location.href = post.postPath;
@@ -91,15 +90,20 @@ function createPostEl(post, parent) {
 
   const dropdownMenu = document.createElement("ul");
   dropdownMenu.classList.add("dropdown-menu");
+  dropdownMenu.style.minWidth = 0;
 
   const deleteItem = document.createElement("li");
   const deleteLink = document.createElement("a");
   deleteLink.classList.add("dropdown-item");
+  if (!post.deletable) deleteLink.classList.add("disabled");
   deleteLink.href = "#";
   deleteLink.innerText = "削除";
-  deleteLink.addEventListener("click", (event) => {
+  deleteLink.addEventListener("click", async (event) => {
     event.preventDefault();
     event.stopPropagation();
+    if (confirm("ポストを削除するとこの投稿に紐づくデータ（返信ポスト、いいね）も削除されます。削除しますか。")) {
+      await deletePost(post.postId);
+    }
   });
 
   deleteItem.appendChild(deleteLink);
@@ -193,16 +197,18 @@ async function likePost(postId) {
   const resData = await apiPost("/api/post/like", formData);
 
   if (resData.success) {
-    const likedPost = document.getElementById(`post-${postId}`);
-    const heartIcon = likedPost.querySelector("[name='heart-outline']");
-    heartIcon.name = "heart";
-    heartIcon.classList.remove("unlike");
-    heartIcon.classList.add("like");
-    heartIcon.style.color = "red";
+    const likedPosts = document.querySelectorAll(`.post-${postId}`);
+    for (const likedPost of likedPosts) {
+      const heartIcon = likedPost.querySelector("[name='heart-outline']");
+      heartIcon.name = "heart";
+      heartIcon.classList.remove("unlike");
+      heartIcon.classList.add("like");
+      heartIcon.style.color = "red";
 
-    const heartCount = likedPost.querySelector(".heart-count");
-    const currentCount = +heartCount.textContent;
-    heartCount.innerText = (currentCount + 1).toString();
+      const heartCount = likedPost.querySelector(".heart-count");
+      const currentCount = +heartCount.textContent;
+      heartCount.innerText = (currentCount + 1).toString();
+    }
   } else {
     if (resData.error) {
       alert(resData.error);
@@ -216,16 +222,33 @@ async function unlikePost(postId) {
   const resData = await apiPost("/api/post/unlike", formData);
 
   if (resData.success) {
-    const unlikedPost = document.getElementById(`post-${postId}`);
-    const heartIcon = unlikedPost.querySelector("[name='heart']");
-    heartIcon.name = "heart-outline";
-    heartIcon.classList.remove("like");
-    heartIcon.classList.add("unlike");
-    heartIcon.style.color = "";
+    const unlikedPosts = document.querySelectorAll(`.post-${postId}`);
+    for (const unlikedPost of unlikedPosts) {
+      const heartIcon = unlikedPost.querySelector("[name='heart']");
+      heartIcon.name = "heart-outline";
+      heartIcon.classList.remove("like");
+      heartIcon.classList.add("unlike");
+      heartIcon.style.color = "";
 
-    const heartCount = unlikedPost.querySelector(".heart-count");
-    const currentCount = +heartCount.textContent;
-    heartCount.innerText = (currentCount - 1).toString();
+      const heartCount = unlikedPost.querySelector(".heart-count");
+      const currentCount = +heartCount.textContent;
+      heartCount.innerText = (currentCount - 1).toString();
+    }
+  } else {
+    if (resData.error) {
+      alert(resData.error);
+    }
+  }
+}
+
+async function deletePost(postId) {
+  const formData = new FormData();
+  formData.append("post_id", postId);
+  const resData = await apiPost("/api/post/delete", formData);
+
+  if (resData.success) {
+    const deletedPosts = document.querySelectorAll(`.post-${postId}`);
+    for (const deletedPost of deletedPosts) deletedPost.remove();
   } else {
     if (resData.error) {
       alert(resData.error);
