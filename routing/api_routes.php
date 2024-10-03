@@ -697,8 +697,11 @@ return [
                 $posts[$i] = [
                     "postId" => $posts[$i]["post_id"],
                     "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                    "imagePath" => $posts[$i]["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "thumbnailPath" => $posts[$i]["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
@@ -751,8 +754,11 @@ return [
                 $posts[$i] = [
                     "postId" => $posts[$i]["post_id"],
                     "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                    "imagePath" => $posts[$i]["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "thumbnailPath" => $posts[$i]["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
@@ -805,8 +811,11 @@ return [
                 $posts[$i] = [
                     "postId" => $posts[$i]["post_id"],
                     "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                    "imagePath" => $posts[$i]["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "thumbnailPath" => $posts[$i]["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
@@ -853,8 +862,11 @@ return [
                 $posts[$i] = [
                     "postId" => $posts[$i]["post_id"],
                     "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                    "imagePath" => $posts[$i]["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "thumbnailPath" => $posts[$i]["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
@@ -899,8 +911,11 @@ return [
                 $posts[$i] = [
                     "postId" => $posts[$i]["post_id"],
                     "content" => $posts[$i]["content"],
-                    "imageHash" => $posts[$i]["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                    "imagePath" => $posts[$i]["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
+                        "",
+                    "thumbnailPath" => $posts[$i]["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $posts[$i]["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $posts[$i]["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($posts[$i]["updated_at"]),
@@ -1040,6 +1055,9 @@ return [
             if ($post["username"] !== $authenticatedUser->getUsername()) throw new Exception("このポストは削除できません。");
 
             $postDao->delete($postId);
+            if ($post["image_hash"]) {
+                ImageOperator::deletePostImage($post["image_hash"]);
+            }
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
@@ -1070,8 +1088,11 @@ return [
                 $resBody["post"] = [
                     "postId" => $post["post_id"],
                     "content" => $post["content"],
-                    "imageHash" => $post["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $post["image_hash"] :
+                    "imagePath" => $post["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "thumbnailPath" => $post["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $post["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
@@ -1117,8 +1138,11 @@ return [
                 return [
                     "postId" => $post["post_id"],
                     "content" => $post["content"],
-                    "imageHash" => $post["image_hash"] ?
-                        POST_IMAGE_FILE_DIR . $post["image_hash"] :
+                    "imagePath" => $post["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "thumbnailPath" => $post["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $post["image_hash"] :
                         "",
                     "postPath" => "/post?id=" . $post["post_id"],
                     "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
