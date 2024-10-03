@@ -711,6 +711,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
 
@@ -764,6 +765,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
 
@@ -817,6 +819,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
 
@@ -864,6 +867,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
 
@@ -909,6 +913,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
 
@@ -1020,6 +1025,30 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/delete" => Route::create("/api/post/delete", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $postDao = DAOFactory::getPostDAO();
+            $postId = $_POST["post_id"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+
+            $post = $postDao->getPost($postId, $authenticatedUser->getUserId());
+            if ($post["username"] !== $authenticatedUser->getUsername()) throw new Exception("このポストは削除できません。");
+
+            $postDao->delete($postId);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
     "/api/post/detail" => Route::create("/api/post/detail", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -1055,6 +1084,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $post["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $post["username"],
                 ];
             }
 
@@ -1083,7 +1113,7 @@ return [
             $postDao = DAOFactory::getPostDAO();
             $replies = $postDao->getReplies($postId, $authenticatedUser->getUserId(), $replyLimit, $replyOffset);
 
-            $resBody["replies"] = array_map(function($post) {
+            $resBody["replies"] = array_map(function($post) use ($authenticatedUser) {
                 return [
                     "postId" => $post["post_id"],
                     "content" => $post["content"],
@@ -1101,6 +1131,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $post["username"],
+                    "deletable" => $authenticatedUser->getUsername() === $post["username"],
                 ];
             }, $replies);
 
