@@ -7,9 +7,18 @@
         <h6>このアカウントは存在しません。</h6>
     </div>
 
-    <div id="followers">
-        <div id="followers-not-exists" class="py-3 text-center d-none">
-            <h6>現在フォローされているユーザーはいません。</h6>
+    <div id="followers-not-exists" class="py-3 text-center d-none">
+        <h6>現在フォローされているユーザーはいません。</h6>
+    </div>
+
+    <div id="list-wrapper" style="overflow-y: scroll;">
+        <div id="followers-list">
+        </div>
+
+        <div id="spinner" class="text-center d-none my-2">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
     </div>
 </div>
