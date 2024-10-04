@@ -2,47 +2,55 @@ document.addEventListener("DOMContentLoaded", async function () {
   /**
    * フォロイー初期化処理
    */
+  const listEl = document.getElementById("followees-list");
+  const spinner = document.getElementById("spinner");
   const limit = 30;
   let offset = 0;
+  let loadAll = false;
 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
-  const formData = new FormData();
-  formData.append("username", username ?? "");
-  formData.append("limit", limit);
-  formData.append("offset", offset);
-  const resData = await apiPost("/api/user/followees", formData);
+  async function loadFollowee() {
+    const formData = new FormData();
+    formData.append("username", username ?? "");
+    formData.append("limit", limit);
+    formData.append("offset", offset);
+    const resData = await apiPost("/api/user/followees", formData);
 
-  if (resData.success) {
-    renderFollowees(resData.followees);
-  } else {
-    if (resData.error) {
-      alert(resData.error);
+    if (resData.success) {
+      if (resData.followees === null) {
+        const userNotFound = document.getElementById("user-not-found");
+        userNotFound.classList.remove("d-none");
+        return;
+      }
+
+      if (resData.followees.length) {
+        for (const followee of resData.followees) {
+          createFolloweeEl(followee, listEl);
+        }
+        offset += limit;
+      } else {
+        loadAll = true;
+
+        if (offset === 0) {
+          const notExistsLabel = document.getElementById("followees-not-exists");
+          notExistsLabel.classList.remove("d-none");
+          return;
+        }
+      }
+
+      spinner.classList.add("d-none");
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
     }
   }
+  await loadFollowee();
 
-  function renderFollowees(followees) {
-    if (followees === null) {
-      const userNotFound = document.getElementById("user-not-found");
-      userNotFound.classList.remove("d-none");
-      return;
-    }
-
-    if (followees.length === 0) {
-      const notExistsLabel = document.getElementById("followees-not-exists");
-      notExistsLabel.classList.remove("d-none");
-      return;
-    }
-
-    const followeesWrapper = document.getElementById("followees");
-    for (const followee of followees) {
-      createFolloweeEl(followeesWrapper, followee);
-    }
-  }
-
-  function createFolloweeEl(parent, followee) {
+  function createFolloweeEl(followee, parent) {
     // 親要素のdiv
     const container = document.createElement("div");
     container.classList.add("d-flex", "align-items-center", "p-1");
@@ -98,4 +106,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     // 親要素のdivを引数で受け取った親要素に追加
     parent.appendChild(container);
   }
+
+
+  /**
+   * list-wrapperの max-height 設定処理
+   * 初期表示時とウィンドウリサイズ時に max-height を設定
+   */
+  function setMaxHeight() {
+    const listWrapper = document.getElementById("list-wrapper");
+    const listWrapperTop = listWrapper.getBoundingClientRect().top; // 要素のトップ位置
+    const windowHeight = window.innerHeight; // ウィンドウの高さ
+
+    // max-height を設定
+    listWrapper.style.maxHeight = `${windowHeight - listWrapperTop}px`;
+  }
+  setMaxHeight();
+  window.addEventListener("resize", setMaxHeight);
+
+
+  /**
+   * list-wrapperのスクロール時の処理
+   */
+  document.getElementById("list-wrapper").addEventListener("scroll", async function() {
+    const content = this;
+
+    // 要素がスクロールの最下部に達したかを確認
+    if (content.scrollTop + content.clientHeight >= content.scrollHeight) {
+      if (!loadAll) {
+        spinner.classList.remove("d-none");
+        await loadFollowee();
+      }
+    }
+  });
 });
