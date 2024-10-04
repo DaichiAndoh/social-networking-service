@@ -1,48 +1,56 @@
 document.addEventListener("DOMContentLoaded", async function () {
   /**
-   * フォロイー初期化処理
+   * フォロワー初期化処理
    */
+  const listEl = document.getElementById("followers-list");
+  const spinner = document.getElementById("spinner");
   const limit = 30;
   let offset = 0;
+  let loadAll = false;
 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const username = urlParams.get("un");
 
-  const formData = new FormData();
-  formData.append("username", username ?? "");
-  formData.append("limit", limit);
-  formData.append("offset", offset);
-  const resData = await apiPost("/api/user/followers", formData);
+  async function loadFollower() {
+    const formData = new FormData();
+    formData.append("username", username ?? "");
+    formData.append("limit", limit);
+    formData.append("offset", offset);
+    const resData = await apiPost("/api/user/followers", formData);
 
-  if (resData.success) {
-    renderFollowers(resData.followers);
-  } else {
-    if (resData.error) {
-      alert(resData.error);
+    if (resData.success) {
+      if (resData.followers === null) {
+        const userNotFound = document.getElementById("user-not-found");
+        userNotFound.classList.remove("d-none");
+        return;
+      }
+
+      if (resData.followers.length) {
+        for (const follower of resData.followers) {
+          createFollowerEl(follower, listEl);
+        }
+        offset += limit;
+      } else {
+        loadAll = true;
+
+        if (offset === 0) {
+          const notExistsLabel = document.getElementById("followers-not-exists");
+          notExistsLabel.classList.remove("d-none");
+          return;
+        }
+      }
+
+      spinner.classList.add("d-none");
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
     }
   }
+  await loadFollower();
 
-  function renderFollowers(followers) {
-    if (followers === null) {
-      const userNotFound = document.getElementById("user-not-found");
-      userNotFound.classList.remove("d-none");
-      return;
-    }
-
-    if (followers.length === 0) {
-      const notExistsLabel = document.getElementById("followers-not-exists");
-      notExistsLabel.classList.remove("d-none");
-      return;
-    }
-
-    const followersWrapper = document.getElementById("followers");
-    for (const follower of followers) {
-      createFollowerEl(followersWrapper, follower);
-    }
-  }
-
-  function createFollowerEl(parent, follower) {
+  function createFollowerEl(followee, parent) {
     // 親要素のdiv
     const container = document.createElement("div");
     container.classList.add("d-flex", "align-items-center", "p-1");
@@ -54,12 +62,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       container.style.backgroundColor = "";
     });
     container.addEventListener("click", function() {
-      window.location.href = follower.profilePath;
+      window.location.href = followee.profilePath;
     });
 
     // プロフィール画像のimg
     const img = document.createElement("img");
-    img.src = follower.profileImagePath;
+    img.src = followee.profileImagePath;
     img.alt = "プロフィール画像";
     img.width = 50;
     img.height = 50;
@@ -73,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // 名前のh6
     const nameEl = document.createElement("h6");
     nameEl.classList.add("m-0");
-    nameEl.textContent = follower.name;
+    nameEl.textContent = followee.name;
     nameEl.style.overflow = "hidden";
     nameEl.style.textOverflow = "ellipsis";
     nameEl.style.whiteSpace = "nowrap";
@@ -82,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const usernameEl = document.createElement("p");
     usernameEl.id = "profile-username";
     usernameEl.classList.add("m-0", "text-secondary", "fw-light");
-    usernameEl.textContent = "@" + follower.username;
+    usernameEl.textContent = "@" + followee.username;
     usernameEl.style.overflow = "hidden";
     usernameEl.style.textOverflow = "ellipsis";
     usernameEl.style.whiteSpace = "nowrap";
@@ -98,4 +106,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     // 親要素のdivを引数で受け取った親要素に追加
     parent.appendChild(container);
   }
+
+
+  /**
+   * list-wrapperの max-height 設定処理
+   * 初期表示時とウィンドウリサイズ時に max-height を設定
+   */
+  function setMaxHeight() {
+    const listWrapper = document.getElementById("list-wrapper");
+    const listWrapperTop = listWrapper.getBoundingClientRect().top; // 要素のトップ位置
+    const windowHeight = window.innerHeight; // ウィンドウの高さ
+
+    // max-height を設定
+    listWrapper.style.maxHeight = `${windowHeight - listWrapperTop}px`;
+  }
+  setMaxHeight();
+  window.addEventListener("resize", setMaxHeight);
+
+
+  /**
+   * list-wrapperのスクロール時の処理
+   */
+  document.getElementById("list-wrapper").addEventListener("scroll", async function() {
+    const content = this;
+
+    // 要素がスクロールの最下部に達したかを確認
+    if (content.scrollTop + content.clientHeight >= content.scrollHeight) {
+      if (!loadAll) {
+        spinner.classList.remove("d-none");
+        await loadFollower();
+      }
+    }
+  });
 });
