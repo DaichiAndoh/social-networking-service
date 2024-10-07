@@ -12,9 +12,14 @@
             <a id="profile-profile-image-link" href="" target="_blank" rel="noopener noreferrer">
                 <img id="profile-profile-image" src="" alt="プロフィール画像" width="90" height="90" class="rounded-circle border">
             </a>
-            <button id="profile-edit-btn" class="btn btn-primary btn-sm d-none" data-bs-toggle="modal" data-bs-target="#profileEditModal">プロフィールを編集</button>
-            <button id="profile-follow-btn" class="btn btn-primary btn-sm d-none">フォロー</button>
-            <button id="profile-unfollow-btn" class="btn btn-outline-primary btn-sm d-none">アンフォロー</button>
+            <div class="d-flex align-items-center gap-2">
+                <a id="message-btn" class="p-1 rounded-circle border border-primary d-flex justify-content-center align-items-center d-none" style="width: 32px; height: 32px;">
+                    <ion-icon name="mail-outline" class="fs-4"></ion-icon>
+                </a>
+                <button id="profile-edit-btn" class="btn btn-primary btn-sm d-none" data-bs-toggle="modal" data-bs-target="#profileEditModal">プロフィールを編集</button>
+                <button id="profile-follow-btn" class="btn btn-primary btn-sm d-none">フォロー</button>
+                <button id="profile-unfollow-btn" class="btn btn-outline-primary btn-sm d-none">アンフォロー</button>
+            </div>
         </div>
 
         <div>

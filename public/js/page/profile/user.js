@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const customRadio = document.getElementById("profile-image-type-custom");
     const profileImagePreviewEl = document.getElementById("profile-image-preview");
 
+    const messageBtn = document.getElementById("message-btn");
     const editBtn = document.getElementById("profile-edit-btn");
     const followBtn = document.getElementById("profile-follow-btn");
     const unfollowBtn = document.getElementById("profile-unfollow-btn");
@@ -69,6 +70,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (userData.isLoggedInUser) {
       editBtn.classList.remove("d-none");
     } else {
+      messageBtn.href = `/messages/chat?un=${userData.username}`;
+      messageBtn.classList.remove("d-none");
+
       if (userData.isFollowee) {
         unfollowBtn.classList.remove("d-none");
       } else {
