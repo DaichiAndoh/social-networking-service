@@ -14,4 +14,5 @@ interface PostDAO {
     public function getUserPosts(int $user_id, int $limit, int $offset): array;
     public function getUserReplies(int $user_id, int $limit, int $offset): array;
     public function getUserLikes(int $user_id, int $limit, int $offset): array;
+    public function getPostById(int $post_id): ?Post;
 }

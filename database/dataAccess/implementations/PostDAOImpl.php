@@ -219,4 +219,28 @@ class PostDAOImpl implements PostDAO {
 
         return $result ?? [];
     }
+
+    public function getPostById(int $post_id): ?Post {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT * FROM posts WHERE post_id = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "i", [$post_id]);
+
+        return $result && count($result) > 0 ? $this->rawDataToPost($result[0]) : null;
+    }
+
+    private function rawDataToPost(array $rawData): Post {
+        return new Post(
+            post_id: $rawData["post_id"],
+            user_id: $rawData["user_id"],
+            reply_to_id: $rawData["reply_to_id"],
+            content: $rawData["content"],
+            image_hash: $rawData["image_hash"],
+            status: $rawData["status"],
+            scheduled_at: $rawData["scheduled_at"],
+            created_at: $rawData["created_at"],
+            updated_at: $rawData["updated_at"],
+        );
+    }
 }

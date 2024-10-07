@@ -10,6 +10,7 @@ use Helpers\MailSender;
 use Helpers\Validator;
 use Models\Follow;
 use Models\Like;
+use Models\Notification;
 use Models\Post;
 use Models\TempUser;
 use Models\User;
@@ -525,6 +526,17 @@ return [
                 throw new Exception("フォロー処理に失敗しました。");
             }
 
+            $notification = new Notification(
+                from_user_id: $authenticatedUser->getUserId(),
+                to_user_id: $user->getUserId(),
+                type: "FOLLOW",
+            );
+            $notificationDao = DAOFactory::getNotificationDAO();
+            $result = $notificationDao->create($notification);
+            if (!$result) {
+                throw new Exception("通知作成処理に失敗しました。");
+            }
+
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -1007,6 +1019,12 @@ return [
 
             // 返信ポストかどうかを判定
             $isReply = intval($_POST["post-reply-to-id"] ?? "0") !== 0;
+            if ($isReply) {
+                $parentPost = $postDao->getPostById($_POST["post-reply-to-id"]);
+                if ($parentPost === null) {
+                    throw new Exception("返信先のポストが存在しません。");
+                }
+            }
 
             // 新しいPostオブジェクトを作成
             $status = "POSTED";
@@ -1017,7 +1035,7 @@ return [
                 content: $_POST["post-content"],
                 status: $status,
                 user_id: $user->getUserId(),
-                reply_to_id: $isReply ? intval($_POST["post-reply-to-id"]) : null,
+                reply_to_id: $isReply ? $parentPost->getPostId() : null,
             );
             if ($postImageUploaded) $post->setImageHash($imageHash);
             if ($status === "SCHEDULED") $post->setScheduledAt($_POST["post-scheduled-at"]);
@@ -1025,6 +1043,21 @@ return [
             // ポストを作成
             $success = $postDao->create($post);
             if (!$success) throw new Exception("ポスト作成に失敗しました。");
+
+            // 通知を作成
+            if ($isReply) {
+                $notification = new Notification(
+                    from_user_id: $user->getUserId(),
+                    to_user_id: $parentPost->getUserId(),
+                    source_id: $parentPost->getPostId(),
+                    type: "REPLY",
+                );
+                $notificationDao = DAOFactory::getNotificationDAO();
+                $result = $notificationDao->create($notification);
+                if (!$result) {
+                    throw new Exception("通知作成処理に失敗しました。");
+                }
+            }
 
             $message = $isReply ? "返信しました。" : "ポストを作成しました。";
             if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
@@ -1175,17 +1208,34 @@ return [
             if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
 
             $likeDao = DAOFactory::getLikeDAO();
+            $postDao = DAOFactory::getPostDAO();
+
             $postId = $_POST["post_id"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
             $exists = $likeDao->exists($authenticatedUser->getUserId(), $postId);
             if ($exists) throw new Exception("既にいいねしています。");
 
+            $post = $postDao->getPostById($postId);
+            if ($post === null) throw new Exception("いいねするポストが存在しません。");
+
             $like = new Like(
                 user_id: $authenticatedUser->getUserId(),
-                post_id: $postId,
+                post_id: $post->getPostId(),
             );
             $likeDao->like($like);
+
+            $notification = new Notification(
+                from_user_id: $authenticatedUser->getUserId(),
+                to_user_id: $post->getUserId(),
+                source_id: $post->getPostId(),
+                type: "LIKE",
+            );
+            $notificationDao = DAOFactory::getNotificationDAO();
+            $result = $notificationDao->create($notification);
+            if (!$result) {
+                throw new Exception("通知作成処理に失敗しました。");
+            }
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {
@@ -1210,6 +1260,81 @@ return [
             if (!$exists) throw new Exception("既にいいねされていません。");
 
             $likeDao->unlike($authenticatedUser->getUserId(), $postId);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+
+    // 通知関連
+    "/api/notifications/list" => Route::create("/api/notifications/list", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $notificationDao = DAOFactory::getNotificationDAO();
+
+            $limit = $_POST["limit"] ?? 30;
+            $offset = $_POST["offset"] ?? 0;
+            $userId = $authenticatedUser->getUserId();
+            $notifications = $notificationDao->getUserNotifications($userId, $limit, $offset);
+
+            // "SELECT n.type, n.source_id, n.is_read, fu.name, fu.username, fu.profile_image_hash " .
+            for ($i = 0; $i < count($notifications); $i++) {
+                if ($notifications[$i]["type"] === "LIKE") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+                else if ($notifications[$i]["type"] === "FOLLOW") $notificationPath = "/user?un=" . $notifications[$i]["username"];
+                else if ($notifications[$i]["type"] === "REPLY") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+                else $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+
+                $notifications[$i] = [
+                    "notificationId" => $notifications[$i]["notification_id"],
+                    "notificationPath" => $notificationPath,
+                    "type" => $notifications[$i]["type"],
+                    "isRead" => $notifications[$i]["is_read"],
+                    "fromUserName" => $notifications[$i]["name"],
+                    "fromUserProfileImagePath" => $notifications[$i]["profile_image_hash"] ?
+                        PROFILE_IMAGE_FILE_DIR . $notifications[$i]["profile_image_hash"] :
+                        PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "fromUserProfilePath" => "/user?un=" . $notifications[$i]["username"],
+                ];
+            }
+
+            $resBody["notifications"] = $notifications;
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/notifications/read" => Route::create("/api/notifications/read", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $notificationId = $_POST["notification_id"];
+            $notificationDao = DAOFactory::getNotificationDAO();
+            $notification = $notificationDao->getNotificationById($notificationId);
+            if ($notification === null) throw new Exception("無効な通知です。");
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            if ($notification->getToUserId() !== $authenticatedUser->getUserId()) throw new Exception("通知に紐づくユーザーではありません。");
+
+            $notification->setIsRead(true);
+            $result = $notificationDao->updateIsRead($notification);
+            if (!$result) {
+                throw new Exception("通知確認ステータス更新処理に失敗しました。");
+            }
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

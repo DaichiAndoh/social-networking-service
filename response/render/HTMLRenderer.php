@@ -2,6 +2,7 @@
 
 namespace Response\Render;
 
+use Database\DataAccess\DAOFactory;
 use Helpers\Authenticator;
 use Response\HTTPRenderer;
 
@@ -42,6 +43,10 @@ class HTMLRenderer implements HTTPRenderer {
     private function getHeader(): string {
         ob_start();
         $user = Authenticator::getAuthenticatedUser();
+        $notificationCount = 0;
+        if ($user !== null) {
+            $notificationCount = DAOFactory::getNotificationDAO()->getUserUnreadNotificationCount($user->getUserId());
+        }
         if ($user !== null) {
             $profileImagePath = $user->getProfileImageHash() ?
                 PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
