@@ -13,11 +13,17 @@
                                 <span class="fs-5 ms-2 d-none d-sm-inline">ホーム</span>
                             </a>
                         </li>
-                        <li class="nav-item mb-2">
-                            <a href="#" class="nav-link p-0 d-flex align-items-center text-light">
+                        <li class="nav-item mb-2 position-relative">
+                            <a href="/notifications" class="nav-link p-0 d-flex align-items-center text-light">
                                 <ion-icon name="notifications-outline"></ion-icon>
                                 <span class="fs-5 ms-2 d-none d-sm-inline">通知</span>
                             </a>
+                            <?php if ($notificationCount > 0): ?>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <?= $notificationCount > 99 ? "99+" : $notificationCount ?>
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                            <?php endif; ?>
                         </li>
                         <li class="nav-item mb-2">
                             <a href="#" class="nav-link p-0 d-flex align-items-center text-light">

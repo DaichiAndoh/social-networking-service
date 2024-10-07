@@ -103,4 +103,9 @@ return [
     "/post" => Route::create("/post", function(): HTTPRenderer {
         return new HTMLRenderer("page/post/detail", []);
     })->setMiddleware(["auth", "email_verified"]),
+
+    // 通知関連
+    "/notifications" => Route::create("/notifications", function(): HTTPRenderer {
+        return new HTMLRenderer("page/notifications/notifications", []);
+    })->setMiddleware(["auth", "email_verified"]),
 ];
