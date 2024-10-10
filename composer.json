@@ -9,7 +9,8 @@
             "Models\\": "Models/",
             "Response\\": "Response/",
             "Routing\\": "Routing/",
-            "Types\\": "Types/"
+            "Types\\": "Types/",
+            "Ws\\": "Ws/"
         }
     },
     "require": {

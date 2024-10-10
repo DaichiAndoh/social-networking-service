@@ -1291,7 +1291,7 @@ return [
                 if ($notifications[$i]["type"] === "LIKE") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
                 else if ($notifications[$i]["type"] === "FOLLOW") $notificationPath = "/user?un=" . $notifications[$i]["username"];
                 else if ($notifications[$i]["type"] === "REPLY") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
-                else $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+                else $notificationPath = "/messages/chat?un=" . $notifications[$i]["username"];
 
                 $notifications[$i] = [
                     "notificationId" => $notifications[$i]["notification_id"],
@@ -1460,6 +1460,30 @@ return [
                 ];
             }
             $resBody["messages"] = $messages;
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/messages/chat/token" => Route::create("/api/messages/chat/token", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $tun = $_POST["username"];
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $fun = $authenticatedUser->getUsername();
+            $token = Hasher::createHash($fun . $tun);
+
+            $resBody["fun"] = $fun;
+            $resBody["tun"] = $tun;
+            $resBody["token"] = $token;
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

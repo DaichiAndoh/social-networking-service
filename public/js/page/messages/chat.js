@@ -72,10 +72,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
   await loadMessages();
 
-  function createMessageEl(message, parent) {
+  function createMessageEl(message, parent, direction = "start") {
     const div = document.createElement("div");
     const innerDiv = document.createElement("div");
-    innerDiv.textContent = message.content;
+    innerDiv.innerText = message.content;
     innerDiv.style.maxWidth = "60%";
 
     if (message.isMyMessage) {
@@ -87,7 +87,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     div.appendChild(innerDiv);
-    parent.prepend(div);
+    if (direction === "start") parent.prepend(div);
+    else parent.append(div);
   }
 
 
@@ -116,4 +117,82 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
   });
+
+
+  /**
+   * 送信ボタンのdisabled切り替え処理
+   */
+  const messageInput = document.getElementById("message-input");
+  const btn = document.getElementById("send-button");
+  messageInput.addEventListener("input", (event) => {
+    if (event.target.value.trim() === "") {
+      btn.classList.add("disabled");
+    } else {
+      btn.classList.remove("disabled");
+    }
+  });
+
+
+  /**
+   * WebSocket関連処理
+   */
+  async function connectToWsServer() {
+    let fun = "";
+    let tun = "";
+    let token = "";
+
+    // WebSocket用認証トークン取得
+    const formData = new FormData();
+    formData.append("username", username);
+    const resData = await apiPost("/api/messages/chat/token", formData);
+    if (resData.success) {
+      fun = resData.fun ?? "";
+      tun = resData.tun ?? "";
+      token = resData.token ?? "";
+    } else {
+      if (resData.error) {
+        alert(resData.error);
+      }
+    }
+
+    if (!fun || !tun || !token) alert("エラーが発生しました。");
+
+    // WebSocketサーバー接続
+    const conn = new WebSocket(`ws://localhost:8080?fun=${fun}&tun=${tun}&t=${token}`);
+
+    conn.addEventListener("open", (event) => {});
+
+    conn.addEventListener("message", (event) => {
+      const message = JSON.parse(event.data);
+      createMessageEl(message, listEl, "end");
+      offset++;
+      resetChat();
+    });
+
+    conn.addEventListener("error", (error) => {
+      console.error(error);
+    });
+
+    conn.addEventListener("close", (event) => {});
+
+    return conn;
+  }
+  // WebSocket接続, 初期化
+  const wsConn = await connectToWsServer();
+
+  // メッセージ送信
+  btn.addEventListener("click", (event) => {
+    const content = messageInput.value;
+    wsConn.send(JSON.stringify({ content }));
+  });
+
+  // メッセージ送信完了後の処理
+  function resetChat() {
+    // 入力欄をクリア
+    messageInput.value = "";
+
+    // チャットスクロールを最下部に移動
+    const wrapper = document.getElementById("messages-wrapper");
+    wrapper.scrollTop = wrapper.scrollHeight;
+  }
 });

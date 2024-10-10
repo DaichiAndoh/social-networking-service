@@ -22,8 +22,8 @@
     </div>
 
     <div class="input-group px-3">
-        <input type="text" class="form-control" placeholder="新しいメッセージを作成" aria-label="新しいメッセージを作成" aria-describedby="send-button">
-        <button class="btn btn-outline-primary" type="button" id="send-button">送信</button>
+        <textarea id="message-input" class="form-control p-2" rows="1" placeholder="新しいメッセージを作成" style="resize: none;"></textarea>
+        <button class="btn btn-primary disabled" type="button" id="send-button">送信</button>
     </div>
 </div>
 
