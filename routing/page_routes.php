@@ -108,4 +108,12 @@ return [
     "/notifications" => Route::create("/notifications", function(): HTTPRenderer {
         return new HTMLRenderer("page/notifications/notifications", []);
     })->setMiddleware(["auth", "email_verified"]),
+
+    // メッセージ関連
+    "/messages" => Route::create("/messages", function(): HTTPRenderer {
+        return new HTMLRenderer("page/messages/users", []);
+    })->setMiddleware(["auth", "email_verified"]),
+    "/messages/chat" => Route::create("/messages/chat", function(): HTTPRenderer {
+        return new HTMLRenderer("page/messages/chat", []);
+    })->setMiddleware(["auth", "email_verified"]),
 ];

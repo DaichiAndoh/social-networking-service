@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       case "MESSAGE":
         const chatIcon = document.createElement("ion-icon");
         chatIcon.setAttribute("name", "chatbox-ellipses");
+        chatIcon.style.color = "#CCC";
         icon = chatIcon;
 
         text = "さんからメッセージが届きました。"
