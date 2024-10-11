@@ -81,22 +81,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * timeline-wrapperの max-height 設定処理
-   * 初期表示時とウィンドウリサイズ時に max-height を設定
-   */
-  function setMaxHeight() {
-    const timelineWrapper = document.getElementById("timeline-wrapper");
-    const timelineWrapperTop = timelineWrapper.getBoundingClientRect().top; // 要素のトップ位置
-    const windowHeight = window.innerHeight; // ウィンドウの高さ
-
-    // max-height を設定
-    timelineWrapper.style.maxHeight = `${windowHeight - timelineWrapperTop}px`;
-  }
-  setMaxHeight();
-  window.addEventListener("resize", setMaxHeight);
-
-
-  /**
    * timeline-wrapperのスクロール時の処理
    */
   document.getElementById("timeline-wrapper").addEventListener("scroll", async function() {

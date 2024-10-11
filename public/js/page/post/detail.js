@@ -76,22 +76,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * replies-wrapperの max-height 設定処理
-   * 初期表示時とウィンドウリサイズ時に max-height を設定
-   */
-  const repliesWrapper = document.getElementById("replies-wrapper");
-  function setRepliesWrapperMaxHeight() {
-    const repliesWrapperTop = repliesWrapper.getBoundingClientRect().top; // 要素のトップ位置
-    const windowHeight = window.innerHeight; // ウィンドウの高さ
-
-    // max-height を設定
-    repliesWrapper.style.maxHeight = `${windowHeight - repliesWrapperTop}px`;
-  }
-  setRepliesWrapperMaxHeight();
-  window.addEventListener("resize", setRepliesWrapperMaxHeight);
-
-
-  /**
    * replies-wrapperのスクロール時の処理
    */
   repliesWrapper.addEventListener("scroll", async function() {
