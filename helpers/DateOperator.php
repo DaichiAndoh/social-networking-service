@@ -36,4 +36,12 @@ class DateOperator {
             return $dateTime->format($format);
         }
     }
+
+    public static function stringToDatetime(string $dateTimeString): DateTime {
+        return new DateTime($dateTimeString);
+    }
+
+    public static function formatJpDateTime(DateTime $datetime): string {
+        return $datetime->format("Y年n月j日 G時i分");
+    }
 }

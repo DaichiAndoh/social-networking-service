@@ -196,6 +196,21 @@ class PostDAOImpl implements PostDAO {
         return $result ?? [];
     }
 
+    public function getScheduledPosts(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT post_id, content, image_hash, scheduled_at " .
+            "FROM posts " .
+            "WHERE status = 'SCHEDULED' " .
+            "AND user_id = ? " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]);
+
+        return $result ?? [];
+    }
+
     public function getUserLikes(int $user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 

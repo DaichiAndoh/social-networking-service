@@ -979,8 +979,8 @@ return [
                 !Validator::validateStrLen($_POST["post-content"], Post::$minLens["content"], Post::$maxLens["content"])
             ) $fieldErrors["post-content"] = sprintf(
                 "%s文字以上、%s文字以下で入力してください。",
-                User::$minLens["content"],
-                User::$maxLens["content"],
+                Post::$minLens["content"],
+                Post::$maxLens["content"],
             );
 
             $postImageUploaded = $_FILES["post-image"]["error"] === UPLOAD_ERR_OK;
@@ -1262,6 +1262,42 @@ return [
             if (!$exists) throw new Exception("既にいいねされていません。");
 
             $likeDao->unlike($authenticatedUser->getUserId(), $postId);
+
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_auth", "api_email_verified"]),
+    "/api/post/scheduled_posts" => Route::create("/api/post/scheduled_posts", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            // リクエストメソッドがPOSTかどうかをチェック
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
+
+            $limit = $_POST["limit"];
+            $offset = $_POST["offset"];
+
+            $authenticatedUser = Authenticator::getAuthenticatedUser();
+            $postDao = DAOFactory::getPostDAO();
+            $scheduledPosts = $postDao->getScheduledPosts($authenticatedUser->getUserId(), $limit, $offset);
+
+            $resBody["scheduledPosts"] = array_map(function($post) {
+                return [
+                    "postId" => $post["post_id"],
+                    "content" => $post["content"],
+                    "imagePath" => $post["image_hash"] ?
+                        POST_ORIGINAL_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "thumbnailPath" => $post["image_hash"] ?
+                        POST_THUMBNAIL_IMAGE_FILE_DIR . $post["image_hash"] :
+                        "",
+                    "scheduledAt" => DateOperator::formatJpDateTime(DateOperator::stringToDatetime($post["scheduled_at"])),
+                ];
+            }, $scheduledPosts);
 
             return new JSONRenderer($resBody);
         } catch (Exception $e) {

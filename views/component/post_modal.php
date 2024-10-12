@@ -42,7 +42,7 @@
                                 data-td-target-toggle="nearest"
                             >
                                 <input
-                                    id="post-datetimepicker-input"
+                                    id="post-scheduled-at"
                                     type="text"
                                     class="form-control"
                                     data-td-target="#post-datetimepicker"
@@ -55,6 +55,7 @@
                                 >
                                     <i class="fas fa-calendar"></i>
                                 </span>
+                                <div id="post-scheduled-at-error-msg" class="invalid-feedback"></div>
                             </div>
 
                             <div class="mt-5 text-end">
@@ -63,13 +64,49 @@
                                 <button id="post-schedule-btn" type="submit" class="btn btn-primary d-none">予約</button>
                             </div>
                         </div>
-
-                        <div id="post-draft-block" class="d-none">
-                        </div>
-
-                        <div id="post-schedule-block" class="d-none">
-                        </div>
                     </form>
+
+                    <div id="post-draft-block" class="d-none">
+                    </div>
+
+                    <div id="post-schedule-block" class="d-none">
+                        <div id="scheduled-post-not-exists" class="py-3 text-center d-none">
+                            <h6>予約されているポストはありません。</h6>
+                        </div>
+
+                        <div id="scheduled-post-list-wrapper" style="max-height: 50vh; overflow-y: scroll;">
+                            <div id="scheduled-post-list">
+                            </div>
+
+                            <div id="spinner" class="text-center d-none my-2">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="scheduled-post-detail" class="d-none">
+                            <div class="p-1">
+                                <div class="text-dark">
+                                    <ion-icon id="return-icon" name="arrow-back-outline" class="fs-4" style="cursor: pointer;"></ion-icon>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 mb-1 text-secondary">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                    <small id="detail-scheduled-at"></small>
+                                </div>
+                                <div id="detail-content" class="ms-1">
+                                </div>
+                                <div class="text-center">
+                                    <a id="detail-image-link" class="d-none" href="#" target="_blank" rel="noopener noreferrer">
+                                        <img id="detail-image" class="border" src="#" alt="ポスト画像">
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <button id="scheduled-post-delete-btn" type="button" class="btn btn-danger">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
