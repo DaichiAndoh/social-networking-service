@@ -46,6 +46,16 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
+    public function postScheduledPosts(): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "UPDATE posts SET status = 'POSTED', scheduled_at = NULL WHERE status = 'SCHEDULED' AND scheduled_at <= CONVERT_TZ(NOW(), '+00:00', '+09:00')";
+
+        $result = $mysqli->prepareAndExecute($query, "", []);
+
+        return $result;
+    }
+
     public function getPost(int $post_id, int $authenticated_user_id): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
