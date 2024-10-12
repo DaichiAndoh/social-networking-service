@@ -630,7 +630,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -678,7 +678,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -735,7 +735,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -792,7 +792,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -849,7 +849,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -900,7 +900,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -949,7 +949,7 @@ return [
         } catch (Exception $e) {
             error_log($e->getMessage());
             $resBody["success"] = false;
-            $resBody["error"] = $e->getMessage();
+            $resBody["error"] = "エラーが発生しました。";
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_auth", "api_email_verified"]),
@@ -1045,7 +1045,7 @@ return [
             if (!$success) throw new Exception("ポスト作成に失敗しました。");
 
             // 通知を作成
-            if ($isReply) {
+            if ($isReply && $user->getUserId() !== $parentPost->getUserId()) {
                 $notification = new Notification(
                     from_user_id: $user->getUserId(),
                     to_user_id: $parentPost->getUserId(),
@@ -1225,16 +1225,18 @@ return [
             );
             $likeDao->like($like);
 
-            $notification = new Notification(
-                from_user_id: $authenticatedUser->getUserId(),
-                to_user_id: $post->getUserId(),
-                source_id: $post->getPostId(),
-                type: "LIKE",
-            );
-            $notificationDao = DAOFactory::getNotificationDAO();
-            $result = $notificationDao->create($notification);
-            if (!$result) {
-                throw new Exception("通知作成処理に失敗しました。");
+            if ($authenticatedUser->getUserId() !== $post->getUserId()) {
+                $notification = new Notification(
+                    from_user_id: $authenticatedUser->getUserId(),
+                    to_user_id: $post->getUserId(),
+                    source_id: $post->getPostId(),
+                    type: "LIKE",
+                );
+                $notificationDao = DAOFactory::getNotificationDAO();
+                $result = $notificationDao->create($notification);
+                if (!$result) {
+                    throw new Exception("通知作成処理に失敗しました。");
+                }
             }
 
             return new JSONRenderer($resBody);
@@ -1286,7 +1288,6 @@ return [
             $userId = $authenticatedUser->getUserId();
             $notifications = $notificationDao->getUserNotifications($userId, $limit, $offset);
 
-            // "SELECT n.type, n.source_id, n.is_read, fu.name, fu.username, fu.profile_image_hash " .
             for ($i = 0; $i < count($notifications); $i++) {
                 if ($notifications[$i]["type"] === "LIKE") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
                 else if ($notifications[$i]["type"] === "FOLLOW") $notificationPath = "/user?un=" . $notifications[$i]["username"];

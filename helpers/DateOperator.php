@@ -26,10 +26,14 @@ class DateOperator {
             // 1日未満
             $hours = floor($seconds / 3600);
             return $hours . "時間前";
-        } else {
-            // それ以上
+        } elseif ($seconds < 86400 * 7) {
+            // 1週間未満
             $days = floor($seconds / 86400);
             return $days . "日前";
+        } else {
+            // 1週間以上の場合は日付を表示
+            $format = $dateTime->format("Y") === $now->format("Y") ? "n月j日" : "Y年n月j日";
+            return $dateTime->format($format);
         }
     }
 }

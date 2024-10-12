@@ -98,22 +98,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /**
-   * list-wrapperの max-height 設定処理
-   * 初期表示時とウィンドウリサイズ時に max-height を設定
-   */
-  function setMaxHeight() {
-    const listWrapper = document.getElementById("list-wrapper");
-    const listWrapperTop = listWrapper.getBoundingClientRect().top; // 要素のトップ位置
-    const windowHeight = window.innerHeight; // ウィンドウの高さ
-
-    // max-height を設定
-    listWrapper.style.maxHeight = `${windowHeight - listWrapperTop}px`;
-  }
-  setMaxHeight();
-  window.addEventListener("resize", setMaxHeight);
-
-
-  /**
    * list-wrapperのスクロール時の処理
    */
   document.getElementById("list-wrapper").addEventListener("scroll", async function() {
