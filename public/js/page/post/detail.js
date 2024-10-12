@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   /**
    * replies-wrapperのスクロール時の処理
    */
-  repliesWrapper.addEventListener("scroll", async function() {
+  document.getElementById("replies-wrapper").addEventListener("scroll", async function() {
     const content = this;
 
     // 要素がスクロールの最下部に達したかを確認
