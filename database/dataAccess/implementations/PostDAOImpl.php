@@ -46,6 +46,16 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
+    public function postScheduledPosts(): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "UPDATE posts SET status = 'POSTED', scheduled_at = NULL WHERE status = 'SCHEDULED' AND scheduled_at <= CONVERT_TZ(NOW(), '+00:00', '+09:00')";
+
+        $result = $mysqli->prepareAndExecute($query, "", []);
+
+        return $result;
+    }
+
     public function getPost(int $post_id, int $authenticated_user_id): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
@@ -192,6 +202,21 @@ class PostDAOImpl implements PostDAO {
             "LIMIT ? OFFSET ?";
 
         $result = $mysqli->prepareAndFetchAll($query, "iiiiii", [$user_id, $user_id, $user_id, $user_id, $limit, $offset]) ?? null;
+
+        return $result ?? [];
+    }
+
+    public function getScheduledPosts(int $user_id, int $limit, int $offset): array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query =
+            "SELECT post_id, content, image_hash, scheduled_at " .
+            "FROM posts " .
+            "WHERE status = 'SCHEDULED' " .
+            "AND user_id = ? " .
+            "LIMIT ? OFFSET ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]);
 
         return $result ?? [];
     }

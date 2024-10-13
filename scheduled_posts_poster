@@ -1,0 +1,14 @@
+<?php
+
+require __DIR__ . "/vendor/autoload.php";
+
+use Database\DataAccess\DAOFactory;
+
+$postDao = DAOFactory::getPostDAO();
+$result = $postDao->postScheduledPosts();
+
+if ($result) {
+    error_log("予約ポストの投稿処理に成功しました。");
+} else {
+    error_log("予約ポストの投稿処理に失敗しました。");
+}
