@@ -40,6 +40,47 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   /**
    * ポスト作成モーダル
+   * ファイルinput値変更時の処理
+   */
+  const postImageInput = document.getElementById("post-image");
+  postImageInput.addEventListener("change", function(event) {
+    const file = event.target.files[0]; // アップロードされたファイルを取得
+
+    if (file && file.type.startsWith("image/")) { // ファイルが画像の場合のみ処理
+      const reader = new FileReader(); // FileReaderオブジェクトを作成
+
+      reader.onload = function(e) {
+        const postImagePreview = document.getElementById("post-image-preview");
+        postImagePreview.src = e.target.result; // 読み込んだ画像をプレビューに設定
+
+        const postImagePreviewWrapper = document.getElementById("post-image-preview-wrapper");
+        postImagePreviewWrapper.classList.add("d-flex");
+        postImagePreviewWrapper.classList.remove("d-none");
+      };
+
+      reader.readAsDataURL(file); // ファイルをデータURLとして読み込む
+    }
+  });
+
+
+  /**
+   * ポスト作成モーダル
+   * 選択された画像削除アイコンクリック時の処理
+   */
+  const postImageDeleteIcon = document.getElementById("post-image-delete-icon");
+  postImageDeleteIcon.addEventListener("click", function(event) {
+    postImageInput.value = "";
+    const postImagePreview = document.getElementById("post-image-preview");
+    postImagePreview.src = "";
+
+    const postImagePreviewWrapper = document.getElementById("post-image-preview-wrapper");
+    postImagePreviewWrapper.classList.add("d-none");
+    postImagePreviewWrapper.classList.remove("d-flex");
+  });
+
+
+  /**
+   * ポスト作成モーダル
    * 作成ボタンクリック時の処理
    */
   const form = document.getElementById("create-post-form");

@@ -30,6 +30,13 @@
                                 <label for="post-image" class="form-label">画像</label>
                                 <input type="file" class="form-control" id="post-image" name="post-image" accept=".jpg, .jpeg, .png, .gif">
                                 <div id="post-image-error-msg" class="invalid-feedback"></div>
+                                <div id="post-image-preview-wrapper" class="d-none justify-content-center mt-3">
+                                    <div class="text-center">
+                                        <p class="p-0 m-0">選択された画像</p>
+                                        <img id="post-image-preview" src="" alt="ポスト画像プレビュー" class="border" style="width: 100%; max-width: 150px;">
+                                    </div>
+                                    <ion-icon id="post-image-delete-icon" name="close-outline" class="fs-4" style="cursor: pointer;"></ion-icon>
+                                </div>
                             </div>
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" role="switch" id="post-schedule">
