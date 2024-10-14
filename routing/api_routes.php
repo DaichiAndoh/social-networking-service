@@ -3,6 +3,7 @@
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticator;
+use Helpers\Crypter;
 use Helpers\DateOperator;
 use Helpers\Hasher;
 use Helpers\ImageOperator;
@@ -1493,7 +1494,7 @@ return [
 
             for ($i = 0; $i < count($messages); $i++) {
                 $messages[$i] = [
-                    "content" => $messages[$i]["content"],
+                    "content" => Crypter::decrypt($messages[$i]["content"]),
                     "isMyMessage" => $messages[$i]["from_user_id"] === $authenticatedUser->getUserId(),
                 ];
             }

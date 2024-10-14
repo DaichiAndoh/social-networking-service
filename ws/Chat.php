@@ -5,7 +5,9 @@ namespace Ws;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Database\DataAccess\DAOFactory;
+use Helpers\Crypter;
 use Helpers\Hasher;
+use Helpers\Validator;
 use Models\Message;
 use Models\Notification;
 
@@ -50,9 +52,9 @@ class Chat implements MessageComponentInterface {
         $tun = $chatUsers["tun"];
         $rawData = json_decode($data, true);
         $rawData["content"] = trim($rawData["content"]);
-        if (!$rawData["content"]) {
+        if (!Validator::validateStrLen($rawData["content"], Message::$minLens["content"], Message::$maxLens["content"])) {
             throw new \Exception("リクエストデータが不適切です。");
-        }
+        };
 
         // メッセージをDBに登録
         $userDao = DAOFactory::getUserDao();
@@ -67,7 +69,7 @@ class Chat implements MessageComponentInterface {
         $message = new Message(
             from_user_id: $fromUser->getUserId(),
             to_user_id: $toUser->getUserId(),
-            content: $rawData["content"],
+            content: Crypter::encrypt($rawData["content"]),
         );
         $result = $messageDao->create($message);
         if (!$result) {

@@ -12,7 +12,7 @@ class CreateMessagesTable implements SchemaMigration {
                 message_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                 from_user_id INT UNSIGNED NOT NULL,
                 to_user_id INT UNSIGNED NOT NULL,
-                content VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (from_user_id) REFERENCES users(user_id) ON DELETE CASCADE,
                 FOREIGN KEY (to_user_id) REFERENCES users(user_id) ON DELETE CASCADE

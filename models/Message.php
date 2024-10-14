@@ -8,6 +8,14 @@ use Models\Traits\GenericModel;
 class Message implements Model {
     use GenericModel;
 
+    public static $minLens = [
+        "content" => 1,
+    ];
+
+    public static $maxLens = [
+        "content" => 200,
+    ];
+
     public function __construct(
         private int $from_user_id,
         private int $to_user_id,
