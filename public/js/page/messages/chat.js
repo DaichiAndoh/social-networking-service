@@ -55,12 +55,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         offset += limit;
       } else {
         loadAll = true;
-
-        if (offset === 0) {
-          const notExistsLabel = document.getElementById("messages-not-exists");
-          notExistsLabel.classList.remove("d-none");
-          return;
-        }
       }
 
       spinner.classList.add("d-none");
@@ -125,10 +119,17 @@ document.addEventListener("DOMContentLoaded", async function () {
   const messageInput = document.getElementById("message-input");
   const btn = document.getElementById("send-button");
   messageInput.addEventListener("input", (event) => {
-    if (event.target.value.trim() === "") {
+    const value = event.target.value.trim();
+    if (value.length === 0 || value.length > 200) {
       btn.classList.add("disabled");
+      if (value.length) {
+        setFormValidation(messageInput.id, "メッセージは200文字以下で入力してください。");
+      }
     } else {
       btn.classList.remove("disabled");
+      if (messageInput.classList.contains("is-invalid")) {
+        resetFormValidations();
+      }
     }
   });
 

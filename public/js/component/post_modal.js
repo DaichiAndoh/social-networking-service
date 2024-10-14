@@ -16,19 +16,19 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   const scheduleSwicher = document.getElementById("post-schedule");
   const datetimepicker = document.getElementById("post-datetimepicker");
-  const draftBtn = document.getElementById("post-draft-btn");
+  // const draftBtn = document.getElementById("post-draft-btn");
   const createBtn = document.getElementById("post-create-btn");
   const scheduleBtn = document.getElementById("post-schedule-btn");
 
   function toggleUploadBlock() {
     if (scheduleSwicher.checked) {
       datetimepicker.classList.remove("d-none");
-      draftBtn.classList.add("d-none");
+      // draftBtn.classList.add("d-none");
       createBtn.classList.add("d-none");
       scheduleBtn.classList.remove("d-none");
     } else {
       datetimepicker.classList.add("d-none");
-      draftBtn.classList.remove("d-none");
+      // draftBtn.classList.remove("d-none");
       createBtn.classList.remove("d-none");
       scheduleBtn.classList.add("d-none");
     }
@@ -36,6 +36,47 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   toggleUploadBlock();
   scheduleSwicher.addEventListener("change", toggleUploadBlock);
+
+
+  /**
+   * ポスト作成モーダル
+   * ファイルinput値変更時の処理
+   */
+  const postImageInput = document.getElementById("post-image");
+  postImageInput.addEventListener("change", function(event) {
+    const file = event.target.files[0]; // アップロードされたファイルを取得
+
+    if (file && file.type.startsWith("image/")) { // ファイルが画像の場合のみ処理
+      const reader = new FileReader(); // FileReaderオブジェクトを作成
+
+      reader.onload = function(e) {
+        const postImagePreview = document.getElementById("post-image-preview");
+        postImagePreview.src = e.target.result; // 読み込んだ画像をプレビューに設定
+
+        const postImagePreviewWrapper = document.getElementById("post-image-preview-wrapper");
+        postImagePreviewWrapper.classList.add("d-flex");
+        postImagePreviewWrapper.classList.remove("d-none");
+      };
+
+      reader.readAsDataURL(file); // ファイルをデータURLとして読み込む
+    }
+  });
+
+
+  /**
+   * ポスト作成モーダル
+   * 選択された画像削除アイコンクリック時の処理
+   */
+  const postImageDeleteIcon = document.getElementById("post-image-delete-icon");
+  postImageDeleteIcon.addEventListener("click", function(event) {
+    postImageInput.value = "";
+    const postImagePreview = document.getElementById("post-image-preview");
+    postImagePreview.src = "";
+
+    const postImagePreviewWrapper = document.getElementById("post-image-preview-wrapper");
+    postImagePreviewWrapper.classList.add("d-none");
+    postImagePreviewWrapper.classList.remove("d-flex");
+  });
 
 
   /**
@@ -49,8 +90,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const submitter = event.submitter.id;
     let type = "create";
-    if (submitter === "post-draft-btn") type = "draft";
-    else if (submitter === "post-schedule-btn") type = "schedule";
+    // if (submitter === "post-draft-btn") type = "draft";
+    // else if (submitter === "post-schedule-btn") type = "schedule";
+    if (submitter === "post-schedule-btn") type = "schedule";
 
     const formData = new FormData(form);
     formData.append("type", type);

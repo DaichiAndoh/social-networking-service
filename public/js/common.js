@@ -10,7 +10,7 @@ async function apiPost(url, body) {
 }
 
 async function resetFormValidations() {
-  const invalidInputs = document.querySelectorAll("input.is-invalid");
+  const invalidInputs = document.querySelectorAll("input.is-invalid, textarea.is-invalid");
   invalidInputs.forEach(function(input) {
     input.classList.remove("is-invalid");
   });

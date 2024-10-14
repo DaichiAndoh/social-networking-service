@@ -23,7 +23,8 @@
 
     <div class="input-group px-3">
         <textarea id="message-input" class="form-control p-2" rows="1" placeholder="新しいメッセージを作成" style="resize: none;"></textarea>
-        <button class="btn btn-primary disabled" type="button" id="send-button">送信</button>
+        <button class="btn btn-primary rounded-end disabled" type="button" id="send-button">送信</button>
+        <div id="message-input-error-msg" class="invalid-feedback"></div>
     </div>
 </div>
 

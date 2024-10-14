@@ -51,6 +51,15 @@ class Validator {
                         $fieldErrors[$field] = "パスワードが条件を満たしていません。";
                     }
                     break;
+
+                case ValueType::USERNAME:
+                    if (!(
+                        is_string($value) &&
+                        preg_match("/^[a-zA-Z0-9_]+$/", $value) // 半角英数字とアンダースコアのみを許可
+                    )) {
+                        $fieldErrors[$field] = "ユーザー名が条件を満たしていません。";
+                    }
+                    break;
             }
         }
 
@@ -64,7 +73,7 @@ class Validator {
     }
 
     public static function validateStrLen(string $value, int $min = 1, int $max = 100): bool {
-        $len = strlen($value);
+        $len = mb_strlen($value);
         return $len >= $min && $len <= $max;
     }
 

@@ -3,6 +3,7 @@
 use Database\DataAccess\DAOFactory;
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticator;
+use Helpers\Crypter;
 use Helpers\DateOperator;
 use Helpers\Hasher;
 use Helpers\ImageOperator;
@@ -37,7 +38,7 @@ return [
             // 入力値検証
             $fieldErrors = Validator::validateFields([
                 "name" => ValueType::STRING,
-                "username" => ValueType::STRING,
+                "username" => ValueType::USERNAME,
                 "email" => ValueType::EMAIL,
                 "password" => ValueType::PASSWORD,
                 "confirm-password" => ValueType::PASSWORD,
@@ -1028,8 +1029,9 @@ return [
 
             // 新しいPostオブジェクトを作成
             $status = "POSTED";
-            if ($_POST["type"] === "draft") $status = "SAVED";
-            else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+            // if ($_POST["type"] === "draft") $status = "SAVED";
+            // else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+            if ($_POST["type"] === "schedule") $status = "SCHEDULED";
 
             $post = new Post(
                 content: $_POST["post-content"],
@@ -1060,7 +1062,7 @@ return [
             }
 
             $message = $isReply ? "返信しました。" : "ポストを作成しました。";
-            if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
+            // if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
             if ($status === "SCHEDULED") $message = "ポストを予約しました。";
             FlashData::setFlashData("success", $message);
 
@@ -1492,7 +1494,7 @@ return [
 
             for ($i = 0; $i < count($messages); $i++) {
                 $messages[$i] = [
-                    "content" => $messages[$i]["content"],
+                    "content" => Crypter::decrypt($messages[$i]["content"]),
                     "isMyMessage" => $messages[$i]["from_user_id"] === $authenticatedUser->getUserId(),
                 ];
             }
