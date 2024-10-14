@@ -1028,8 +1028,9 @@ return [
 
             // 新しいPostオブジェクトを作成
             $status = "POSTED";
-            if ($_POST["type"] === "draft") $status = "SAVED";
-            else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+            // if ($_POST["type"] === "draft") $status = "SAVED";
+            // else if ($_POST["type"] === "schedule") $status = "SCHEDULED";
+            if ($_POST["type"] === "schedule") $status = "SCHEDULED";
 
             $post = new Post(
                 content: $_POST["post-content"],
@@ -1060,7 +1061,7 @@ return [
             }
 
             $message = $isReply ? "返信しました。" : "ポストを作成しました。";
-            if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
+            // if ($status === "SAVED") $message = "ポストを下書きに保存しました。";
             if ($status === "SCHEDULED") $message = "ポストを予約しました。";
             FlashData::setFlashData("success", $message);
 

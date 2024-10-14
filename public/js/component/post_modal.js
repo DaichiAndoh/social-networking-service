@@ -16,19 +16,19 @@ document.addEventListener("DOMContentLoaded", async function () {
    */
   const scheduleSwicher = document.getElementById("post-schedule");
   const datetimepicker = document.getElementById("post-datetimepicker");
-  const draftBtn = document.getElementById("post-draft-btn");
+  // const draftBtn = document.getElementById("post-draft-btn");
   const createBtn = document.getElementById("post-create-btn");
   const scheduleBtn = document.getElementById("post-schedule-btn");
 
   function toggleUploadBlock() {
     if (scheduleSwicher.checked) {
       datetimepicker.classList.remove("d-none");
-      draftBtn.classList.add("d-none");
+      // draftBtn.classList.add("d-none");
       createBtn.classList.add("d-none");
       scheduleBtn.classList.remove("d-none");
     } else {
       datetimepicker.classList.add("d-none");
-      draftBtn.classList.remove("d-none");
+      // draftBtn.classList.remove("d-none");
       createBtn.classList.remove("d-none");
       scheduleBtn.classList.add("d-none");
     }
@@ -90,8 +90,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const submitter = event.submitter.id;
     let type = "create";
-    if (submitter === "post-draft-btn") type = "draft";
-    else if (submitter === "post-schedule-btn") type = "schedule";
+    // if (submitter === "post-draft-btn") type = "draft";
+    // else if (submitter === "post-schedule-btn") type = "schedule";
+    if (submitter === "post-schedule-btn") type = "schedule";
 
     const formData = new FormData(form);
     formData.append("type", type);

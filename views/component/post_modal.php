@@ -12,9 +12,9 @@
                             <li class="nav-item">
                                 <a class="nav-link active" href="#" data-target="#post-create-block">作成</a>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="#" data-target="#post-draft-block">下書き</a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-target="#post-schedule-block">予約</a>
                             </li>
@@ -66,15 +66,15 @@
                             </div>
 
                             <div class="mt-5 text-end">
-                                <button id="post-draft-btn" type="submit" class="btn btn-secondary d-none">下書き保存</button>
+                                <!-- <button id="post-draft-btn" type="submit" class="btn btn-secondary d-none">下書き保存</button> -->
                                 <button id="post-create-btn" type="submit" class="btn btn-primary d-none">作成</button>
                                 <button id="post-schedule-btn" type="submit" class="btn btn-primary d-none">予約</button>
                             </div>
                         </div>
                     </form>
 
-                    <div id="post-draft-block" class="d-none">
-                    </div>
+                    <!-- <div id="post-draft-block" class="d-none">
+                    </div> -->
 
                     <div id="post-schedule-block" class="d-none">
                         <div id="scheduled-post-not-exists" class="py-3 text-center d-none">
