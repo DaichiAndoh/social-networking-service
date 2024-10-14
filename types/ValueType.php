@@ -9,4 +9,5 @@ enum ValueType: string {
     case DATETIME = "datetime";
     case EMAIL = "email";
     case PASSWORD = "password";
+    case USERNAME = "username";
 }

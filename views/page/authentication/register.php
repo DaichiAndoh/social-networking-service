@@ -13,6 +13,9 @@
                         <label for="username" class="form-label">ユーザー名</label>
                         <input type="text" class="form-control" id="username" name="username" required>
                         <div id="username-error-msg" class="invalid-feedback"></div>
+                        <div class="form-text">
+                            <p class="m-0">半角英数字またはアンダースコア（ _ ）を使用して設定してください。</p>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">メールアドレス</label>

@@ -38,7 +38,7 @@ return [
             // 入力値検証
             $fieldErrors = Validator::validateFields([
                 "name" => ValueType::STRING,
-                "username" => ValueType::STRING,
+                "username" => ValueType::USERNAME,
                 "email" => ValueType::EMAIL,
                 "password" => ValueType::PASSWORD,
                 "confirm-password" => ValueType::PASSWORD,
