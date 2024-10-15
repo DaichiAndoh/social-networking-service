@@ -29,9 +29,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $userDao = DAOFactory::getUserDAO();
             $tempUserDao = DAOFactory::getTempUserDAO();
 
@@ -129,9 +126,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $userDao = DAOFactory::getUserDAO();
 
             // 入力値検証
@@ -172,9 +166,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             // 検証用URLを作成
             $authenticatedUser = Authenticator::getAuthenticatedUser();
             $queryParameters = [
@@ -203,9 +194,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $userDao = DAOFactory::getUserDAO();
             $tempUserDao = DAOFactory::getTempUserDAO();
 
@@ -266,9 +254,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $userDao = DAOFactory::getUserDAO();
             $tempUserDao = DAOFactory::getTempUserDAO();
 
@@ -344,9 +329,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
@@ -391,9 +373,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $user = Authenticator::getAuthenticatedUser();
             $userDao = DAOFactory::getUserDAO();
 
@@ -494,9 +473,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             if ($username === "") {
                 throw new Exception("パラメータが不適切です。");
@@ -550,9 +526,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             if ($username === "") {
                 throw new Exception("パラメータが不適切です。");
@@ -591,9 +564,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
@@ -639,9 +609,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
@@ -687,9 +654,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postDao = DAOFactory::getPostDAO();
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
@@ -744,9 +708,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postDao = DAOFactory::getPostDAO();
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
@@ -801,9 +762,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postDao = DAOFactory::getPostDAO();
             $username = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
@@ -860,9 +818,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
 
@@ -909,9 +864,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $authenticatedUser = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
 
@@ -960,9 +912,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $user = Authenticator::getAuthenticatedUser();
             $postDao = DAOFactory::getPostDAO();
 
@@ -1079,9 +1028,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postDao = DAOFactory::getPostDAO();
             $postId = $_POST["post_id"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
@@ -1106,9 +1052,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postId = $_POST["postId"];
 
             if ($postId === null) throw new Exception("リクエストデータが不適切です。");
@@ -1156,9 +1099,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $postId = $_POST["postId"];
             $replyLimit = $_POST["replyLimit"];
             $replyOffset = $_POST["replyOffset"];
@@ -1206,9 +1146,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $likeDao = DAOFactory::getLikeDAO();
             $postDao = DAOFactory::getPostDAO();
 
@@ -1253,9 +1190,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $likeDao = DAOFactory::getLikeDAO();
             $postId = $_POST["post_id"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
@@ -1277,9 +1211,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $limit = $_POST["limit"];
             $offset = $_POST["offset"];
 
@@ -1315,9 +1246,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $authenticatedUser = Authenticator::getAuthenticatedUser();
             $notificationDao = DAOFactory::getNotificationDAO();
 
@@ -1358,9 +1286,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $notificationId = $_POST["notification_id"];
             $notificationDao = DAOFactory::getNotificationDAO();
             $notification = $notificationDao->getNotificationById($notificationId);
@@ -1389,9 +1314,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $authenticatedUser = Authenticator::getAuthenticatedUser();
 
             $messageDao = DAOFactory::getMessageDAO();
@@ -1425,9 +1347,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             if ($username === null) {
                 throw new Exception("リクエストデータが不適切です。");
@@ -1465,9 +1384,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $username = $_POST["username"];
             if ($username === null) {
                 throw new Exception("リクエストデータが不適切です。");
@@ -1512,9 +1428,6 @@ return [
         $resBody = ["success" => true];
 
         try {
-            // リクエストメソッドがPOSTかどうかをチェック
-            if ($_SERVER["REQUEST_METHOD"] !== "POST") throw new Exception("リクエストメソッドが不適切です。");
-
             $tun = $_POST["username"];
             $authenticatedUser = Authenticator::getAuthenticatedUser();
             $fun = $authenticatedUser->getUsername();

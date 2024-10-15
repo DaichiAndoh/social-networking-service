@@ -10,8 +10,10 @@ $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 // ルートの読み込み
 if (strpos($path, "/api/") === 0) {
     $routes = include("../routing/api_routes.php");
+    $routeType = "api";
 } else {
     $routes = include("../routing/page_routes.php");
+    $routeType = "ui";
 }
 
 // ルートにパスが存在するかチェック
@@ -23,8 +25,9 @@ if (isset($routes[$path])) {
 
         // ミドルウェア読み込み
         $middlewareRegister = include("../middleware/middleware_register.php");
+        $globalMiddlewares = array_merge($middlewareRegister["global"], $middlewareRegister[$routeType . "-global"]);
         $middlewares = array_merge(
-            $middlewareRegister["global"],
+            $globalMiddlewares,
             array_map(
                 fn ($routeAlias) => $middlewareRegister["aliases"][$routeAlias],
                 $route->getMiddleware()
