@@ -4,6 +4,12 @@ return [
     "global" => [
         \Middleware\GLOBAL\SessionsSetupMiddleware::class,
     ],
+    "ui-global" => [
+        \Middleware\UI\GetMethodRequestMiddleware::class,
+    ],
+    "api-global" => [
+        \Middleware\API\PostMethodRequestMiddleware::class,
+    ],
     "aliases" => [
         // UI
         "signature" => \Middleware\UI\SignatureValidationMiddleware::class,
