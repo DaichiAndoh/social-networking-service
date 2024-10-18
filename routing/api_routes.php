@@ -162,6 +162,30 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
+    "/api/login/guest" => Route::create("/api/login/guest", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            $userDao = DAOFactory::getUserDAO();
+
+            // ゲストユーザー取得
+            $guestUser = $userDao->getGuestUser();
+            if ($guestUser === null) throw new Exception("ゲストユーザーが存在しません。");
+
+            // ゲストユーザーでログイン
+            Authenticator::loginAsUser($guestUser);
+
+            // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
+            FlashData::setFlashData("success", "ログインしました。");
+            $resBody["redirectUrl"] = "/timeline";
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_guest"]),
     "/api/email/verification/resend" => Route::create("/api/email/verification/resend", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
