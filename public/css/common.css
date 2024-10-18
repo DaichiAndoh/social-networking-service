@@ -5,6 +5,8 @@ body {
     word-break: break-all;
 }
 
+
+/* ホバー時アクセションを定義したクラス */
 .hover-action {
     padding: 3px;
 }
@@ -19,4 +21,46 @@ body {
 
 .hover-underline:hover {
     text-decoration: underline;
+}
+
+
+/* トップ画面のタイピングアニメーションを定義したクラス */
+.typing {
+    width: 24ch;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid #444;
+    font-family: monospace;
+    color: #444;
+    animation: typing 2s steps(12), typingEffect .5s step-end infinite alternate;
+}
+
+@keyframes typing {
+    from {
+      width: 0
+    }
+}
+
+@keyframes typingEffect {
+    50% {
+      border-color: transparent
+    }
+}
+
+
+/* トップ画面のログインテキストを定義したクラス */
+.login-label::before,
+.login-label::after {
+    content: "";
+    background-color: #ededf4; /* 横線の色 */
+    height: 1px; /* 横線の高さ */
+    width: 100px; /* 横線の長さ */
+}
+
+.login-label::before {
+    margin-right: 15px;
+}
+
+.login-label::after {
+    margin-left: 15px;
 }
