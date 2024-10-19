@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
   await loadFollower();
 
-  function createFollowerEl(followee, parent) {
+  function createFollowerEl(follower, parent) {
     // 親要素のdiv
     const container = document.createElement("div");
     container.classList.add("d-flex", "align-items-center", "p-1");
@@ -62,12 +62,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       container.style.backgroundColor = "";
     });
     container.addEventListener("click", function() {
-      window.location.href = followee.profilePath;
+      window.location.href = follower.profilePath;
     });
 
     // プロフィール画像のimg
     const img = document.createElement("img");
-    img.src = followee.profileImagePath;
+    img.src = follower.profileImagePath;
     img.alt = "プロフィール画像";
     img.width = 50;
     img.height = 50;
@@ -78,25 +78,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     textContainer.classList.add("ms-3");
     textContainer.style.minWidth = "0";
 
-    // 名前のh6
+    // 名前のdiv, h6
+    const nameDiv = document.createElement("div");
+    nameDiv.classList.add("d-flex", "align-items-center");
+
     const nameEl = document.createElement("h6");
     nameEl.classList.add("m-0");
-    nameEl.textContent = followee.name;
+    nameEl.textContent = follower.name;
     nameEl.style.overflow = "hidden";
     nameEl.style.textOverflow = "ellipsis";
     nameEl.style.whiteSpace = "nowrap";
+    nameDiv.appendChild(nameEl);
+
+    if (follower.userType === "INFLUENCER") {
+      const influencerIcon = document.createElement("ion-icon");
+      influencerIcon.setAttribute("name", "shield-checkmark");
+      influencerIcon.style.color = "#dbbf4b";
+      nameDiv.appendChild(influencerIcon);
+    }
 
     // ユーザー名のp
     const usernameEl = document.createElement("p");
     usernameEl.id = "profile-username";
     usernameEl.classList.add("m-0", "text-secondary", "fw-light");
-    usernameEl.textContent = "@" + followee.username;
+    usernameEl.textContent = "@" + follower.username;
     usernameEl.style.overflow = "hidden";
     usernameEl.style.textOverflow = "ellipsis";
     usernameEl.style.whiteSpace = "nowrap";
 
     // h6とpをdivの子要素に追加
-    textContainer.appendChild(nameEl);
+    textContainer.appendChild(nameDiv);
     textContainer.appendChild(usernameEl);
 
     // imgとdivを親要素のdivに追加

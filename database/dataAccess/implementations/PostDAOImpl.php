@@ -64,7 +64,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE reply_to_id = ? GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
@@ -85,7 +85,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
@@ -109,7 +109,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE reply_to_id IS NOT NULL GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
@@ -135,7 +135,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN follows f ON u.user_id = f.followee_id " .
@@ -162,7 +162,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE user_id = ? AND reply_to_id IS NOT NULL GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
@@ -188,7 +188,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE user_id = ? AND reply_to_id IS NOT NULL GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
@@ -229,7 +229,7 @@ class PostDAOImpl implements PostDAO {
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
-            "u.name, u.username, u.profile_image_hash " .
+            "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE user_id = ? AND reply_to_id IS NOT NULL GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .

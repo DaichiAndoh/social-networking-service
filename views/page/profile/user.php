@@ -25,7 +25,10 @@
         </div>
 
         <div>
-            <h5 id="profile-name" class="m-0"></h5>
+            <div class="d-flex align-items-center">
+                <h5 id="profile-name" class="m-0"></h5>
+                <ion-icon id="profile-influencer-icon" name="shield-checkmark" class="d-none" style="color: #dbbf4b;"></ion-icon>
+            </div>
             <p id="profile-username" class="m-0 text-secondary fw-light"></p>
             <p id="follower-label" class="m-0 text-secondary fw-light d-none">
                 <small class="bg-light p-1 rounded">フォローされています</small>
