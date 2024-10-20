@@ -35,7 +35,7 @@ class MessageDAOImpl implements MessageDAO {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
-            "SELECT u.user_id, u.name, u.username, u.profile_image_hash FROM messages m " .
+            "SELECT u.user_id, u.name, u.username, u.profile_image_hash, u.type FROM messages m " .
             "INNER JOIN users u ON u.user_id = m.from_user_id OR u.user_id = m.to_user_id " .
             "WHERE m.from_user_id = ? " .
             "OR m.to_user_id = ? " .

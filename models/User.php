@@ -22,10 +22,13 @@ class User implements Model {
         "profile_text" => 160,
     ];
 
+    private static $typeValues = ["USER", "GUEST", "INFLUENCER"];
+
     public function __construct(
         private string $name,
         private string $username,
         private string $email,
+        private string $type = "user",
         private ?int $user_id = null,
         private ?string $profile_text = null,
         private ?string $profile_image_hash = null,
@@ -78,8 +81,18 @@ class User implements Model {
         return $this->profile_image_hash;
     }
 
-    public function setProfileImageHash(?string $profile_image_hash): void {
+    public function setProfileImageHash(string $profile_image_hash): void {
         $this->profile_image_hash = $profile_image_hash;
+    }
+
+    public function getType(): ?string {
+        return $this->type;
+    }
+
+    public function setType(string $type): void {
+        if (in_array($type, User::$typeValues)) {
+            $this->type = $type;
+        }
     }
 
     public function getEmailConfirmedAt(): ?string {

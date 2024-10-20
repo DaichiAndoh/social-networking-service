@@ -61,7 +61,7 @@ function createPostEl(post, parent) {
 
   const userLink = document.createElement("a");
   userLink.href = post.profilePath;
-  userLink.classList.add("text-black", "hover-underline");
+  userLink.classList.add("text-black", "hover-underline", "d-flex", "align-items-center");
 
   const nameSpan = document.createElement("span");
   nameSpan.classList.add("fw-semibold", "fs-6");
@@ -71,8 +71,20 @@ function createPostEl(post, parent) {
   usernameSpan.classList.add("fw-light", "text-secondary");
   usernameSpan.innerText = `@${post.username}・${post.postedAt}`;
 
-  userLink.appendChild(nameSpan);
-  userLink.appendChild(usernameSpan);
+  /** インフルエンサーの場合は名前の後にバッチアイコンをつける */
+  if (post.userType === "INFLUENCER") {
+    const influencerIcon = document.createElement("ion-icon");
+    influencerIcon.setAttribute("name", "shield-checkmark");
+    influencerIcon.classList.add("me-1");
+    influencerIcon.style.color = "#dbbf4b";
+
+    userLink.appendChild(nameSpan);
+    userLink.appendChild(influencerIcon);
+    userLink.appendChild(usernameSpan);
+  } else {
+    userLink.appendChild(nameSpan);
+    userLink.appendChild(usernameSpan);
+  }
 
   const dropdownDiv = document.createElement("div");
   dropdownDiv.classList.add("dropdown");

@@ -67,13 +67,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     textContainer.classList.add("ms-3");
     textContainer.style.minWidth = "0";
 
-    // 名前のh6
+    // 名前のdiv, h6
+    const nameDiv = document.createElement("div");
+    nameDiv.classList.add("d-flex", "align-items-center");
+
     const nameEl = document.createElement("h6");
     nameEl.classList.add("m-0");
     nameEl.textContent = chatUser.name;
     nameEl.style.overflow = "hidden";
     nameEl.style.textOverflow = "ellipsis";
     nameEl.style.whiteSpace = "nowrap";
+    nameDiv.appendChild(nameEl);
+
+    if (chatUser.userType === "INFLUENCER") {
+      const influencerIcon = document.createElement("ion-icon");
+      influencerIcon.setAttribute("name", "shield-checkmark");
+      influencerIcon.style.color = "#dbbf4b";
+      nameDiv.appendChild(influencerIcon);
+    }
 
     // ユーザー名のp
     const usernameEl = document.createElement("p");
@@ -85,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     usernameEl.style.whiteSpace = "nowrap";
 
     // h6とpをdivの子要素に追加
-    textContainer.appendChild(nameEl);
+    textContainer.appendChild(nameDiv);
     textContainer.appendChild(usernameEl);
 
     // imgとdivを親要素のdivに追加

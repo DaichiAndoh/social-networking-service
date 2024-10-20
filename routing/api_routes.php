@@ -162,6 +162,30 @@ return [
             return new JSONRenderer($resBody);
         }
     })->setMiddleware(["api_guest"]),
+    "/api/login/guest" => Route::create("/api/login/guest", function(): HTTPRenderer {
+        $resBody = ["success" => true];
+
+        try {
+            $userDao = DAOFactory::getUserDAO();
+
+            // ゲストユーザー取得
+            $guestUser = $userDao->getGuestUser();
+            if ($guestUser === null) throw new Exception("ゲストユーザーが存在しません。");
+
+            // ゲストユーザーでログイン
+            Authenticator::loginAsUser($guestUser);
+
+            // UI側で作成後のページに遷移されるため、そこでこのメッセージが表示される
+            FlashData::setFlashData("success", "ログインしました。");
+            $resBody["redirectUrl"] = "/timeline";
+            return new JSONRenderer($resBody);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $resBody["success"] = false;
+            $resBody["error"] = "エラーが発生しました。";
+            return new JSONRenderer($resBody);
+        }
+    })->setMiddleware(["api_guest"]),
     "/api/email/verification/resend" => Route::create("/api/email/verification/resend", function(): HTTPRenderer {
         $resBody = ["success" => true];
 
@@ -354,6 +378,7 @@ return [
                     "profileImagePath" => $user->getProfileImageHash() ?
                         PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                    "userType" => $user->getType(),
                     "profileImageType" => $user->getProfileImageHash() === null ? "default" : "custom",
                     "followeeCount" => $followDao->getFolloweeCount($user->getUserId()),
                     "followerCount" => $followDao->getFollowerCount($user->getUserId()),
@@ -591,6 +616,7 @@ return [
                             PROFILE_IMAGE_FILE_DIR . $followers[$i]["profile_image_hash"] :
                             PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                         "profilePath" => "/user?un=" . $followers[$i]["username"],
+                        "userType" => $followers[$i]["type"],
                     ];
                 }
 
@@ -636,6 +662,7 @@ return [
                             PROFILE_IMAGE_FILE_DIR . $followees[$i]["profile_image_hash"] :
                             PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                         "profilePath" => "/user?un=" . $followees[$i]["username"],
+                        "userType" => $followees[$i]["type"],
                     ];
                 }
 
@@ -691,6 +718,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "userType" => $posts[$i]["type"],
                     "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
@@ -745,6 +773,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "userType" => $posts[$i]["type"],
                     "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
@@ -799,6 +828,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "userType" => $posts[$i]["type"],
                     "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
@@ -847,6 +877,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "userType" => $posts[$i]["type"],
                     "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
@@ -893,6 +924,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $posts[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $posts[$i]["username"],
+                    "userType" => $posts[$i]["type"],
                     "deletable" => $authenticatedUser->getUsername() === $posts[$i]["username"],
                 ];
             }
@@ -1083,6 +1115,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $post["username"],
+                    "userType" => $post["type"],
                     "deletable" => $authenticatedUser->getUsername() === $post["username"],
                 ];
             }
@@ -1130,6 +1163,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "profilePath" => "/user?un=" . $post["username"],
+                    "userType" => $post["type"],
                     "deletable" => $authenticatedUser->getUsername() === $post["username"],
                 ];
             }, $replies);
@@ -1270,6 +1304,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $notifications[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "fromUserProfilePath" => "/user?un=" . $notifications[$i]["username"],
+                    "userType" => $notifications[$i]["type"],
                 ];
             }
 
@@ -1330,6 +1365,7 @@ return [
                         PROFILE_IMAGE_FILE_DIR . $chatUsers[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "chatPath" => "/messages/chat?un=" . $chatUsers[$i]["username"],
+                    "userType" => $chatUsers[$i]["type"],
                 ];
             }
 

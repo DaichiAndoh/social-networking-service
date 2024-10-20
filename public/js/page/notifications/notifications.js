@@ -152,8 +152,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     profileNameLink.classList.add("text-black", "hover-underline");
     profileNameLink.textContent = notification.fromUserName;
 
+    if (notification.userType === "INFLUENCER") {
+      const influencerIcon = document.createElement("ion-icon");
+      influencerIcon.setAttribute("name", "shield-checkmark");
+      influencerIcon.style.color = "#dbbf4b";
+      influencerIcon.style.height = "18px";
+      influencerIcon.style.verticalAlign = "text-top";
+      profileNameLink.appendChild(influencerIcon);
+    }
     content.appendChild(profileNameLink);
 
+    // 通知テキスト
     const textSpan = document.createElement("span");
     textSpan.classList.add("fw-light", "text-secondary");
     textSpan.innerText = text;

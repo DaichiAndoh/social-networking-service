@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <div class="mb-3">
-                        <a href="/login" class="btn btn-outline-primary w-100">ゲストログイン</a>
+                        <a id="guest-login-btn" href="/login" class="btn btn-outline-primary w-100">ゲストログイン</a>
                     </div>
                     <div class="alert alert-danger d-flex gap-1 py-2 px-1 m-0" role="alert">
                         <div>
@@ -25,8 +25,9 @@
                         </div>
                         <div>
                             <small>
-                                ゲストログインで使用するアカウントは、ゲストログインを行う全てのユーザーと共通になります。
+                                ゲストログインで使用するアカウントは、ゲストログインを行う他のユーザーとの共有アカウントになります。
                                 そのため、ログイン後の操作では個人情報や機密情報等を扱わないようにしてください。<br>
+                                ゲストアカウントの操作による情報漏洩やデータの損失について、当サービスは一切の責任を負いかねます。<br>
                                 また、ゲストユーザーのアカウントに紐づくデータは、予告せず管理者側で削除等の操作を行う可能性があります。
                             </small>
                         </div>
@@ -36,3 +37,5 @@
         </div>
     </div>
 </div>
+
+<script src="/js/page/top.js"></script>

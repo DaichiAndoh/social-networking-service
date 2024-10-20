@@ -91,11 +91,24 @@ class UserDAOImpl implements UserDAO {
         return $result;
     }
 
+    private function getRawOfGuest(): ?array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT * FROM users WHERE type = 'GUEST' ORDER BY RAND() LIMIT 1";
+
+        $result = $mysqli->prepareAndFetchAll($query, "", [])[0];
+
+        if ($result === null) return null;
+
+        return $result;
+    }
+
     private function rawDataToUser(array $rawData): User {
         return new User(
             name: $rawData["name"],
             username: $rawData["username"],
             email: $rawData["email"],
+            type: $rawData["type"],
             created_at: $rawData["created_at"],
             updated_at: $rawData["updated_at"],
             user_id: $rawData["user_id"],
@@ -122,6 +135,13 @@ class UserDAOImpl implements UserDAO {
     public function getByUsername(string $username): ?User {
         $userRaw = $this->getRawByUsername($username);
         if($userRaw === null) return null;
+
+        return $this->rawDataToUser($userRaw);
+    }
+
+    public function getGuestUser(): ?User {
+        $userRaw = $this->getRawOfGuest();
+        if ($userRaw === null) return null;
 
         return $this->rawDataToUser($userRaw);
     }
