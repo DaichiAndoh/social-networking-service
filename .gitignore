@@ -1,6 +1,8 @@
 .DS_Store
 vendor
 .env
+database/seeds/*
+!database/seeds/.gitkeep
 public/img/user/*
 !public/img/user/default_profile_image.png
 public/img/post/original/*
