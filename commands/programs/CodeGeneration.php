@@ -109,7 +109,7 @@ class {$className} extends AbstractSeeder {
     // TODO: tableColumns配列の割り当て
     protected array \$tableColumns = [];
 
-    public function createRowData(array \$imageHashList): array {
+    public function createRowData(): array {
         // TODO: createRowData()メソッドの実装
         return [];
     }
