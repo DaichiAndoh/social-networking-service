@@ -43,17 +43,9 @@ abstract class AbstractSeeder implements SchemaSeeder {
         foreach ($row as $i=>$value) {
             $columnDataType = $this->tableColumns[$i]["data_type"];
             $columnName = $this->tableColumns[$i]["column_name"];
-            $nullable = $this->tableColumns[$i]["nullable"];
 
             if (!isset(static::AVAILABLE_TYPES[$columnDataType])) throw new \InvalidArgumentException(sprintf("The data type %s is not an available data type.", $columnDataType));
-
-            if ($nullable) {
-                $valueType = get_debug_type($value);
-                if ($valueType !== $columnDataType && $valueType !== "null") throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s or null. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
-            } else {
-                $valueType = get_debug_type($value);
-                if ($valueType !== $columnDataType) throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
-            }
+            if (get_debug_type($value) !== $columnDataType) throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
         }
     }
 

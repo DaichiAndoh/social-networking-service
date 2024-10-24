@@ -3,6 +3,7 @@
 namespace Commands\Programs;
 
 use Commands\AbstractCommand;
+use Commands\Argument;
 use Database\MySQLWrapper;
 use Database\SchemaSeeder;
 
@@ -11,19 +12,37 @@ class Seed extends AbstractCommand {
     protected static ?string $alias = "seed";
 
     public static function getArguments(): array {
-        return [];
+        return [
+            // TODO: descriptionの修正
+            (new Argument("init"))->description("Create initial records.")->required(false)->allowAsShort(true),
+        ];
     }
 
     public function execute(): int {
-        $this->runAllSeeds();
+        $init = $this->getArgumentValue("init");
+
+        if ($init) {
+            $seedFiles = [
+                "InfluencerInitSeeder.php",
+                "InfluencerPostInitSeeder.php",
+                "InfluencerReplyInitSeeder.php",
+                "InfluencerFollowInitSeeder.php",
+            ];
+            $this->runAllSeeds($seedFiles);
+        } else {
+            $this->runAllSeeds();
+        }
         return 0;
     }
 
-    function runAllSeeds(): void {
+    function runAllSeeds(?array $seedFiles): void {
         $directoryPath = __DIR__ . "/../../database/seeds";
 
         // ディレクトリをスキャンしてすべてのファイルを取得
-        $files = scandir($directoryPath);
+        $files = $seedFiles;
+        if ($files === null) {
+            $files = scandir($directoryPath);
+        }
 
         foreach ($files as $file) {
             if (pathinfo($file, PATHINFO_EXTENSION) === "php") {

@@ -44,4 +44,12 @@ class DateOperator {
     public static function formatJpDateTime(DateTime $datetime): string {
         return $datetime->format("Y年n月j日 G時i分");
     }
+
+    public static function formatDateTime(DateTime $datetime): string {
+        return $datetime->format("Y-m-d H:i:s");
+    }
+
+    public static function getCurrentDateTime(): DateTime {
+        return new DateTime("now");
+    }
 }
