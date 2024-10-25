@@ -27,6 +27,11 @@ class Seed extends AbstractCommand {
                 "InfluencerPostInitSeeder.php",
                 "InfluencerReplyInitSeeder.php",
                 "InfluencerFollowInitSeeder.php",
+                "UserInitSeeder.php",
+                "UserPostInitSeeder.php",
+                "UserReplyInitSeeder.php",
+                "UserFollowInitSeeder.php",
+                "LikeInitSeeder.php",
             ];
             $this->runAllSeeds($seedFiles);
         } else {

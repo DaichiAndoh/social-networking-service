@@ -27,7 +27,6 @@ class InfluencerFollowInitSeeder extends AbstractSeeder {
     public function createRowData(): array {
         // TODO: createRowData()メソッドの実装
         $follows = [];
-        $postCount = rand(INIT_INFLUENCER_POST_MIN_COUNT, INIT_INFLUENCER_POST_MAX_COUNT);
         $influencerIds = self::getAllTestInfluencerIds();
 
         for ($i = 0; $i < count($influencerIds); $i++) {
