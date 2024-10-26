@@ -3,14 +3,25 @@
 namespace Helpers;
 
 use DateTime;
+use DateTimeZone;
 
 class DateOperator {
+    private static ?DateTimeZone $timezone = null;
+
+    private static function getTimezone(): DateTimeZone {
+        // 初回アクセス時にJSTタイムゾーンを設定
+        if (self::$timezone === null) {
+            self::$timezone = new DateTimeZone("Asia/Tokyo");
+        }
+        return self::$timezone;
+    }
+
     public static function getTimeDiff(string $dateTimeString): string {
         // 現在時刻データ
-        $now = new DateTime();
+        $now = new DateTime("now", self::getTimezone());
 
         // 比較対象の日時データ
-        $dateTime = new DateTime($dateTimeString);
+        $dateTime = new DateTime($dateTimeString, self::getTimezone());
 
         // 経過時間を秒単位で取得
         $seconds = $now->getTimestamp() - $dateTime->getTimestamp();
@@ -38,18 +49,23 @@ class DateOperator {
     }
 
     public static function stringToDatetime(string $dateTimeString): DateTime {
-        return new DateTime($dateTimeString);
+        return new DateTime($dateTimeString, self::getTimezone());
     }
 
     public static function formatJpDateTime(DateTime $datetime): string {
-        return $datetime->format("Y年n月j日 G時i分");
+        return $datetime->setTimezone(self::getTimezone())->format("Y年n月j日 G時i分");
     }
 
     public static function formatDateTime(DateTime $datetime): string {
-        return $datetime->format("Y-m-d H:i:s");
+        return $datetime->setTimezone(self::getTimezone())->format("Y-m-d H:i:s");
     }
 
     public static function getCurrentDateTime(): DateTime {
-        return new DateTime("now");
+        return new DateTime("now", self::getTimezone());
+    }
+
+    public static function getCurrentHour(): int {
+        $now = self::getCurrentDateTime();
+        return (int) $now->format("G");
     }
 }

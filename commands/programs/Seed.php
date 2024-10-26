@@ -15,12 +15,15 @@ class Seed extends AbstractCommand {
         return [
             // TODO: descriptionの修正
             (new Argument("init"))->description("Create initial records.")->required(false)->allowAsShort(true),
+            (new Argument("batch"))->description("")->required(false)->allowAsShort(true),
         ];
     }
 
     public function execute(): int {
         $init = $this->getArgumentValue("init");
+        $batch = $this->getArgumentValue("batch");
 
+        $seedFiles = [];
         if ($init) {
             $seedFiles = [
                 "InfluencerInitSeeder.php",
@@ -33,10 +36,16 @@ class Seed extends AbstractCommand {
                 "UserFollowInitSeeder.php",
                 "LikeInitSeeder.php",
             ];
-            $this->runAllSeeds($seedFiles);
-        } else {
-            $this->runAllSeeds();
+        } else if ($batch) {
+            $seedFiles = [
+                "InfluencerPostBatchSeeder.php",
+                "UserPostBatchSeeder.php",
+                "UserReplyBatchSeeder.php",
+                "UserLikeBatchSeeder.php",
+            ];
         }
+
+        $this->runAllSeeds($seedFiles);
         return 0;
     }
 
@@ -45,7 +54,7 @@ class Seed extends AbstractCommand {
 
         // ディレクトリをスキャンしてすべてのファイルを取得
         $files = $seedFiles;
-        if ($files === null) {
+        if ($files === null || count($files) === 0) {
             $files = scandir($directoryPath);
         }
 
