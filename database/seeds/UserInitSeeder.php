@@ -54,7 +54,7 @@ class UserInitSeeder extends AbstractSeeder {
         for ($i = 1; $i <= INIT_USER_COUNT; $i++) {
             $users[] = [
                 $faker->userName(),
-                $faker->word() . $i,
+                $faker->word() . "u" . $i,
                 "user" . $i . "@example.com",
                 password_hash($faker->password(), PASSWORD_DEFAULT),
                 $faker->text(User::$maxLens["profile_text"]),

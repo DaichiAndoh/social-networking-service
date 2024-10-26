@@ -54,7 +54,7 @@ class InfluencerInitSeeder extends AbstractSeeder {
         for ($i = 1; $i <= INIT_INFLUENCER_COUNT; $i++) {
             $influencers[] = [
                 $faker->userName(),
-                $faker->word() . $i,
+                $faker->word() . "i" . $i,
                 "influencer" . $i . "@example.com",
                 password_hash($faker->password(), PASSWORD_DEFAULT),
                 $faker->text(User::$maxLens["profile_text"]),
