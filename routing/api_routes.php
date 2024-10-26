@@ -1289,22 +1289,22 @@ return [
             $notifications = $notificationDao->getUserNotifications($userId, $limit, $offset);
 
             for ($i = 0; $i < count($notifications); $i++) {
-                if ($notifications[$i]["type"] === "LIKE") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
-                else if ($notifications[$i]["type"] === "FOLLOW") $notificationPath = "/user?un=" . $notifications[$i]["username"];
-                else if ($notifications[$i]["type"] === "REPLY") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+                if ($notifications[$i]["notification_type"] === "LIKE") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
+                else if ($notifications[$i]["notification_type"] === "FOLLOW") $notificationPath = "/user?un=" . $notifications[$i]["username"];
+                else if ($notifications[$i]["notification_type"] === "REPLY") $notificationPath = "/post?id=" . $notifications[$i]["source_id"];
                 else $notificationPath = "/messages/chat?un=" . $notifications[$i]["username"];
 
                 $notifications[$i] = [
                     "notificationId" => $notifications[$i]["notification_id"],
                     "notificationPath" => $notificationPath,
-                    "type" => $notifications[$i]["type"],
+                    "notificationType" => $notifications[$i]["notification_type"],
                     "isRead" => $notifications[$i]["is_read"],
                     "fromUserName" => $notifications[$i]["name"],
                     "fromUserProfileImagePath" => $notifications[$i]["profile_image_hash"] ?
                         PROFILE_IMAGE_FILE_DIR . $notifications[$i]["profile_image_hash"] :
                         PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
                     "fromUserProfilePath" => "/user?un=" . $notifications[$i]["username"],
-                    "userType" => $notifications[$i]["type"],
+                    "userType" => $notifications[$i]["user_type"],
                 ];
             }
 

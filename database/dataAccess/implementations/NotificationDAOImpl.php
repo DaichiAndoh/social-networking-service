@@ -57,7 +57,7 @@ class NotificationDAOImpl implements NotificationDAO {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
-            "SELECT n.notification_id, n.type, n.source_id, n.is_read, fu.name, fu.username, fu.profile_image_hash, fu.type " .
+            "SELECT n.notification_id, n.type notification_type, n.source_id, n.is_read, fu.name, fu.username, fu.profile_image_hash, fu.type user_type " .
             "FROM notifications n " .
             "INNER JOIN users fu ON fu.user_id = n.from_user_id " .
             "WHERE to_user_id = ? " .
