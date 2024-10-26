@@ -41,7 +41,7 @@ class InfluencerPostBatchSeeder extends AbstractSeeder {
 
         $limit = INIT_INFLUENCER_COUNT / count(BATCH_HOURS);
         $offset = $index * $limit;
-        $influencerIds = self::getTestInfluencerIds($limit, $offset);
+        $influencerIds = self::getProtInfluencerIds($limit, $offset);
 
         for ($i = 0; $i < count($influencerIds); $i++) {
             for ($j = 0; $j < BATCH_INFLUENCER_POST_COUNT; $j++) {
@@ -56,7 +56,7 @@ class InfluencerPostBatchSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getTestInfluencerIds(int $limit, int $offset): array {
+    private function getProtInfluencerIds(int $limit, int $offset): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT user_id FROM users WHERE email LIKE 'influencer%@example.com' AND type = 'INFLUENCER' ORDER BY users.user_id LIMIT ? OFFSET ?;";

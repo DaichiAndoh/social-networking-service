@@ -38,12 +38,12 @@ class UserReplyInitSeeder extends AbstractSeeder {
         $faker = Factory::create();
 
         $posts = [];
-        $userIds = self::getAllTestUserIds();
+        $userIds = self::getAllProtUserIds();
 
         for ($i = 0; $i < count($userIds); $i++) {
             // インフルエンサーのポストへのリプライ
             $replyCount = rand(INIT_USER_REPLY_MIN_COUNT, INIT_USER_REPLY_MAX_COUNT);
-            $postIds = self::getTestInfluencerPostIds($replyCount);
+            $postIds = self::getProtInfluencerPostIds($replyCount);
             for ($j = 0; $j < count($postIds); $j++) {
                 $posts[] = [
                     $userIds[$i],
@@ -55,7 +55,7 @@ class UserReplyInitSeeder extends AbstractSeeder {
 
             // 一般ユーザーのポストへのリプライ
             $replyCount = rand(INIT_USER_REPLY_MIN_COUNT, INIT_USER_REPLY_MAX_COUNT);
-            $postIds = self::getTestUserPostIds($userIds[$i], $replyCount);
+            $postIds = self::getProtUserPostIds($userIds[$i], $replyCount);
             for ($j = 0; $j < count($postIds); $j++) {
                 $posts[] = [
                     $userIds[$i],
@@ -69,10 +69,10 @@ class UserReplyInitSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getAllTestUserIds(): array {
+    private function getAllProtUserIds(): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER'";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER'";
 
         $result = $mysqli->query($query);
 
@@ -84,7 +84,7 @@ class UserReplyInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestInfluencerPostIds(int $limit): array {
+    private function getProtInfluencerPostIds(int $limit): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.email LIKE 'influencer%@example.com' AND u.type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
@@ -102,10 +102,10 @@ class UserReplyInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestUserPostIds(int $notUserId, int $limit): array {
+    private function getProtUserPostIds(int $notUserId, int $limit): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type = 'USER' ORDER BY RAND() LIMIT ?";
+        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type != 'INFLUENCER' ORDER BY RAND() LIMIT ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $notUserId, $limit);

@@ -38,11 +38,11 @@ class InfluencerReplyInitSeeder extends AbstractSeeder {
         $faker = Factory::create();
 
         $posts = [];
-        $influencerIds = self::getAllTestInfluencerIds();
+        $influencerIds = self::getAllProtInfluencerIds();
 
         for ($i = 0; $i < count($influencerIds); $i++) {
             $replyCount = rand(INIT_INFLUENCER_REPLY_MIN_COUNT, INIT_INFLUENCER_REPLY_MAX_COUNT);
-            $postIds = self::getTestInfluencerPostIds($influencerIds[$i], $replyCount);
+            $postIds = self::getProtInfluencerPostIds($influencerIds[$i], $replyCount);
             for ($j = 0; $j < count($postIds); $j++) {
                 $posts[] = [
                     $influencerIds[$i],
@@ -56,7 +56,7 @@ class InfluencerReplyInitSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getAllTestInfluencerIds(): array {
+    private function getAllProtInfluencerIds(): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT user_id FROM users WHERE email LIKE 'influencer%@example.com' AND type = 'INFLUENCER'";
@@ -71,7 +71,7 @@ class InfluencerReplyInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestInfluencerPostIds(int $notUserId, int $limit): array {
+    private function getProtInfluencerPostIds(int $notUserId, int $limit): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'influencer%@example.com' AND u.type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";

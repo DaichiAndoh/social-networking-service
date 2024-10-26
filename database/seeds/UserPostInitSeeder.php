@@ -34,7 +34,7 @@ class UserPostInitSeeder extends AbstractSeeder {
         $faker = Factory::create();
 
         $posts = [];
-        $userIds = self::getAllTestUserIds();
+        $userIds = self::getAllProtUserIds();
 
         for ($i = 0; $i < count($userIds); $i++) {
             $postCount = rand(INIT_USER_POST_MIN_COUNT, INIT_USER_POST_MAX_COUNT);
@@ -50,10 +50,10 @@ class UserPostInitSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getAllTestUserIds(): array {
+    private function getAllProtUserIds(): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER'";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER'";
 
         $result = $mysqli->query($query);
 

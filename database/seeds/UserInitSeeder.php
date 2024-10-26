@@ -52,13 +52,14 @@ class UserInitSeeder extends AbstractSeeder {
         $users = [];
 
         for ($i = 1; $i <= INIT_USER_COUNT; $i++) {
+            $type = $i <= INIT_USER_COUNT - INIT_GUEST_COUNT ? "USER" : "GUEST";
             $users[] = [
                 $faker->userName(),
                 $faker->word() . "u" . $i,
                 "user" . $i . "@example.com",
                 password_hash($faker->password(), PASSWORD_DEFAULT),
                 $faker->text(User::$maxLens["profile_text"]),
-                "USER",
+                $type,
                 DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
             ];
         }

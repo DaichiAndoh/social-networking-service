@@ -41,7 +41,7 @@ class UserPostBatchSeeder extends AbstractSeeder {
 
         $limit = ceil(INIT_USER_COUNT / count(BATCH_HOURS));
         $offset = $index * $limit;
-        $userIds = self::getTestUserIds($limit, $offset);
+        $userIds = self::getProtUserIds($limit, $offset);
 
         for ($i = 0; $i < count($userIds); $i++) {
             for ($j = 0; $j < BATCH_USER_POST_COUNT; $j++) {
@@ -56,10 +56,10 @@ class UserPostBatchSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getTestUserIds(int $limit, int $offset): array {
+    private function getProtUserIds(int $limit, int $offset): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER' ORDER BY users.user_id LIMIT ? OFFSET ?";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER' ORDER BY users.user_id LIMIT ? OFFSET ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $limit, $offset);

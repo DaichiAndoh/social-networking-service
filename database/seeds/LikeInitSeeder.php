@@ -30,31 +30,31 @@ class LikeInitSeeder extends AbstractSeeder {
 
         $likes = [];
 
-        $influencerIds = self::getAllTestInfluencerIds();
+        $influencerIds = self::getAllProtInfluencerIds();
         for ($i = 0; $i < count($influencerIds); $i++) {
             // インフルエンサー > インフルエンサーのポストいいね
-            $postIds = self::getTestInfluencerPostIds($influencerIds[$i], INIT_LIKE_TO_INFLUENCER_COUNT);
+            $postIds = self::getProtInfluencerPostIds($influencerIds[$i], INIT_LIKE_TO_INFLUENCER_COUNT);
             for ($j = 0; $j < count($postIds); $j++) {
                 $likes[] = [$influencerIds[$i], $postIds[$j]];
             }
 
             // インフルエンサー > 一般ユーザーのポストいいね
-            $postIds = self::getTestUserPostIds($influencerIds[$i], INIT_LIKE_TO_USER_COUNT);
+            $postIds = self::getProtUserPostIds($influencerIds[$i], INIT_LIKE_TO_USER_COUNT);
             for ($j = 0; $j < count($postIds); $j++) {
                 $likes[] = [$influencerIds[$i], $postIds[$j]];
             }
         }
 
-        $userIds = self::getAllTestUserIds();
+        $userIds = self::getAllProtUserIds();
         for ($i = 0; $i < count($userIds); $i++) {
             // 一般ユーザー > インフルエンサーのポストいいね
-            $postIds = self::getTestInfluencerPostIds($userIds[$i], INIT_LIKE_TO_INFLUENCER_COUNT);
+            $postIds = self::getProtInfluencerPostIds($userIds[$i], INIT_LIKE_TO_INFLUENCER_COUNT);
             for ($j = 0; $j < count($postIds); $j++) {
                 $likes[] = [$userIds[$i], $postIds[$j]];
             }
 
             // 一般ユーザー > 一般ユーザーのポストいいね
-            $postIds = self::getTestUserPostIds($userIds[$i], INIT_LIKE_TO_USER_COUNT);
+            $postIds = self::getProtUserPostIds($userIds[$i], INIT_LIKE_TO_USER_COUNT);
             for ($j = 0; $j < count($postIds); $j++) {
                 $likes[] = [$userIds[$i], $postIds[$j]];
             }
@@ -63,7 +63,7 @@ class LikeInitSeeder extends AbstractSeeder {
         return $likes;
     }
 
-    private function getAllTestInfluencerIds(): array {
+    private function getAllProtInfluencerIds(): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT user_id FROM users WHERE email LIKE 'influencer%@example.com' AND type = 'INFLUENCER'";
@@ -78,7 +78,7 @@ class LikeInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestInfluencerPostIds(int $notUserId, int $limit): array {
+    private function getProtInfluencerPostIds(int $notUserId, int $limit): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'influencer%@example.com' AND u.type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
@@ -96,10 +96,10 @@ class LikeInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getAllTestUserIds(): array {
+    private function getAllProtUserIds(): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER'";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER'";
 
         $result = $mysqli->query($query);
 
@@ -111,10 +111,10 @@ class LikeInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestUserPostIds(int $notUserId, int $limit): array {
+    private function getProtUserPostIds(int $notUserId, int $limit): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type = 'USER' ORDER BY RAND() LIMIT ?";
+        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type != 'INFLUENCER' ORDER BY RAND() LIMIT ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $notUserId, $limit);

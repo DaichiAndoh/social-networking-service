@@ -27,19 +27,19 @@ class UserFollowInitSeeder extends AbstractSeeder {
     public function createRowData(): array {
         // TODO: createRowData()メソッドの実装
         $follows = [];
-        $userIds = self::getAllTestUserIds();
+        $userIds = self::getAllProtUserIds();
 
         for ($i = 0; $i < count($userIds); $i++) {
             // インフルエンサーのフォロー
             $influencerFollowCount = rand(INIT_USER_FOLLOW_MIN_COUNT, INIT_USER_FOLLOW_MAX_COUNT);
-            $followInfluencerIds = self::getTestInfluencerIds($userIds[$i], $influencerFollowCount);
+            $followInfluencerIds = self::getProtInfluencerIds($influencerFollowCount);
             for ($j = 0; $j < count($followInfluencerIds); $j++) {
                 $follows[] = [$userIds[$i], $followInfluencerIds[$j]];
             }
 
             // 一般ユーザーのフォロー
             $userFollowCount = rand(INIT_USER_FOLLOW_MIN_COUNT, INIT_USER_FOLLOW_MAX_COUNT);
-            $followUserIds = self::getTestUserIds($userIds[$i], $userFollowCount);
+            $followUserIds = self::getProtUserIds($userIds[$i], $userFollowCount);
             for ($j = 0; $j < count($followUserIds); $j++) {
                 $follows[] = [$userIds[$i], $followUserIds[$j]];
             }
@@ -48,10 +48,10 @@ class UserFollowInitSeeder extends AbstractSeeder {
         return $follows;
     }
 
-    private function getAllTestUserIds(): array {
+    private function getAllProtUserIds(): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER'";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER'";
 
         $result = $mysqli->query($query);
 
@@ -63,13 +63,13 @@ class UserFollowInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestInfluencerIds(int $notUserId, int $limit): array {
+    private function getProtInfluencerIds(int $limit): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE user_id != ? AND email LIKE 'influencer%@example.com' AND type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'influencer%@example.com' AND type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
 
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("ii", $notUserId, $limit);
+        $stmt->bind_param("i", $limit);
 
         $stmt->execute();
         $result = $stmt->get_result();
@@ -81,10 +81,10 @@ class UserFollowInitSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestUserIds(int $notUserId, int $limit): array {
+    private function getProtUserIds(int $notUserId, int $limit): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE user_id != ? AND email LIKE 'user%@example.com' AND type = 'USER' ORDER BY RAND() LIMIT ?";
+        $query = "SELECT user_id FROM users WHERE user_id != ? AND email LIKE 'user%@example.com' AND type != 'INFLUENCER' ORDER BY RAND() LIMIT ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $notUserId, $limit);

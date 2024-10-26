@@ -34,7 +34,7 @@ class InfluencerPostInitSeeder extends AbstractSeeder {
         $faker = Factory::create();
 
         $posts = [];
-        $influencerIds = self::getAllTestInfluencerIds();
+        $influencerIds = self::getAllProtInfluencerIds();
 
         for ($i = 0; $i < count($influencerIds); $i++) {
             $postCount = rand(INIT_INFLUENCER_POST_MIN_COUNT, INIT_INFLUENCER_POST_MAX_COUNT);
@@ -50,7 +50,7 @@ class InfluencerPostInitSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getAllTestInfluencerIds(): array {
+    private function getAllProtInfluencerIds(): array {
         $mysqli = new MySQLWrapper();
 
         $query = "SELECT user_id FROM users WHERE email LIKE 'influencer%@example.com' AND type = 'INFLUENCER'";

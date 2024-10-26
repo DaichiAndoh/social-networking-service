@@ -45,10 +45,22 @@ class UserReplyBatchSeeder extends AbstractSeeder {
 
         $limit = ceil(INIT_USER_COUNT / count(BATCH_HOURS));
         $offset = $index * $limit;
-        $userIds = self::getTestUserIds($limit, $offset);
+        $userIds = self::getProtUserIds($limit, $offset);
 
         for ($i = 0; $i < count($userIds); $i++) {
-            $postIds = self::getTestUserPostIds($userIds[$i], BATCH_USER_REPLY_COUNT);
+            // インフルエンサーのポストへのリプライ
+            $postIds = self::getProtInfluencerPostIds(BATCH_USER_REPLY_COUNT);
+            for ($j = 0; $j < count($postIds); $j++) {
+                $posts[] = [
+                    $userIds[$i],
+                    $postIds[$j],
+                    $faker->text(Post::$maxLens["content"]),
+                    "POSTED",
+                ];
+            }
+
+            // 一般ユーザーのポストへのリプライ
+            $postIds = self::getProtUserPostIds($userIds[$i], BATCH_USER_REPLY_COUNT);
             for ($j = 0; $j < count($postIds); $j++) {
                 $posts[] = [
                     $userIds[$i],
@@ -62,10 +74,10 @@ class UserReplyBatchSeeder extends AbstractSeeder {
         return $posts;
     }
 
-    private function getTestUserIds(int $limit, int $offset): array {
+    private function getProtUserIds(int $limit, int $offset): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type = 'USER' ORDER BY users.user_id LIMIT ? OFFSET ?";
+        $query = "SELECT user_id FROM users WHERE email LIKE 'user%@example.com' AND type != 'INFLUENCER' ORDER BY users.user_id LIMIT ? OFFSET ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $limit, $offset);
@@ -80,10 +92,28 @@ class UserReplyBatchSeeder extends AbstractSeeder {
         return [];
     }
 
-    private function getTestUserPostIds(int $notUserId, int $limit): array {
+    private function getProtInfluencerPostIds(int $limit): array {
         $mysqli = new MySQLWrapper();
 
-        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type = 'USER' ORDER BY RAND() LIMIT ?";
+        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.email LIKE 'influencer%@example.com' AND u.type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
+
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("i", $limit);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+            $postIds = array_map("intval", array_column($rows, "post_id"));
+            return $postIds;
+        }
+        return [];
+    }
+
+    private function getProtUserPostIds(int $notUserId, int $limit): array {
+        $mysqli = new MySQLWrapper();
+
+        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.user_id != ? AND u.email LIKE 'user%@example.com' AND u.type != 'INFLUENCER' ORDER BY RAND() LIMIT ?";
 
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $notUserId, $limit);
