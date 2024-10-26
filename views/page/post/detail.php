@@ -13,7 +13,9 @@
     </div>
 
     <div id="replies-block" class="d-none mt-3 flex-grow-1" style="max-width: 500px; width: 100%; margin: 0 auto;">
-        <ion-icon name="arrow-redo-outline" class="fs-4" style="transform: scaleY(-1);"></ion-icon>
+        <div style="width: 22px; height: 22px;">
+            <ion-icon name="arrow-redo-outline" style="transform: scaleY(-1); font-size: 22px;"></ion-icon>
+        </div>
         <div class="d-flex flex-column flex-grow-1">
             <div id="replies-wrapper" class="ms-2 py-3 pe-3 flex-grow-1" style="overflow-y: scroll; height: 0;">
                 <div id="replies">
