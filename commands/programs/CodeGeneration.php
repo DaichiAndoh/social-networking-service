@@ -22,6 +22,9 @@ class CodeGeneration extends AbstractCommand {
         if ($codeGenType === "migration") {
             $migrationName = $this->getArgumentValue("name");
             $this->generateMigrationFile($migrationName);
+        } else if ($codeGenType === "seeder") {
+            $seederName = $this->getArgumentValue("name");
+            $this->generateSeederFile($seederName);
         }
 
         return 0;
@@ -68,6 +71,50 @@ class {$className} implements SchemaMigration {
     }
 }
 MIGRATION;
+    }
+
+    private function generateSeederFile(string $seederName): void {
+        if (substr($seederName, -6) !== "Seeder") {
+            $seederName .= "Seeder";
+        }
+
+        $filename = sprintf("%s.php", $seederName);
+
+        // シードファルコンテンツを取得
+        $seederContent = $this->getSeederContent($seederName);
+
+        // シードファイルのパスを指定
+        $path = sprintf("%s/../../database/seeds/%s", __DIR__, $filename);
+
+        // シードファイルを作成
+        file_put_contents($path, $seederContent);
+        $this->log("Seeder file {$filename} has been generated!");
+    }
+
+    private function getSeederContent(string $seederName): string {
+        $className = $this->pascalCase($seederName);
+
+        return <<<SEEDER
+<?php
+
+namespace Database\Seeds;
+
+use Faker\Factory;
+use Database\AbstractSeeder;
+
+class {$className} extends AbstractSeeder {
+    // TODO: tableName文字列の割り当て
+    protected ?string \$tableName = null;
+
+    // TODO: tableColumns配列の割り当て
+    protected array \$tableColumns = [];
+
+    public function createRowData(): array {
+        // TODO: createRowData()メソッドの実装
+        return [];
+    }
+}
+SEEDER;
     }
 
     private function pascalCase(string $string): string {
