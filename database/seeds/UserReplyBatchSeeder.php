@@ -32,14 +32,6 @@ class UserReplyBatchSeeder extends AbstractSeeder {
             "data_type" => "string",
             "column_name" => "status",
         ],
-        [
-            "data_type" => "string",
-            "column_name" => "created_at",
-        ],
-        [
-            "data_type" => "string",
-            "column_name" => "updated_at",
-        ],
     ];
 
     public function createRowData(): array {
@@ -63,8 +55,6 @@ class UserReplyBatchSeeder extends AbstractSeeder {
                     $postIds[$j],
                     $faker->text(Post::$maxLens["content"]),
                     "POSTED",
-                    DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
-                    DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
                 ];
             }
         }

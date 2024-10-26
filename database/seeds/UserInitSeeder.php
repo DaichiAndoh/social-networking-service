@@ -43,14 +43,6 @@ class UserInitSeeder extends AbstractSeeder {
             "data_type" => "string",
             "column_name" => "email_confirmed_at",
         ],
-        [
-            "data_type" => "string",
-            "column_name" => "created_at",
-        ],
-        [
-            "data_type" => "string",
-            "column_name" => "updated_at",
-        ],
     ];
 
     public function createRowData(): array {
@@ -67,8 +59,6 @@ class UserInitSeeder extends AbstractSeeder {
                 password_hash($faker->password(), PASSWORD_DEFAULT),
                 $faker->text(User::$maxLens["profile_text"]),
                 "USER",
-                DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
-                DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
                 DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
             ];
         }

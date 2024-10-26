@@ -5,7 +5,6 @@ namespace Database\Seeds;
 use Faker\Factory;
 use Database\AbstractSeeder;
 use Database\MySQLWrapper;
-use Helpers\DateOperator;
 use Models\Post;
 
 require_once(sprintf("%s/../../constants/seed_constants.php", __DIR__));
@@ -32,14 +31,6 @@ class UserReplyInitSeeder extends AbstractSeeder {
             "data_type" => "string",
             "column_name" => "status",
         ],
-        [
-            "data_type" => "string",
-            "column_name" => "created_at",
-        ],
-        [
-            "data_type" => "string",
-            "column_name" => "updated_at",
-        ],
     ];
 
     public function createRowData(): array {
@@ -58,8 +49,6 @@ class UserReplyInitSeeder extends AbstractSeeder {
                     $postIds[$j],
                     $faker->text(Post::$maxLens["content"]),
                     "POSTED",
-                    DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
-                    DateOperator::formatDateTime(DateOperator::getCurrentDateTime()),
                 ];
             }
         }
