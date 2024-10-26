@@ -41,6 +41,19 @@ class UserReplyInitSeeder extends AbstractSeeder {
         $userIds = self::getAllTestUserIds();
 
         for ($i = 0; $i < count($userIds); $i++) {
+            // インフルエンサーのポストへのリプライ
+            $replyCount = rand(INIT_USER_REPLY_MIN_COUNT, INIT_USER_REPLY_MAX_COUNT);
+            $postIds = self::getTestInfluencerPostIds($replyCount);
+            for ($j = 0; $j < count($postIds); $j++) {
+                $posts[] = [
+                    $userIds[$i],
+                    $postIds[$j],
+                    $faker->text(Post::$maxLens["content"]),
+                    "POSTED",
+                ];
+            }
+
+            // 一般ユーザーのポストへのリプライ
             $replyCount = rand(INIT_USER_REPLY_MIN_COUNT, INIT_USER_REPLY_MAX_COUNT);
             $postIds = self::getTestUserPostIds($userIds[$i], $replyCount);
             for ($j = 0; $j < count($postIds); $j++) {
@@ -67,6 +80,24 @@ class UserReplyInitSeeder extends AbstractSeeder {
             $rows = $result->fetch_all(MYSQLI_ASSOC);
             $userIds = array_map("intval", array_column($rows, "user_id"));
             return $userIds;
+        }
+        return [];
+    }
+
+    private function getTestInfluencerPostIds(int $limit): array {
+        $mysqli = new MySQLWrapper();
+
+        $query = "SELECT p.post_id post_id FROM posts p INNER JOIN users u ON p.user_id = u.user_id WHERE u.email LIKE 'influencer%@example.com' AND u.type = 'INFLUENCER' ORDER BY RAND() LIMIT ?";
+
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("i", $limit);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+            $postIds = array_map("intval", array_column($rows, "post_id"));
+            return $postIds;
         }
         return [];
     }
