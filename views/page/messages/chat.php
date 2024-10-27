@@ -9,7 +9,7 @@
         <a class="chat-user-link">
             <img id="chat-user-image" src="" alt="プロフィール画像" class="rounded-circle" height="40" width="40">
         </a>
-        <a class="fs-5 text-black text-decoration-none chat-user-link">test_user</a>
+        <a id="chat-user-name" class="fs-5 text-black text-decoration-none chat-user-link"></a>
     </div>
 
     <div id="messages-wrapper" class="my-3 flex-grow-1" style="overflow-y: scroll;">

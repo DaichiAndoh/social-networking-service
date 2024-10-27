@@ -54,17 +54,15 @@ class MessageDAOImpl implements MessageDAO {
 
         $query =
             "SELECT from_user_id, content FROM messages " .
-            "WHERE from_user_id = ? " .
-            "OR from_user_id = ? " .
-            "OR to_user_id = ? " .
-            "OR to_user_id = ? " .
+            "WHERE (from_user_id = ? AND to_user_id = ?) " .
+            "OR (from_user_id = ? AND to_user_id = ?) " .
             "ORDER BY created_at DESC " .
             "LIMIT ? OFFSET ?";
 
         $result = $mysqli->prepareAndFetchAll(
             $query,
             "iiiiii",
-            [$user_id, $chat_user_id, $user_id, $chat_user_id, $limit, $offset],
+            [$user_id, $chat_user_id, $chat_user_id, $user_id, $limit, $offset],
         );
 
         return $result ?? [];

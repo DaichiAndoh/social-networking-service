@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         const chatUserImage = document.getElementById("chat-user-image");
         chatUserImage.src = resData.userData.profileImagePath;
 
+        const chatUserName = document.getElementById("chat-user-name");
+        chatUserName.textContent = resData.userData.name;
+
         const chatUserInfo = document.getElementById("chat-user-info");
         chatUserInfo.classList.remove("d-none");
       }

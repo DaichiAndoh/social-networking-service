@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   function createNotificationEl(notification, parent) {
     let icon;
     let text;
-    switch (notification.type) {
+    switch (notification.notificationType) {
       case "FOLLOW":
         const userIcon = document.createElement("ion-icon");
         userIcon.setAttribute("name", "person");
