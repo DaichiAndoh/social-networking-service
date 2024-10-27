@@ -3,7 +3,7 @@
         <div class="row flex-nowrap">
             <div id="sidebar" class="col-auto col-sm-4 col-md-3 col-xl-2 px-sm-1 px-0" style="background-color: #051c2c;">
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-2 pt-2 min-vh-100">
-                    <a id="logo" href="#" class="d-flex align-items-center me-md-auto text-light text-decoration-none">
+                    <a id="logo" href="/" class="d-flex align-items-center me-md-auto text-light text-decoration-none">
                         <span class="fs-5 d-none d-sm-inline">SNS</span>
                     </a>
                     <ul class="nav nav-pills flex-column mb-sm-auto mt-0 mt-sm-3 align-items-center align-items-sm-start" id="menu">
@@ -52,6 +52,9 @@
                         <a href="#" class="d-flex align-items-center text-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="<?= $profileImagePath ?>" alt="hugenerd" width="30" height="30" class="rounded-circle">
                             <span class="text-light d-none d-sm-inline mx-1">@<?= $user->getUsername() ?></span>
+                            <?php if ($user->getType() === "INFLUENCER"): ?>
+                                <ion-icon name="shield-checkmark" class="flex-shrink-0 d-none d-sm-inline" style="color: #dbbf4b;"></ion-icon>
+                            <?php endif; ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-light text-small shadow">
                             <li><a class="dropdown-item" href="/user">プロフィール</a></li>

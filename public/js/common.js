@@ -32,7 +32,7 @@ function createPostEl(post, parent) {
   });
 
   const cardContentDiv = document.createElement("div");
-  cardContentDiv.classList.add("d-flex");
+  cardContentDiv.classList.add("d-flex", "gap-2");
 
   /** 左ブロック */
   // プロフィール画像
@@ -53,41 +53,29 @@ function createPostEl(post, parent) {
 
   /** 右ブロック */
   const rightDiv = document.createElement("div");
-  rightDiv.classList.add("w-100", "ms-2");
 
-  // 名前, ユーザー名, 3点ドットアイコン
-  const profileDiv = document.createElement("div");
-  profileDiv.classList.add("d-flex", "justify-content-between");
+  // 名前, 3点ドットアイコン
+  const nameThreeDotsDiv = document.createElement("div");
+  nameThreeDotsDiv.classList.add("d-flex", "justify-content-between");
 
-  const userLink = document.createElement("a");
-  userLink.href = post.profilePath;
-  userLink.classList.add("text-black", "hover-underline", "d-flex", "align-items-center");
+  const nameLink = document.createElement("a");
+  nameLink.classList.add("text-black", "fw-semibold", "fs-6", "hover-underline");
+  nameLink.href = post.profilePath;
+  nameLink.textContent = post.name;
 
-  const nameSpan = document.createElement("span");
-  nameSpan.classList.add("fw-semibold", "fs-6");
-  nameSpan.innerText = post.name + " ";
-
-  const usernameSpan = document.createElement("span");
-  usernameSpan.classList.add("fw-light", "text-secondary");
-  usernameSpan.innerText = `@${post.username}・${post.postedAt}`;
-
-  /** インフルエンサーの場合は名前の後にバッチアイコンをつける */
   if (post.userType === "INFLUENCER") {
+    // インフルエンサーの場合は名前の後にバッチアイコンをつける
     const influencerIcon = document.createElement("ion-icon");
     influencerIcon.setAttribute("name", "shield-checkmark");
-    influencerIcon.classList.add("me-1");
     influencerIcon.style.color = "#dbbf4b";
-
-    userLink.appendChild(nameSpan);
-    userLink.appendChild(influencerIcon);
-    userLink.appendChild(usernameSpan);
-  } else {
-    userLink.appendChild(nameSpan);
-    userLink.appendChild(usernameSpan);
+    influencerIcon.style.height = "18px";
+    influencerIcon.style.verticalAlign = "text-top";
+    nameLink.appendChild(influencerIcon);
   }
 
   const dropdownDiv = document.createElement("div");
   dropdownDiv.classList.add("dropdown");
+  dropdownDiv.style.height = "22px";
   dropdownDiv.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -120,12 +108,35 @@ function createPostEl(post, parent) {
 
   deleteItem.appendChild(deleteLink);
   dropdownMenu.appendChild(deleteItem);
-
   dropdownDiv.appendChild(threeDotsIcon);
   dropdownDiv.appendChild(dropdownMenu);
 
-  profileDiv.appendChild(userLink);
-  profileDiv.appendChild(dropdownDiv);
+  nameThreeDotsDiv.appendChild(nameLink);
+  nameThreeDotsDiv.appendChild(dropdownDiv);
+
+  // ユーザー名, 投稿時間
+  const usernamePostedAtDiv = document.createElement("div");
+  usernamePostedAtDiv.classList.add("w-100", "mb-1");
+
+  const usernamePostedAtLink = document.createElement("a");
+  usernamePostedAtLink.classList.add("text-secondary", "hover-underline", "d-flex");
+  usernamePostedAtLink.href = post.profilePath;
+  usernamePostedAtLink.style.fontSize = "14px";
+
+  const usernameSpan = document.createElement("span");
+  usernameSpan.classList.add("d-inline-block");
+  usernameSpan.style.overflow = "hidden";
+  usernameSpan.style.textOverflow = "ellipsis";
+  usernameSpan.style.whiteSpace = "nowrap";
+  usernameSpan.innerText = `@${post.username}`;
+
+  const postedAtSpan = document.createElement("span");
+  postedAtSpan.classList.add("d-inline-block", "flex-shrink-0");
+  postedAtSpan.innerText = `・${post.postedAt}`;
+
+  usernamePostedAtLink.appendChild(usernameSpan);
+  usernamePostedAtLink.appendChild(postedAtSpan);
+  usernamePostedAtDiv.appendChild(usernamePostedAtLink);
 
   // 本文
   const textBody = document.createElement("div");
@@ -210,7 +221,8 @@ function createPostEl(post, parent) {
   iconsDiv.appendChild(replyDiv);
   iconsDiv.appendChild(heartDiv);
 
-  rightDiv.appendChild(profileDiv);
+  rightDiv.appendChild(nameThreeDotsDiv);
+  rightDiv.appendChild(usernamePostedAtDiv);
   rightDiv.appendChild(textBody);
   if (post.imagePath && post.thumbnailPath) rightDiv.appendChild(postImgDiv);
   rightDiv.appendChild(iconsDiv);
