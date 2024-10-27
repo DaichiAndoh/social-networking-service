@@ -1118,6 +1118,34 @@ return [
                     "userType" => $post["type"],
                     "deletable" => $authenticatedUser->getUsername() === $post["username"],
                 ];
+
+                if ($post["reply_to_id"]) {
+                    $post = $postDao->getPost($post["reply_to_id"], $authenticatedUser->getUserId());
+
+                    $resBody["parentPost"] = [
+                        "postId" => $post["post_id"],
+                        "content" => $post["content"],
+                        "imagePath" => $post["image_hash"] ?
+                            POST_ORIGINAL_IMAGE_FILE_DIR . $post["image_hash"] :
+                            "",
+                        "thumbnailPath" => $post["image_hash"] ?
+                            POST_THUMBNAIL_IMAGE_FILE_DIR . $post["image_hash"] :
+                            "",
+                        "postPath" => "/post?id=" . $post["post_id"],
+                        "postedAt" => DateOperator::getTimeDiff($post["updated_at"]),
+                        "replyCount" => $post["reply_count"],
+                        "likeCount" => $post["like_count"],
+                        "liked" => $post["liked"],
+                        "name" => $post["name"],
+                        "username" => $post["username"],
+                        "profileImagePath" => $post["profile_image_hash"] ?
+                            PROFILE_IMAGE_FILE_DIR . $post["profile_image_hash"] :
+                            PROFILE_IMAGE_FILE_DIR . "default_profile_image.png",
+                        "profilePath" => "/user?un=" . $post["username"],
+                        "userType" => $post["type"],
+                        "deletable" => $authenticatedUser->getUsername() === $post["username"],
+                    ];
+                }
             }
 
             return new JSONRenderer($resBody);

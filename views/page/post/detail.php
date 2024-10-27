@@ -9,6 +9,18 @@
         <h5>このポストは存在しません。</h5>
     </div>
 
+    <div id="parent-post-block" class="d-none mt-0 mb-1 mx-auto" style="max-width: 500px; width: 100%;">
+        <a id="toggle-parent-post-link" data-bs-toggle="collapse" href="#collapse-block" role="button" aria-expanded="false" aria-controls="collapse-block">
+            <span id="link-text">返信元ポストを見る</span>
+            <ion-icon id="link-icon" name="chevron-down-outline" style="font-size: 18px; vertical-align: text-top;"></ion-icon>
+        </a>
+        <div class="collapse mt-1" id="collapse-block">
+            <div id="parent-post">
+            </div>
+            <ion-icon name="chevron-down-outline" style="font-size: 22px;"></ion-icon>
+        </div>
+    </div>
+
     <div id="post-block" class="d-none" style="max-width: 500px; width: 100%; margin: 0 auto;">
     </div>
 
