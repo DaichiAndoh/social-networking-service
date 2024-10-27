@@ -86,8 +86,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // インフルエンサーの場合はバッチを表示
     if (userData.userType === "INFLUENCER") {
-      const influencerIcon = document.getElementById("profile-influencer-icon");
-      influencerIcon.classList.remove("d-none");
+      const influencerIcon = document.createElement("ion-icon");
+      influencerIcon.setAttribute("name", "shield-checkmark");
+      influencerIcon.style.color = "#dbbf4b";
+      influencerIcon.style.height = "25px";
+      influencerIcon.style.verticalAlign = "text-top";
+      nameEl.appendChild(influencerIcon);
     }
 
     // ユーザープロフィールブロック表示（ここで表示させることで画面のちらつきを抑える）

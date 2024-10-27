@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (follower.userType === "INFLUENCER") {
       const influencerIcon = document.createElement("ion-icon");
       influencerIcon.setAttribute("name", "shield-checkmark");
+      influencerIcon.classList.add("flex-shrink-0");
       influencerIcon.style.color = "#dbbf4b";
       nameDiv.appendChild(influencerIcon);
     }

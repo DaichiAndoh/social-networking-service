@@ -52,6 +52,9 @@
                         <a href="#" class="d-flex align-items-center text-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="<?= $profileImagePath ?>" alt="hugenerd" width="30" height="30" class="rounded-circle">
                             <span class="text-light d-none d-sm-inline mx-1">@<?= $user->getUsername() ?></span>
+                            <?php if ($user->getType() === "INFLUENCER"): ?>
+                                <ion-icon name="shield-checkmark" class="flex-shrink-0 d-none d-sm-inline" style="color: #dbbf4b;"></ion-icon>
+                            <?php endif; ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-light text-small shadow">
                             <li><a class="dropdown-item" href="/user">プロフィール</a></li>
