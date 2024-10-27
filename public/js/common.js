@@ -53,6 +53,7 @@ function createPostEl(post, parent) {
 
   /** 右ブロック */
   const rightDiv = document.createElement("div");
+  rightDiv.classList.add("flex-grow-1");
 
   // 名前, 3点ドットアイコン
   const nameThreeDotsDiv = document.createElement("div");
