@@ -60,7 +60,7 @@ class PostDAOImpl implements PostDAO {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
-            "SELECT p.post_id, p.content, p.image_hash, p.updated_at, " .
+            "SELECT p.post_id, p.reply_to_id, p.content, p.image_hash, p.updated_at, " .
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
             "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .

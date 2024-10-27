@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const postBlock = document.getElementById("post-block");
   const repliesBlock = document.getElementById("replies-block");
+  const parentPostBlock = document.getElementById("parent-post-block");
+  const parentPost = document.getElementById("parent-post");
   const spinner = document.getElementById("spinner");
 
   async function loadPost() {
@@ -26,6 +28,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       } else {
         createPostEl(resData.post, postBlock);
+
+        if (resData.parentPost) {
+          createPostEl(resData.parentPost, parentPost);
+          parentPostBlock.classList.remove("d-none");
+        }
         postBlock.classList.remove("d-none");
       }
     } else {
@@ -88,5 +95,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         await loadReplies();
       }
     }
+  });
+
+
+  /**
+   * toggle-parent-post-linkのクリック時の処理
+   * リンクのテキストとアイコンを変更する
+   */
+  const toggleLink = document.getElementById("toggle-parent-post-link");
+  const linkText = document.getElementById("link-text");
+  const linkIcon = document.getElementById("link-icon");
+  const targetBlock = document.getElementById("collapse-block");
+
+  toggleLink.addEventListener("click", function() {
+    setTimeout(function() {
+      if (targetBlock.classList.contains("show")) {
+        linkText.textContent = "返信元ポストを隠す";
+        linkIcon.name = "chevron-up-outline";
+      } else {
+        linkText.textContent = "返信元ポストを見る";
+        linkIcon.name = "chevron-down-outline";
+      }
+    }, 400); // Bootstrap Collapseのデフォルトアニメーション分の待機
   });
 });
