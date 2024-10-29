@@ -162,7 +162,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (!fun || !tun || !token) alert("エラーが発生しました。");
 
     // WebSocketサーバー接続
-    const conn = new WebSocket(`ws://localhost:8080?fun=${fun}&tun=${tun}&t=${token}`);
+    const wsUrl = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+      ? "ws://localhost:8080"
+      : "ws://sns.d-andoh.com/ws";
+    const conn = new WebSocket(`${wsUrl}?fun=${fun}&tun=${tun}&t=${token}`);
 
     conn.addEventListener("open", (event) => {});
 
