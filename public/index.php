@@ -1,6 +1,6 @@
 <?php
 
-require_once "../vendor/autoload.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 
 $DEBUG = true;
 
@@ -9,10 +9,10 @@ $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
 // ルートの読み込み
 if (strpos($path, "/api/") === 0) {
-    $routes = include("../src/Routing/api_routes.php");
+    $routes = include(__DIR__ . "/../src/Routing/api_routes.php");
     $routeType = "api";
 } else {
-    $routes = include("../src/Routing/page_routes.php");
+    $routes = include(__DIR__ . "/../src/Routing/page_routes.php");
     $routeType = "ui";
 }
 
@@ -24,7 +24,7 @@ if (isset($routes[$path])) {
         if (!($route instanceof Routing\Route)) throw new Exception("Invalid route type");
 
         // ミドルウェア読み込み
-        $middlewareRegister = include("../src/Middleware/middleware_register.php");
+        $middlewareRegister = include(__DIR__ . "/../src/Middleware/middleware_register.php");
         $globalMiddlewares = array_merge($middlewareRegister["global"], $middlewareRegister[$routeType . "-global"]);
         $middlewares = array_merge(
             $globalMiddlewares,

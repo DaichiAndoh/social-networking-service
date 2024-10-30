@@ -34,10 +34,10 @@ class MailSender {
                 "signedURL" => $signedURL,
                 "toName" => $toName,
             ]);
-            include("../views/mails/email_verification.php");
+            include(__DIR__ . "/../views/mails/email_verification.php");
             $mail->Body = ob_get_clean();
 
-            $textBody = file_get_contents("../views/mails/email_verification.txt");
+            $textBody = file_get_contents(__DIR__ . "/../views/mails/email_verification.txt");
             $textBody = str_replace("[URL]", $signedURL, $textBody);
             $textBody = str_replace("[TO_NAME]", $toName, $textBody);
             $mail->AltBody = $textBody;
@@ -78,10 +78,10 @@ class MailSender {
                 "signedURL" => $signedURL,
                 "toName" => $toName,
             ]);
-            include("../views/mails/password_reset.php");
+            include(__DIR__ . "/../views/mails/password_reset.php");
             $mail->Body = ob_get_clean();
 
-            $textBody = file_get_contents("../views/mails/password_reset.txt");
+            $textBody = file_get_contents(__DIR__ . "/../views/mails/password_reset.txt");
             $textBody = str_replace("[URL]", $signedURL, $textBody);
             $textBody = str_replace("[TO_NAME]", $toName, $textBody);
             $mail->AltBody = $textBody;

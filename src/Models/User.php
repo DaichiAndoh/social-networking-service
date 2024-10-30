@@ -81,7 +81,7 @@ class User implements Model {
         return $this->profile_image_hash;
     }
 
-    public function setProfileImageHash(string $profile_image_hash): void {
+    public function setProfileImageHash(?string $profile_image_hash): void {
         $this->profile_image_hash = $profile_image_hash;
     }
 
