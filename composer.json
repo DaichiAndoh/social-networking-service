@@ -1,16 +1,16 @@
 {
     "autoload": {
         "psr-4": {
-            "Commands\\": "Commands/",
-            "Database\\": "Database/",
-            "Exceptions\\": "Exceptions/",
-            "Helpers\\": "Helpers/",
-            "Middleware\\": "Middleware/",
-            "Models\\": "Models/",
-            "Response\\": "Response/",
-            "Routing\\": "Routing/",
-            "Types\\": "Types/",
-            "Ws\\": "Ws/"
+            "Commands\\": "src/Commands/",
+            "Database\\": "src/Database/",
+            "Exceptions\\": "src/Exceptions/",
+            "Helpers\\": "src/Helpers/",
+            "Middleware\\": "src/Middleware/",
+            "Models\\": "src/Models/",
+            "Response\\": "src/Response/",
+            "Routing\\": "src/Routing/",
+            "Types\\": "src/Types/",
+            "Ws\\": "src/Ws/"
         }
     },
     "require": {
