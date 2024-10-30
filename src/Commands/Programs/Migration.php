@@ -104,7 +104,7 @@ class Migration extends AbstractCommand {
     }
 
     private function getAllMigrationFiles(string $order = "asc"): array {
-        $directory = sprintf("%s/../../database/migrations", __DIR__);
+        $directory = sprintf("%s/../../Database/Migrations", __DIR__);
         $this->log($directory);
         $allFiles = glob($directory . "/*.php");
 

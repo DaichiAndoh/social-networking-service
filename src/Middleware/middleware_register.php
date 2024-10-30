@@ -2,25 +2,25 @@
 
 return [
     "global" => [
-        \Middleware\GLOBAL\SessionsSetupMiddleware::class,
+        \Middleware\Global\SessionsSetupMiddleware::class,
     ],
     "ui-global" => [
-        \Middleware\UI\GetMethodRequestMiddleware::class,
+        \Middleware\Ui\GetMethodRequestMiddleware::class,
     ],
     "api-global" => [
-        \Middleware\API\PostMethodRequestMiddleware::class,
+        \Middleware\Api\PostMethodRequestMiddleware::class,
     ],
     "aliases" => [
         // UI
-        "signature" => \Middleware\UI\SignatureValidationMiddleware::class,
-        "guest" => \Middleware\UI\GuestMiddleware::class,
-        "auth" => \Middleware\UI\AuthenticatedMiddleware::class,
-        "email_verified" => \Middleware\UI\EmailVerifiedMiddleware::class,
-        "email_unverified" => \Middleware\UI\EmailUnverifiedMiddleware::class,
+        "signature" => \Middleware\Ui\SignatureValidationMiddleware::class,
+        "guest" => \Middleware\Ui\GuestMiddleware::class,
+        "auth" => \Middleware\Ui\AuthenticatedMiddleware::class,
+        "email_verified" => \Middleware\Ui\EmailVerifiedMiddleware::class,
+        "email_unverified" => \Middleware\Ui\EmailUnverifiedMiddleware::class,
         // API
-        "api_guest" => \Middleware\API\GuestMiddleware::class,
-        "api_auth" => \Middleware\API\AuthenticatedMiddleware::class,
-        "api_email_verified" => \Middleware\API\EmailVerifiedMiddleware::class,
-        "api_email_unverified" => \Middleware\API\EmailUnverifiedMiddleware::class,
+        "api_guest" => \Middleware\Api\GuestMiddleware::class,
+        "api_auth" => \Middleware\Api\AuthenticatedMiddleware::class,
+        "api_email_verified" => \Middleware\Api\EmailVerifiedMiddleware::class,
+        "api_email_unverified" => \Middleware\Api\EmailUnverifiedMiddleware::class,
     ],
 ];

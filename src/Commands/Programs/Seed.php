@@ -50,7 +50,7 @@ class Seed extends AbstractCommand {
     }
 
     function runAllSeeds(?array $seedFiles): void {
-        $directoryPath = __DIR__ . "/../../database/seeds";
+        $directoryPath = __DIR__ . "/../../Database/Seeds";
 
         // ディレクトリをスキャンしてすべてのファイルを取得
         $files = $seedFiles;

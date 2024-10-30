@@ -42,7 +42,7 @@ class CodeGeneration extends AbstractCommand {
         $migrationContent = $this->getMigrationContent($migrationName);
 
         // マイグレーションファイルのパスを指定
-        $path = sprintf("%s/../../database/migrations/%s", __DIR__, $filename);
+        $path = sprintf("%s/../../Database/Migrations/%s", __DIR__, $filename);
 
         // マイグレーションファイルを作成
         file_put_contents($path, $migrationContent);
@@ -84,7 +84,7 @@ MIGRATION;
         $seederContent = $this->getSeederContent($seederName);
 
         // シードファイルのパスを指定
-        $path = sprintf("%s/../../database/seeds/%s", __DIR__, $filename);
+        $path = sprintf("%s/../../Database/Seeds/%s", __DIR__, $filename);
 
         // シードファイルを作成
         file_put_contents($path, $seederContent);
