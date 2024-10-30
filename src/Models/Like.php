@@ -12,6 +12,8 @@ class Like implements Model {
         private int $user_id,
         private int $post_id,
         private ?int $like_id = null,
+        private ?string $created_at = null,
+        private ?string $updated_at = null,
     ) {}
 
     public function getLikeId(): ?int {
@@ -36,5 +38,21 @@ class Like implements Model {
 
     public function setPostId(int $post_id): void {
         $this->post_id = $post_id;
+    }
+
+    public function getCreatedAt(): ?string {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(string $created_at): void {
+        $this->created_at = $created_at;
+    }
+
+    public function getUpdatedAt(): ?string {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(string $updated_at): void {
+        $this->updated_at = $updated_at;
     }
 }
