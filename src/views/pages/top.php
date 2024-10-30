@@ -38,4 +38,4 @@
     </div>
 </div>
 
-<script src="/js/page/top.js"></script>
+<script src="/js/pages/top.js"></script>

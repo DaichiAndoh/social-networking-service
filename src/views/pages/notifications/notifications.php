@@ -20,4 +20,4 @@
 </div>
 </div>
 
-<script src="/js/page/notifications/notifications.js"></script>
+<script src="/js/pages/notifications/notifications.js"></script>

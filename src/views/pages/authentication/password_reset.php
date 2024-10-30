@@ -38,4 +38,4 @@
     </div>
 </div>
 
-<script src="/js/page/authentication/password_reset.js"></script>
+<script src="/js/pages/authentication/password_reset.js"></script>

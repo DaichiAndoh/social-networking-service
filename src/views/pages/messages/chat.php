@@ -35,4 +35,4 @@
 </div>
 </div>
 
-<script src="/js/page/messages/chat.js"></script>
+<script src="/js/pages/messages/chat.js"></script>

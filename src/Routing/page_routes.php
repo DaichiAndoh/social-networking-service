@@ -11,18 +11,18 @@ use Routing\Route;
 
 return [
     "/" => Route::create("/", function(): HTTPRenderer {
-        return new HTMLRenderer("page/top", []);
+        return new HTMLRenderer("pages/top", []);
     })->setMiddleware(["guest"]),
 
     // ユーザー認証関連
     "/register" => Route::create("/register", function(): HTTPRenderer {
-        return new HTMLRenderer("page/authentication/register", []);
+        return new HTMLRenderer("pages/authentication/register", []);
     })->setMiddleware(["guest"]),
     "/login" => Route::create("/login", function(): HTTPRenderer {
-        return new HTMLRenderer("page/authentication/login", []);
+        return new HTMLRenderer("pages/authentication/login", []);
     })->setMiddleware(["guest"]),
     "/email/verification/resend" => Route::create("/email/verification/resend", function(): HTTPRenderer {
-        return new HTMLRenderer("page/authentication/email_verification_resend", []);
+        return new HTMLRenderer("pages/authentication/email_verification_resend", []);
     })->setMiddleware(["auth", "email_unverified"]),
     "/email/verify" => Route::create("/email/verify", function(): HTTPRenderer {
         try {
@@ -49,7 +49,7 @@ return [
         }
     })->setMiddleware(["auth", "email_unverified", "signature"]),
     "/password/forgot" => Route::create("/password/forgot", function(): HTTPRenderer {
-        return new HTMLRenderer("page/authentication/password_forgot", []);
+        return new HTMLRenderer("pages/authentication/password_forgot", []);
     })->setMiddleware(["guest"]),
     "/password/reset" => Route::create("/password/reset", function(): HTTPRenderer {
         try {
@@ -72,7 +72,7 @@ return [
                 return new RedirectRenderer("/");
             }
 
-            return new HTMLRenderer("page/authentication/password_reset", [
+            return new HTMLRenderer("pages/authentication/password_reset", [
                 "user" => $_GET["user"],
                 "signature" => $_GET["signature"],
             ]);
@@ -85,35 +85,35 @@ return [
 
     // ユーザープロフィール関連
     "/user" => Route::create("/user", function(): HTTPRenderer {
-        return new HTMLRenderer("page/profile/user", []);
+        return new HTMLRenderer("pages/profile/user", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followers" => Route::create("/user/followers", function(): HTTPRenderer {
-        return new HTMLRenderer("page/profile/followers", []);
+        return new HTMLRenderer("pages/profile/followers", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/user/followees" => Route::create("/user/followees", function(): HTTPRenderer {
-        return new HTMLRenderer("page/profile/followees", []);
+        return new HTMLRenderer("pages/profile/followees", []);
     })->setMiddleware(["auth", "email_verified"]),
 
     // タイムライン関連
     "/timeline" => Route::create("/timeline", function(): HTTPRenderer {
-        return new HTMLRenderer("page/timeline/timeline", []);
+        return new HTMLRenderer("pages/timeline/timeline", []);
     })->setMiddleware(["auth", "email_verified"]),
 
     // ポスト関連
     "/post" => Route::create("/post", function(): HTTPRenderer {
-        return new HTMLRenderer("page/post/detail", []);
+        return new HTMLRenderer("pages/post/detail", []);
     })->setMiddleware(["auth", "email_verified"]),
 
     // 通知関連
     "/notifications" => Route::create("/notifications", function(): HTTPRenderer {
-        return new HTMLRenderer("page/notifications/notifications", []);
+        return new HTMLRenderer("pages/notifications/notifications", []);
     })->setMiddleware(["auth", "email_verified"]),
 
     // メッセージ関連
     "/messages" => Route::create("/messages", function(): HTTPRenderer {
-        return new HTMLRenderer("page/messages/users", []);
+        return new HTMLRenderer("pages/messages/users", []);
     })->setMiddleware(["auth", "email_verified"]),
     "/messages/chat" => Route::create("/messages/chat", function(): HTTPRenderer {
-        return new HTMLRenderer("page/messages/chat", []);
+        return new HTMLRenderer("pages/messages/chat", []);
     })->setMiddleware(["auth", "email_verified"]),
 ];

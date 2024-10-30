@@ -36,4 +36,4 @@
     </div>
 </div>
 
-<script src="/js/page/authentication/login.js"></script>
+<script src="/js/pages/authentication/login.js"></script>

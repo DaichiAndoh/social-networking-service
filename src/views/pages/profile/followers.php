@@ -9,12 +9,12 @@
         <h6>このアカウントは存在しません。</h6>
     </div>
 
-    <div id="followees-not-exists" class="py-3 text-center d-none">
-        <h6>現在フォローしているユーザーはいません。</h6>
+    <div id="followers-not-exists" class="py-3 text-center d-none">
+        <h6>現在フォローされているユーザーはいません。</h6>
     </div>
 
     <div id="list-wrapper" class="flex-grow-1" style="overflow-y: scroll;">
-        <div id="followees-list">
+        <div id="followers-list">
         </div>
 
         <div id="spinner" class="text-center d-none my-2">
@@ -30,4 +30,4 @@
 </div>
 </div>
 
-<script src="/js/page/profile/followees.js"></script>
+<script src="/js/pages/profile/followers.js"></script>

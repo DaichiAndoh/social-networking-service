@@ -26,4 +26,4 @@
     </div>
 </div>
 
-<script src="/js/page/authentication/email_verification_resend.js"></script>
+<script src="/js/pages/authentication/email_verification_resend.js"></script>

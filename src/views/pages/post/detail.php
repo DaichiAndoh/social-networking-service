@@ -48,4 +48,4 @@
 </div>
 </div>
 
-<script src="/js/page/post/detail.js"></script>
+<script src="/js/pages/post/detail.js"></script>

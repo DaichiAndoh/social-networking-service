@@ -141,4 +141,4 @@
 </div>
 </div>
 
-<script src="/js/page/profile/user.js"></script>
+<script src="/js/pages/profile/user.js"></script>

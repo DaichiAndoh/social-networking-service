@@ -20,4 +20,4 @@
 </div>
 </div>
 
-<script src="/js/page/messages/users.js"></script>
+<script src="/js/pages/messages/users.js"></script>

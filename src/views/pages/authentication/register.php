@@ -60,4 +60,4 @@
     </div>
 </div>
 
-<script src="/js/page/authentication/register.js"></script>
+<script src="/js/pages/authentication/register.js"></script>

@@ -52,17 +52,17 @@ class HTMLRenderer implements HTTPRenderer {
                 PROFILE_IMAGE_FILE_DIR . $user->getProfileImageHash() :
                 PROFILE_IMAGE_FILE_DIR . "default_profile_image.png";
         }
-        require $this->getViewFilePath("layout/header");
-        require $this->getViewFilePath("component/message_boxes");
-        require $this->getViewFilePath("component/post_modal");
-        require $this->getViewFilePath("component/reply_modal");
-        require $this->getViewFilePath("component/sidebar");
+        require $this->getViewFilePath("layouts/header");
+        require $this->getViewFilePath("components/message_boxes");
+        require $this->getViewFilePath("components/post_modal");
+        require $this->getViewFilePath("components/reply_modal");
+        require $this->getViewFilePath("components/sidebar");
         return ob_get_clean();
     }
 
     private function getFooter(): string {
         ob_start();
-        require $this->getViewFilePath("layout/footer");
+        require $this->getViewFilePath("layouts/footer");
         return ob_get_clean();
     }
 }

@@ -17,4 +17,4 @@ $error = \Response\FlashData::getFlashData("error");
     <?php endif; ?>
 </div>
 
-<script src="/js/component/message_boxes.js"></script>
+<script src="/js/components/message_boxes.js"></script>

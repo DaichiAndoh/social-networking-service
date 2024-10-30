@@ -32,4 +32,4 @@
     </div>
 </div>
 
-<script src="/js/page/authentication/password_forgot.js"></script>
+<script src="/js/pages/authentication/password_forgot.js"></script>

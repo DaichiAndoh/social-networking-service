@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="/css/common.css">
     <script src="/js/common.js"></script>
     <?php if ($user !== null): ?>
-        <link rel="stylesheet" href="/css/component/sidebar.css">
-        <script src="/js/component/sidebar.js"></script>
-        <script src="/js/component/post_modal.js"></script>
-        <script src="/js/component/reply_modal.js"></script>
+        <link rel="stylesheet" href="/css/components/sidebar.css">
+        <script src="/js/components/sidebar.js"></script>
+        <script src="/js/components/post_modal.js"></script>
+        <script src="/js/components/reply_modal.js"></script>
     <?php endif; ?>
 
     <!-- Bootstrap -->

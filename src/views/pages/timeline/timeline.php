@@ -28,4 +28,4 @@
 </div>
 </div>
 
-<script src="/js/page/timeline/timeline.js"></script>
+<script src="/js/pages/timeline/timeline.js"></script>
