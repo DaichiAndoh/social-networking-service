@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // WebSocketサーバー接続
     const wsUrl = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
       ? "ws://localhost:8080"
-      : "ws://sns.d-andoh.com/ws";
+      : "wss://sns.d-andoh.com/ws";
     const conn = new WebSocket(`${wsUrl}?fun=${fun}&tun=${tun}&t=${token}`);
 
     conn.addEventListener("open", (event) => {});
