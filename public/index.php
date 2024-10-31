@@ -2,7 +2,9 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-$DEBUG = true;
+use Helpers\ConfigReader;
+
+$DEBUG = ConfigReader::env("DEBUG");
 
 // リクエストURIを解析してパスだけを取得
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);

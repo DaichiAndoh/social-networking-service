@@ -14,12 +14,14 @@ class Seed extends AbstractCommand {
     public static function getArguments(): array {
         return [
             // TODO: descriptionの修正
-            (new Argument("init"))->description("Create initial records.")->required(false)->allowAsShort(true),
-            (new Argument("batch"))->description("")->required(false)->allowAsShort(true),
+            (new Argument("init"))->description("Execute initial data seeding.")->required(false)->allowAsShort(true),
+            (new Argument("batch"))->description("Execute periodic data seeding.")->required(false)->allowAsShort(true),
         ];
     }
 
     public function execute(): int {
+        $this->log("Starting data seeding...");
+
         $init = $this->getArgumentValue("init");
         $batch = $this->getArgumentValue("batch");
 
@@ -46,6 +48,8 @@ class Seed extends AbstractCommand {
         }
 
         $this->runAllSeeds($seedFiles);
+
+        $this->log("Data seeding completed successfully.");
         return 0;
     }
 
