@@ -26,24 +26,22 @@ body {
 
 /* トップ画面のタイピングアニメーションを定義したクラス */
 .typing {
-    width: 24ch;
+    width: 19ch;
     white-space: nowrap;
     overflow: hidden;
-    border-right: 3px solid #444;
-    font-family: monospace;
-    color: #444;
+    border-right: 3px solid #000;
     animation: typing 2s steps(12), typingEffect .5s step-end infinite alternate;
 }
 
 @keyframes typing {
     from {
-      width: 0
+      width: 0;
     }
 }
 
 @keyframes typingEffect {
     50% {
-      border-color: transparent
+      border-color: transparent;
     }
 }
 
