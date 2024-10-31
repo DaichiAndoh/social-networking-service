@@ -441,14 +441,19 @@ return [
             }
 
             $profileImageType = $_POST["profile-image-type"];
-            $profileImageUploaded = $profileImageType === "custom" && $_FILES["profile-image"]["error"] === UPLOAD_ERR_OK;
-            if ($profileImageUploaded) {
-                if (!Validator::validateImageType($_FILES["profile-image"]["type"])) {
+            $fileError = $_FILES["profile-image"]["error"];
+            if ($profileImageType === "custom") {
+                if ($fileError === UPLOAD_ERR_OK) {
+                    if (!Validator::validateImageType($_FILES["profile-image"]["type"])) {
+                        $fieldErrors["profile-image"] =
+                            "ファイル形式が不適切です。JPG, JPEG, PNG, GIFのファイルが設定可能です。";
+                    } else if (!Validator::validateImageSize($_FILES["profile-image"]["size"])) {
+                        $fieldErrors["profile-image"] =
+                            "ファイルが大きすぎます。";
+                    }
+                } else if ($fileError !== UPLOAD_ERR_NO_FILE) {
                     $fieldErrors["profile-image"] =
-                        "ファイル形式が不適切です。JPG, JPEG, PNG, GIFのファイルが設定可能です。";
-                } else if (!Validator::validateImageSize($_FILES["profile-image"]["size"])) {
-                    $fieldErrors["profile-image"] =
-                        "ファイルが大きすぎます。";
+                        "ファイルサイズ等の問題によりこの画像は設定できません。";
                 }
             }
 
@@ -460,7 +465,7 @@ return [
             }
 
             // プロフィール画像を保存
-            if ($profileImageUploaded) {
+            if ($profileImageType === "custom" && $fileError === UPLOAD_ERR_OK) {
                 $imageHash = ImageOperator::saveProfileImage(
                     $_FILES["profile-image"]["tmp_name"],
                     ImageOperator::imageTypeToExtension($_FILES["profile-image"]["type"]),
@@ -473,8 +478,9 @@ return [
             }
 
             // 元のプロフィール画像が不要になる場合は削除
+            // 元々画像を設定されているケースで、デフォルト画像を使用or新しい画像を設定した場合
             if ($user->getProfileImageHash() !== null) {
-                if ($profileImageUploaded || $profileImageType === "default") {
+                if ($profileImageType === "default" || ($profileImageType === "custom" && $fileError === UPLOAD_ERR_OK)) {
                     ImageOperator::deleteProfileImage($user->getProfileImageHash());
                 }
             }

@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const previewImage = document.getElementById("profile-image-preview");
         previewImage.src = e.target.result; // 読み込んだ画像をプレビューに設定
         previewImage.style.display = "block"; // img要素を表示
+        resetFormValidation("profile-image"); // バリデーションエラーがあればクリア
       };
 
       reader.readAsDataURL(file); // ファイルをデータURLとして読み込む

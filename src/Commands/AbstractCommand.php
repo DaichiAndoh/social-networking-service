@@ -3,6 +3,7 @@
 namespace Commands;
 
 use Exception;
+use Helpers\DateOperator;
 
 abstract class AbstractCommand implements Command {
     protected ?string $value;
@@ -118,7 +119,8 @@ abstract class AbstractCommand implements Command {
     }
 
     protected function log(string $info): void {
-        fwrite(STDOUT, $info . PHP_EOL);
+        $timestamp = DateOperator::formatDateTime(DateOperator::getCurrentDateTime());
+        fwrite(STDOUT, "[$timestamp] $info" . PHP_EOL);
     }
 
     /** @return Argument[]  */

@@ -19,14 +19,16 @@ class PostScheduleExecution extends AbstractCommand {
     }
 
     private function post(): bool {
+        $this->log("Starting scheduled post publishing...");
+
         $postDao = DAOFactory::getPostDAO();
         $result = $postDao->postScheduledPosts();
 
         if ($result) {
-            $this->log("予約ポストの投稿処理に成功しました。");
+            $this->log("Scheduled post publishing completed successfully.");
             return 0;
         } else {
-            $this->log("予約ポストの投稿処理に失敗しました。");
+            $this->log("Scheduled post publishing failed.");
             return 1;
         }
     }

@@ -32,7 +32,7 @@ class Chat implements MessageComponentInterface {
 
         // パラメーターを検証
         if (!Hasher::isHashEqual(Hasher::createHash($fun . $tun), $token)) {
-            echo "Connection rejected ({$conn->resourceId}): Unauthorized\n";
+            // echo "Connection rejected ({$conn->resourceId}): Unauthorized\n";
             $conn->close();
             return;
         }
@@ -41,11 +41,11 @@ class Chat implements MessageComponentInterface {
         $this->clientIds[$conn->resourceId]["fun"] = $fun;
         $this->clientIds[$conn->resourceId]["tun"] = $tun;
         $this->clients[$fun][$tun][$conn->resourceId] = $conn;
-        echo "New connection! ({$conn->resourceId})\n";
+        // echo "New connection! ({$conn->resourceId})\n";
     }
 
     public function onMessage(ConnectionInterface $conn, $data) {
-        echo sprintf("Connection %d sending message '%s'" . "\n", $conn->resourceId, $data);
+        // echo sprintf("Connection %d sending message '%s'" . "\n", $conn->resourceId, $data);
 
         $chatUsers = $this->clientIds[$conn->resourceId];
         $fun = $chatUsers["fun"];
@@ -113,11 +113,11 @@ class Chat implements MessageComponentInterface {
     public function onClose(ConnectionInterface $conn) {
         $chatUsers = $this->clientIds[$conn->resourceId];
         unset($this->clients[$chatUsers["fun"]][$chatUsers["tun"]][$conn->resourceId]);
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        // echo "Connection {$conn->resourceId} has disconnected\n";
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        // echo "An error has occurred: {$e->getMessage()}\n";
         $conn->close();
     }
 }
