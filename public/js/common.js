@@ -16,6 +16,11 @@ async function resetFormValidations() {
   });
 }
 
+async function resetFormValidation(fieldId) {
+  const invalidInput = document.getElementById(fieldId);
+  invalidInput.classList.remove("is-invalid");
+}
+
 async function setFormValidation(fieldId, message) {
   const field = document.getElementById(fieldId);
   field.classList.add("is-invalid");
