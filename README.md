@@ -40,7 +40,7 @@ https://sns.d-andoh.com/
 
 #### トップ画面
 
-<img src="docs/screen_captures/top.png" width="50%" style="border: 1px solid #000">
+<img src="docs/screen_captures/top.png" width="60%" style="border: 1px solid #000">
 
 #### ユーザー認証
 
@@ -83,12 +83,12 @@ https://sns.d-andoh.com/
 ポスト左下のリプライアイコンをクリックすると、当該ポストに対するリプライポストを作成できます。<br>
 リプライポストは投稿予約はできません。
 
-<img src="docs/screen_captures/post/reply_create.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/post/reply_create.png" width="60%" style="border: 1px solid #000">
 
 ポスト右上の3点ドットアイコンをクリックすると、削除ボタンが表示されます。<br>
 自分自身が投稿したポストであれば削除できます。
 
-<img src="docs/screen_captures/post/post_delete.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/post/post_delete.png" width="60%" style="border: 1px solid #000">
 
 #### ポスト詳細
 
@@ -103,7 +103,7 @@ https://sns.d-andoh.com/
 
 #### ユーザープロフィール
 
-サイドメニューの「プロフィール」またはユーザー情報（アイコン, ユーザーの名前など）をクリックすることでユーザープロフィール画面に遷移します。<br>
+サイドメニューの「プロフィール」またはユーザー情報（アイコン、ユーザーの名前など）をクリックすることでユーザープロフィール画面に遷移します。<br>
 ユーザープロフィール画面では、ユーザー情報と、そのユーザーに紐づくポストが「ポスト」「リプライ」「いいね」別で表示されます。
 
 <div>
@@ -114,7 +114,7 @@ https://sns.d-andoh.com/
 
 フォロー、フォロワーのリンクを押すと、それぞれのユーザー一覧が表示されます。
 
-<img src="docs/screen_captures/user_profile/user_profile_followee_follower.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/user_profile/user_profile_followee_follower.png" width="60%" style="border: 1px solid #000">
 
 また、ユーザープロフィール画面は、表示対象ユーザーによって表示が少し異なります。<br>
 自分自身のユーザーであれば、プロフィール編集ボタンが表示され、プロフィール情報を編集できます。
@@ -136,7 +136,7 @@ https://sns.d-andoh.com/
 インフルエンサーユーザーの場合は、インフルエンサーバッチが表示されます。<br>
 このバッチはユーザープロフィール画面だけでなく、ユーザー情報が表示される全ての箇所で表示されます。
 
-<img src="docs/screen_captures/user_profile/user_profile_influencer.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/user_profile/user_profile_influencer.png" width="60%" style="border: 1px solid #000">
 
 #### メッセージ
 
@@ -150,7 +150,7 @@ https://sns.d-andoh.com/
 
 サイドメニューの「メッセージ」をクリックすると、既にチャットを行っているユーザーの一覧が表示されます。
 
-<img src="docs/screen_captures/message/chat_list.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/message/chat_list.png" width="60%" style="border: 1px solid #000">
 
 #### 通知
 
@@ -164,7 +164,7 @@ https://sns.d-andoh.com/
 各通知レコードをクリックすると、当該通知に対応する画面に遷移します。<br>
 また未確認のレコードの背景色は水色となり、サイドメニューにも未確認通知数がバッチ表示されます。
 
-<img src="docs/screen_captures/notification/notification_list.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/notification/notification_list.png" width="60%" style="border: 1px solid #000">
 
 #### SP版
 
@@ -190,6 +190,13 @@ Webアプリケーション開発における様々な要素を、より深く�
 
 このアプリケーションは、CSRを採用しています。<br>
 フロント側のコンテンツを配信し、ブラウザで実行されるJavaScriptによりAPIからデータを取得してレンダリングします。
+
+CSRを採用した主な理由は以下です。
+
+- 表示のちらつきを抑えることによるUXの向上
+- UIとAPIを分けることによる拡張性の向上
+    - UI側のコンテンツをCDNで高速に配信するなども可能
+    - Webブラウザ以外のクライアントへの対応も比較的行いやすい
 
 #### ディレクトリ構造と説明
 
@@ -249,25 +256,34 @@ DAOは、データベースからデータを取得し、データベースレ�
 アーキテクチャはシンプルで、EC2サーバーでアプリケーションを実行し、データベースはRDSを使用しています。
 現在（2024/11/02時点）は、AWS無料利用枠におさめるために、マルチAZによる冗長化などは対応していません。
 
-[TODO: アプリケーションアーキテクチャ図をここに表示させる]
+<img src="docs/architecture/application_flow.png" width="80%" style="border: 1px solid #000">
+
+### 開発フロー
+
+デプロイ処理はGitHub Actionsにより自動で実行されます。<br>
+基本的には作業用ブランチを切りローカルで開発を行い、`main` ブランチへのPRを作成、マージする流れとなります。
+
+`main` ブランチが更新されると、GitHub Actionsによりデプロイ処理が実行されます。
+
+<img src="docs/architecture/development_flow.png" width="80%" style="border: 1px solid #000">
 
 ### 設計図
 
 #### ER図
 
-<img src="docs/diagrams/out/er_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/er_diagram.png" width="80%" style="border: 1px solid #000">
 
 #### 状態遷移図
 
-<img src="docs/diagrams/out/state_transition_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/state_transition_diagram.png" width="80%" style="border: 1px solid #000">
 
 #### ユースケース図
 
-<img src="docs/diagrams/out/use_case_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/use_case_diagram.png" width="80%" style="border: 1px solid #000">
 
 #### アクティビティ図（ユーザー認証）
 
-<img src="docs/diagrams/out/activity_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/activity_diagram.png" width="80%" style="border: 1px solid #000">
 
 ### 開発環境セットアップ
 
@@ -381,8 +397,8 @@ $ php scripts/console migrate -r 2
 
 ##### シーディングファイル作成
 
-`code-gen` により作成されたシーディングファイルの `tableName` にシードデータを挿入するテーブル、
-`tableColumns` にそのテーブルのカラム名とデータ型, 
+`code-gen` により作成されたシーディングファイルの `tableName` にシードデータを挿入するテーブル名、
+`tableColumns` にそのテーブルのカラム名とデータ型、
 `createRowData` に実際に挿入するデータを定義します。
 
 ```php: Database/Migrations/yyyy-mm-dd_[unix_timestamp]_[file_name].php
@@ -476,7 +492,7 @@ $ php scripts/console post-schedule-exec
 | Like (to user) | 5 |
 
 ※1. Users以外は1userあたりのレコード数<br>
-※2. 100usersのうち10userはゲストユーザー（ゲストログインで使用するユーザー）
+※2. 100userのうち10userはゲストユーザー（ゲストログインで使用するユーザー）
 
 #### cronジョブ
 
@@ -499,10 +515,10 @@ $ php scripts/console post-schedule-exec
 
 - 7, 8, 12, 13, 17, 18, 19, 20, 21, 22
 
-これは、このアプリケーションの類似サービスであるX（旧Twitter）の時間別利用率で、
-高い数値が計測されている時間を指定しています。
+これらは、このアプリケーションの類似サービスであるX（旧Twitter）で利用率が高いとされている時間です。
+より実際のシナリオに近づけるためにも、これらの時間にジョブを設定しています。
 
-<img src="docs/src/x_usage_rate_by_time_of_day.png" width="45%" style="border: 1px solid #000"><br>
+<img src="docs/src/x_usage_rate_by_time_of_day.png" width="50%" style="border: 1px solid #000"><br>
 <sub>参照元: 「[2023年版：Twitterのツイート、いいね・RTがつきやすいベストな時間は？アプリユーザーが多い最適な投稿時間帯をデータから分析](https://note.fuller-inc.com/n/nc178c198e7fa)」</sub>
 
 ##### ポスト予約投稿実行

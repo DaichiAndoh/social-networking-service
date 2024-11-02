@@ -49,7 +49,7 @@ class PostDAOImpl implements PostDAO {
     public function postScheduledPosts(): bool {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "UPDATE posts SET status = 'POSTED', scheduled_at = NULL WHERE status = 'SCHEDULED' AND scheduled_at <= CONVERT_TZ(NOW(), '+00:00', '+09:00')";
+        $query = "UPDATE posts SET status = 'POSTED', scheduled_at = NULL WHERE status = 'SCHEDULED' AND scheduled_at <= NOW()";
 
         $result = $mysqli->prepareAndExecute($query, "", []);
 
