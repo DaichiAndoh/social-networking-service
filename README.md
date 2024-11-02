@@ -21,25 +21,20 @@ https://sns.d-andoh.com/
 
 ### 機能
 
-- ユーザーアカウント関係
-    - ユーザー登録
-    - ユーザーログイン
-    - パスワードリセット
-    - ユーザー情報設定
-- ポスト関係
-    - ポスト投稿
-    - リプライ投稿
-    - ポスト予約投稿
-    - ポスト（リプライ）削除
-    - ポストいいね
-    - タイムライン
-        - トレンドタイムライン
-        - フォロータイムライン
-- チャット機能
-    - リアルタイムチャット
-- その他
-    - 通知
-        - フォロー, リプライ, いいね, チャットメッセージ受信
+| グルーピング | 機能 |
+| ------------- | ------------- |
+| ユーザーアカウント関連 | ユーザー登録 |
+|  | ユーザーログイン |
+|  | パスワードリセット |
+|  | ユーザープロフィール設定 |
+| ポスト関連 | ポスト投稿 |
+|  | ポスト予約投稿 |
+|  | リプライ投稿 |
+|  | ポスト（リプライ）削除 |
+|  | ポストいいね |
+|  | タイムライン（トレンド, フォロー） |
+| その他 | リアルタイムチャット |
+|  | 通知（フォロー, リプライ, いいね, チャットメッセージ受信） |
 
 ### 使用方法（画面キャプチャと説明）
 
@@ -51,14 +46,18 @@ https://sns.d-andoh.com/
 
 ユーザー登録時にはメールアドレス検証が求められます。
 
+<div>
 <img src="docs/screen_captures/authentication/user_register.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/authentication/user_register_email_verification.png" width="45%" style="border: 1px solid #000">
+</div>
 
 ユーザーログインでは、登録済みのユーザー情報でログインしてください。<br>
 パスワードリセットも行うことができます。
 
+<div>
 <img src="docs/screen_captures/authentication/user_login.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/authentication/user_password_reset.png" width="45%" style="border: 1px solid #000">
+</div>
 
 #### タイムライン
 
@@ -66,16 +65,20 @@ https://sns.d-andoh.com/
 トレンドタイムラインは直近1週間のポストをいいね数が多い順で表示します。<br>
 フォロータイムラインは自分自身とフォロワーのポストをポスト作成日順で表示します。
 
+<div>
 <img src="docs/screen_captures/timeline/trend_timeline.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/timeline/follow_timeline.png" width="45%" style="border: 1px solid #000">
+</div>
 
 #### ポスト
 
 サイドメニューのポスト作成ボタンをクリックすると、ポスト作成モーダルが開きます。<br>
 作成フォームの予約チェックを有効にし、日時を設定することで、ポスト投稿を予約できます。
 
+<div>
 <img src="docs/screen_captures/post/post_create.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/post/post_schedule.png" width="45%" style="border: 1px solid #000">
+</div>
 
 ポスト左下のリプライアイコンをクリックすると、当該ポストに対するリプライポストを作成できます。<br>
 リプライポストは投稿予約はできません。
@@ -93,17 +96,21 @@ https://sns.d-andoh.com/
 当該ポストとそのポストに紐づくリプライポストが表示されます。<br>
 もし表示対象ポストがリプライポストの場合は、リプライ元ポストも表示します。
 
+<div>
 <img src="docs/screen_captures/post/post_detail.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/post/reply_detail.png" width="45%" style="border: 1px solid #000">
+</div>
 
 #### ユーザープロフィール
 
 サイドメニューの「プロフィール」またはユーザー情報（アイコン, ユーザーの名前など）をクリックすることでユーザープロフィール画面に遷移します。<br>
 ユーザープロフィール画面では、ユーザー情報と、そのユーザーに紐づくポストが「ポスト」「リプライ」「いいね」別で表示されます。
 
+<div>
 <img src="docs/screen_captures/user_profile/user_profile_posts.png" width="31%" style="border: 1px solid #000">
 <img src="docs/screen_captures/user_profile/user_profile_replies.png" width="31%" style="border: 1px solid #000">
 <img src="docs/screen_captures/user_profile/user_profile_likes.png" width="31%" style="border: 1px solid #000">
+</div>
 
 フォロー、フォロワーのリンクを押すと、それぞれのユーザー一覧が表示されます。
 
@@ -112,15 +119,19 @@ https://sns.d-andoh.com/
 また、ユーザープロフィール画面は、表示対象ユーザーによって表示が少し異なります。<br>
 自分自身のユーザーであれば、プロフィール編集ボタンが表示され、プロフィール情報を編集できます。
 
+<div>
 <img src="docs/screen_captures/user_profile/user_profile_posts.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/user_profile/user_profile_edit.png" width="45%" style="border: 1px solid #000">
+</div>
 
 自分以外のユーザーであれば、フォロー状況に応じたボタンが表示されます。
 また、自分以外のユーザーで自分のことをフォローしている場合は、フォローラベル（「フォローされています」というテキストラベル）が表示されます。
 
+<div>
 <img src="docs/screen_captures/user_profile/user_profile_follow_btn.png" width="31%" style="border: 1px solid #000">
 <img src="docs/screen_captures/user_profile/user_profile_unfollow_btn.png" width="31%" style="border: 1px solid #000">
 <img src="docs/screen_captures/user_profile/user_profile_followee.png" width="31%" style="border: 1px solid #000">
+</div>
 
 インフルエンサーユーザーの場合は、インフルエンサーバッチが表示されます。<br>
 このバッチはユーザープロフィール画面だけでなく、ユーザー情報が表示される全ての箇所で表示されます。
@@ -132,8 +143,10 @@ https://sns.d-andoh.com/
 ユーザー同士でテキストベースのリアルタイムチャットを行えます。
 自分以外のユーザーのユーザープロフィール画面にあるチャットアイコン（下の画像であれば、フォローボタンの左横のアイコン）をクリックすると、当該ユーザーとのチャットページに遷移します。
 
+<div>
 <img src="docs/screen_captures/message/chat_icon.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/message/chat.png" width="45%" style="border: 1px solid #000">
+</div>
 
 サイドメニューの「メッセージ」をクリックすると、既にチャットを行っているユーザーの一覧が表示されます。
 
@@ -157,8 +170,10 @@ https://sns.d-andoh.com/
 
 SP版のスタイルも設定しています。
 
+<div>
 <img src="docs/screen_captures/sp/sp1.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/sp/sp2.png" width="45%" style="border: 1px solid #000">
+</div>
 
 ## 開発
 
