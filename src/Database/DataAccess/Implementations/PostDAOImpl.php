@@ -154,7 +154,7 @@ class PostDAOImpl implements PostDAO {
         return $result ?? [];
     }
 
-    public function getUserPosts(int $user_id, int $limit, int $offset): array {
+    public function getUserPosts(int $user_id, int $authenticated_user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
@@ -175,12 +175,12 @@ class PostDAOImpl implements PostDAO {
             "ORDER BY p.post_id DESC " .
             "LIMIT ? OFFSET ?";
 
-        $result = $mysqli->prepareAndFetchAll($query, "iiii", [$user_id, $user_id, $limit, $offset]) ?? null;
+        $result = $mysqli->prepareAndFetchAll($query, "iiii", [$authenticated_user_id, $user_id, $limit, $offset]) ?? null;
 
         return $result ?? [];
     }
 
-    public function getUserReplies(int $user_id, int $limit, int $offset): array {
+    public function getUserReplies(int $user_id, int $authenticated_user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
@@ -201,7 +201,7 @@ class PostDAOImpl implements PostDAO {
             "ORDER BY p.post_id DESC " .
             "LIMIT ? OFFSET ?";
 
-        $result = $mysqli->prepareAndFetchAll($query, "iiii", [$user_id, $user_id, $limit, $offset]) ?? null;
+        $result = $mysqli->prepareAndFetchAll($query, "iiii", [$authenticated_user_id, $user_id, $limit, $offset]) ?? null;
 
         return $result ?? [];
     }
@@ -221,26 +221,27 @@ class PostDAOImpl implements PostDAO {
         return $result ?? [];
     }
 
-    public function getUserLikes(int $user_id, int $limit, int $offset): array {
+    public function getUserLikes(int $user_id, int $authenticated_user_id, int $limit, int $offset): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query =
             "SELECT p.post_id, p.content, p.image_hash, p.updated_at, " .
             "IFNULL(rc.reply_count, 0) AS reply_count, " .
             "IFNULL(lc.like_count, 0) AS like_count, " .
-            "CASE WHEN l.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
+            "CASE WHEN l1.post_id IS NOT NULL THEN 1 ELSE 0 END AS liked, " .
             "u.name, u.username, u.profile_image_hash, u.type " .
             "FROM posts p " .
             "INNER JOIN users u ON p.user_id = u.user_id " .
             "LEFT JOIN (SELECT reply_to_id, COUNT(*) AS reply_count FROM posts WHERE reply_to_id IS NOT NULL GROUP BY reply_to_id) AS rc ON p.post_id = rc.reply_to_id " .
             "LEFT JOIN (SELECT post_id, COUNT(*) AS like_count FROM likes GROUP BY post_id) AS lc ON p.post_id = lc.post_id " .
-            "INNER JOIN (SELECT post_id, created_at FROM likes WHERE user_id = ?) AS l ON p.post_id = l.post_id " .
+            "LEFT JOIN (SELECT post_id FROM likes WHERE user_id = ?) AS l1 ON p.post_id = l1.post_id " .
+            "INNER JOIN (SELECT post_id, created_at FROM likes WHERE user_id = ?) AS l2 ON p.post_id = l2.post_id " .
             "WHERE p.status = 'POSTED' " .
-            "GROUP BY p.post_id, rc.reply_count, lc.like_count, l.created_at " .
-            "ORDER BY l.created_at DESC " .
+            "GROUP BY p.post_id, rc.reply_count, lc.like_count, l2.created_at " .
+            "ORDER BY l2.created_at DESC " .
             "LIMIT ? OFFSET ?";
 
-        $result = $mysqli->prepareAndFetchAll($query, "iii", [$user_id, $limit, $offset]) ?? null;
+        $result = $mysqli->prepareAndFetchAll($query, "iiii", [$authenticated_user_id, $user_id, $limit, $offset]) ?? null;
 
         return $result ?? [];
     }

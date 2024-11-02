@@ -701,7 +701,7 @@ return [
             $limit = $_POST["limit"] ?? 30;
             $offset = $_POST["offset"] ?? 0;
             $userId = $user->getUserId();
-            $posts = $postDao->getUserPosts($userId, $limit, $offset);
+            $posts = $postDao->getUserPosts($userId, $authenticatedUser->getUserId(), $limit, $offset);
 
             for ($i = 0; $i < count($posts); $i++) {
                 $posts[$i] = [
@@ -756,7 +756,7 @@ return [
             $limit = $_POST["limit"] ?? 30;
             $offset = $_POST["offset"] ?? 0;
             $userId = $user->getUserId();
-            $posts = $postDao->getUserReplies($userId, $limit, $offset);
+            $posts = $postDao->getUserReplies($userId, $authenticatedUser->getUserId(), $limit, $offset);
 
             for ($i = 0; $i < count($posts); $i++) {
                 $posts[$i] = [
@@ -811,7 +811,7 @@ return [
             $limit = $_POST["limit"] ?? 30;
             $offset = $_POST["offset"] ?? 0;
             $userId = $user->getUserId();
-            $posts = $postDao->getUserLikes($userId, $limit, $offset);
+            $posts = $postDao->getUserLikes($userId, $authenticatedUser->getUserId(), $limit, $offset);
 
             for ($i = 0; $i < count($posts); $i++) {
                 $posts[$i] = [
