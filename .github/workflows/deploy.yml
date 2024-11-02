@@ -1,0 +1,23 @@
+name: Deploy to EC2
+run-name: Deploying application to EC2 by ${{ github.actor }} 🚀
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Deploy-to-EC2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_PUBLIC_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        run: |
+          echo "$EC2_SSH_KEY" > ec2_ssh_key
+          chmod 600 ec2_ssh_key
+          ssh -o StrictHostKeyChecking=no -i ec2_ssh_key "$EC2_USER@$EC2_PUBLIC_IP" << 'EOF'
+            cd ~/web/social-networking-service
+            git pull origin main
+          EOF
+          rm ec2_ssh_key
