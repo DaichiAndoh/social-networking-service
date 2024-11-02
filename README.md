@@ -83,12 +83,12 @@ https://sns.d-andoh.com/
 ポスト左下のリプライアイコンをクリックすると、当該ポストに対するリプライポストを作成できます。<br>
 リプライポストは投稿予約はできません。
 
-<img src="docs/screen_captures/post/reply_create.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/post/reply_create.png" width="50%" style="border: 1px solid #000">
 
 ポスト右上の3点ドットアイコンをクリックすると、削除ボタンが表示されます。<br>
 自分自身が投稿したポストであれば削除できます。
 
-<img src="docs/screen_captures/post/post_delete.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/post/post_delete.png" width="50%" style="border: 1px solid #000">
 
 #### ポスト詳細
 
@@ -114,7 +114,7 @@ https://sns.d-andoh.com/
 
 フォロー、フォロワーのリンクを押すと、それぞれのユーザー一覧が表示されます。
 
-<img src="docs/screen_captures/user_profile/user_profile_followee_follower.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/user_profile/user_profile_followee_follower.png" width="50%" style="border: 1px solid #000">
 
 また、ユーザープロフィール画面は、表示対象ユーザーによって表示が少し異なります。<br>
 自分自身のユーザーであれば、プロフィール編集ボタンが表示され、プロフィール情報を編集できます。
@@ -136,7 +136,7 @@ https://sns.d-andoh.com/
 インフルエンサーユーザーの場合は、インフルエンサーバッチが表示されます。<br>
 このバッチはユーザープロフィール画面だけでなく、ユーザー情報が表示される全ての箇所で表示されます。
 
-<img src="docs/screen_captures/user_profile/user_profile_influencer.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/user_profile/user_profile_influencer.png" width="50%" style="border: 1px solid #000">
 
 #### メッセージ
 
@@ -150,7 +150,7 @@ https://sns.d-andoh.com/
 
 サイドメニューの「メッセージ」をクリックすると、既にチャットを行っているユーザーの一覧が表示されます。
 
-<img src="docs/screen_captures/message/chat_list.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/message/chat_list.png" width="50%" style="border: 1px solid #000">
 
 #### 通知
 
@@ -164,7 +164,7 @@ https://sns.d-andoh.com/
 各通知レコードをクリックすると、当該通知に対応する画面に遷移します。<br>
 また未確認のレコードの背景色は水色となり、サイドメニューにも未確認通知数がバッチ表示されます。
 
-<img src="docs/screen_captures/notification/notification_list.png" width="45%" style="border: 1px solid #000">
+<img src="docs/screen_captures/notification/notification_list.png" width="50%" style="border: 1px solid #000">
 
 #### SP版
 
@@ -249,25 +249,34 @@ DAOは、データベースからデータを取得し、データベースレ�
 アーキテクチャはシンプルで、EC2サーバーでアプリケーションを実行し、データベースはRDSを使用しています。
 現在（2024/11/02時点）は、AWS無料利用枠におさめるために、マルチAZによる冗長化などは対応していません。
 
-[TODO: アプリケーションアーキテクチャ図をここに表示させる]
+<img src="docs/architecture/application_flow.png" width="60%" style="border: 1px solid #000">
+
+### 開発フロー
+
+デプロイ処理はGitHub Actionsにより自動で実行されます。<br>
+基本的には作業用ブランチを切りローカルで開発を行い、`main` へのPRを作成, マージする流れになります。
+
+`main` ブランチが更新されると、GitHub Actionsのデプロイジョブが実行されます。
+
+<img src="docs/architecture/development_flow.png" width="60%" style="border: 1px solid #000">
 
 ### 設計図
 
 #### ER図
 
-<img src="docs/diagrams/out/er_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/er_diagram.png" width="60%" style="border: 1px solid #000">
 
 #### 状態遷移図
 
-<img src="docs/diagrams/out/state_transition_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/state_transition_diagram.png" width="60%" style="border: 1px solid #000">
 
 #### ユースケース図
 
-<img src="docs/diagrams/out/use_case_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/use_case_diagram.png" width="60%" style="border: 1px solid #000">
 
 #### アクティビティ図（ユーザー認証）
 
-<img src="docs/diagrams/out/activity_diagram.png" width="45%" style="border: 1px solid #000">
+<img src="docs/diagrams/out/activity_diagram.png" width="60%" style="border: 1px solid #000">
 
 ### 開発環境セットアップ
 
@@ -502,7 +511,7 @@ $ php scripts/console post-schedule-exec
 これは、このアプリケーションの類似サービスであるX（旧Twitter）の時間別利用率で、
 高い数値が計測されている時間を指定しています。
 
-<img src="docs/src/x_usage_rate_by_time_of_day.png" width="45%" style="border: 1px solid #000"><br>
+<img src="docs/src/x_usage_rate_by_time_of_day.png" width="50%" style="border: 1px solid #000"><br>
 <sub>参照元: 「[2023年版：Twitterのツイート、いいね・RTがつきやすいベストな時間は？アプリユーザーが多い最適な投稿時間帯をデータから分析](https://note.fuller-inc.com/n/nc178c198e7fa)」</sub>
 
 ##### ポスト予約投稿実行
