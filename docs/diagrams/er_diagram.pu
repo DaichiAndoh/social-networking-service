@@ -13,9 +13,19 @@ entity "users" as users {
     *password: VARCHAR(255) NOT NULL
     *profile_text: VARCHAR(160) NULL
     *profile_image_hash: VARCHAR(40) NULL
+    *type: ENUM('USER','INFLUENCER','GUEST') NOT NULL DEFAULT 'user'
     *email_confirmed_at: DATETIME NULL
     *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     *updated_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+}
+
+entity "temp_users" as temp_users {
+    *temp_user_id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *user_id: INT UNSIGNED NOT NULL
+    *signature: VARCHAR(64) NOT NULL UNIQUE
+    *status: ENUM('PASSWORD_RESET') NOT NULL
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 }
 
 entity "follows" as follows {
@@ -35,6 +45,7 @@ entity "posts" as posts {
     *status: ENUM('POSTED','SAVED','SCHEDULED') NOT NULL
     *scheduled_at: DATETIME NULL
     *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    *updated_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 }
 
 entity "likes" as likes {
@@ -42,6 +53,8 @@ entity "likes" as likes {
     --
     *user_id: INT UNSIGNED <<FK>>
     *post_id: INT UNSIGNED <<FK>>
+    *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    *updated_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 }
 
 entity "notifications" as notifications {
@@ -62,6 +75,12 @@ entity "messages" as messages {
     *to_user_id: INT UNSIGNED <<FK>>
     *content: VARCHAR(255) NOT NULL
     *created_at: DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "migrations" as migrations {
+    *id: INT UNSIGNED AUTO_INCREMENT <<PK>>
+    --
+    *filename: VARCHAR(255) NOT NULL
 }
 
 ' 投稿関連
