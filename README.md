@@ -218,10 +218,10 @@ social-networking-service/
 ##### アプリケーション関連
 
 アプリケーションとしては、`public/index.php` がエントリーポイントとなります。<br>
-`public/index.php` は、`src/Routing/**-routes.php` を用いて、アクセスに応じた処理を実行します。
+`public/index.php` は、`src/Routing/*-routes.php` を用いて、アクセスに応じた処理を実行します。
 
 このアプリケーションは、CSRを採用しています。<br>
-そのため、`src/Routing/**-routes.php` には、`ui-routes.php` と `api-routes.php` の2つのルーティングファイルが存在します。
+そのため、`src/Routing/*-routes.php` には、`ui-routes.php` と `api-routes.php` の2つのルーティングファイルが存在します。
 `ui-routes.php` はフロント側の静的コンテンツをHTMLレスポンスとして返すルートを、`api-routes.php` はAPIのデータをJSONレスポンスとして返すルートを定義しています。<br>
 
 `ui-routes.php` は、基本的にはそのルートに紐づくviewファイルを返すのみです。
@@ -301,7 +301,7 @@ $ php -S localhost:8000 -t public
 ### コマンドプログラム
 
 `scripts/console` の引数にコマンドを指定することで、コマンドプログラムを実行できます。<br>
-登録されているコマンドは以下です。
+登録されているコマンドについて、一つずつ説明します。
 
 #### code-gen
 
