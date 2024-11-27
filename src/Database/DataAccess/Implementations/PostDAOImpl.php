@@ -117,7 +117,13 @@ class PostDAOImpl implements PostDAO {
             "LEFT JOIN (SELECT post_id FROM likes WHERE user_id = ? GROUP BY post_id) AS l ON p.post_id = l.post_id " .
             "WHERE p.status = 'POSTED' " .
             "AND p.reply_to_id IS NULL " .
-            "AND p.updated_at >= NOW() - INTERVAL 1 WEEK " .
+            /**
+             * MEMO:
+             *  本番環境で定期実行のフィード処理を止めたことにより、
+             *  トレンドタイムラインの条件を満たすポスト（1週間以内に投稿されたポスト）の数が少なくなることを考慮し、
+             *  一時的に投稿期間の条件を削除
+             */
+            // "AND p.updated_at >= NOW() - INTERVAL 1 WEEK " .
             "GROUP BY p.post_id, rc.reply_count, lc.like_count " .
             "ORDER BY like_count DESC, p.updated_at DESC " .
             "LIMIT ? OFFSET ?";
