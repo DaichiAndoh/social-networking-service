@@ -491,7 +491,7 @@ $ php scripts/console post-schedule-exec
 
 ##### データシーディング
 
-> [!CAUTION]
+> [!IMPORTANT]
 > このcronジョブは、現在停止しています。
 
 `seed` コマンドの説明項目でも記述している通り、
