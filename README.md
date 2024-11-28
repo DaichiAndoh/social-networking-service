@@ -65,6 +65,9 @@ https://sns.d-andoh.com/
 トレンドタイムラインは直近1週間のポストをいいね数が多い順で表示します。<br>
 フォロータイムラインは自分自身とフォロワーのポストをポスト作成日順で表示します。
 
+> [!IMPORTANT]
+> トレンドタイムラインの「直近1週間のポスト」という条件は現在無効化しています。
+
 <div>
 <img src="docs/screen_captures/timeline/trend_timeline.png" width="45%" style="border: 1px solid #000">
 <img src="docs/screen_captures/timeline/follow_timeline.png" width="45%" style="border: 1px solid #000">
@@ -488,7 +491,7 @@ $ php scripts/console post-schedule-exec
 
 ##### データシーディング
 
-> [!CAUTION]
+> [!IMPORTANT]
 > このcronジョブは、現在停止しています。
 
 `seed` コマンドの説明項目でも記述している通り、
