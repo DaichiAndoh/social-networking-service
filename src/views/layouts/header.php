@@ -18,6 +18,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
     <!-- Font Awesome -->
+    <!--
+        [WARNING]
+        この Font Awesome Kits は削除予定のアカウントに紐づいています。
+        アカウントが削除されると、URLを修正する必要があります。
+    -->
     <script src="https://kit.fontawesome.com/934007e345.js" crossorigin="anonymous"></script>
 
     <!-- Popperjs -->

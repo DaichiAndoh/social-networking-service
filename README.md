@@ -9,7 +9,10 @@
 
 ## URL
 
-https://sns.d-andoh.com/
+> [!WARNING]
+> 現在このURLは無効です。
+
+~~https://sns.d-andoh.com/~~
 
 ## アプリケーション
 
